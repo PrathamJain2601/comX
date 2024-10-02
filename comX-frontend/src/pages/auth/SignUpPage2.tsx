@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/input-otp";
 import { Label } from "@radix-ui/react-label";
 
+const backend_url =  import.meta.env.VITE_BACKEND_URL;
+
 export default function SignUpFormPage2({
   setCurrentPage,
   email,
@@ -24,10 +26,11 @@ export default function SignUpFormPage2({
   const navigate = useNavigate();
 
   const { mutateAsync: checkOTP } = useMutation({
-    mutationFn: (OTPDetails: { email: string; OTP: string }) => {
-      return axios.post("Link", OTPDetails);
+    mutationFn: (OTPDetails: { email: string; otp: string }) => {
+      return axios.post(`${backend_url}/auth/verify-email-otp`, OTPDetails);
     },
     onSuccess() {
+      navigate("/", { replace: true });
       toast.success("Sign Up Successful");
     },
   });
@@ -36,12 +39,9 @@ export default function SignUpFormPage2({
     e.preventDefault();
     const OTPDetails = {
       email: email.current.value,
-      OTP: OTP.current.value,
+      otp: OTP.current.value,
     };
     checkOTP(OTPDetails);
-    console.log(email.current.value, OTP.current.value);
-    setCurrentPage(1);
-    navigate("/", { replace: true });
   };
 
   return (

@@ -37,6 +37,5 @@ export type LoginDetails = {
   username: string;
   email: string;
   designation: string;
-  token: string;
   isLoggedIn: boolean;
 };

@@ -3,7 +3,15 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Label } from "@radix-ui/react-label";
 import { IconBrandGithub, IconBrandGoogle } from "@tabler/icons-react";
-import { Link } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/state/userDetails/userDetails";
+
+const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 export default function LoginPage() {
   return (
@@ -14,9 +22,60 @@ export default function LoginPage() {
 }
 
 function LoginInForm() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+
+  const { mutateAsync: submitForm } = useMutation({
+    mutationFn: async (loginData: {
+      emailOrUsername: string;
+      password: string;
+    }) => {
+      console.log(loginData);
+      const response = await axios.post(
+        `${backend_url}/auth/login`,
+        loginData,
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    },
+    onSuccess(data) {
+      console.log("Login successful:", data);
+      dispatch(
+        setUser({
+          name: data.name,
+          isLoggedIn: true,
+          email: data.email,
+          designation: data.designation,
+          username: data.username,
+        })
+      );
+      toast.success("Logged in successfully!");
+      navigate("/");
+    },
+    onError(error: unknown) {
+      if (axios.isAxiosError(error)) {
+        const errorMessage =
+          error.response?.data?.message || "Login failed. Please try again.";
+        toast.error(errorMessage);
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
+    },
+  });
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Form submitted");
+    try {
+      submitForm({ emailOrUsername: email, password });
+    } catch (error) {
+      console.log(error);
+      toast.error("An error occurred. Please try again.");
+    }
   };
   return (
     <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input border border-slate-300 bg-white dark:bg-black">
@@ -24,23 +83,34 @@ function LoginInForm() {
         Welcome Back to ComX
       </h2>
       <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
-        Login to ComX if you can because we don&apos;t have a login flow
-        yet
+        Login to ComX if you can because we don&apos;t have a login flow yet
       </p>
 
       <form className="my-8" onSubmit={handleSubmit}>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="email">Username/Email Address</Label>
-          <Input id="loginDetails" placeholder="iit2023249@iiita.ac.in" type="text" />
+          <Input
+            id="loginDetails"
+            placeholder="iit2023249@iiita.ac.in"
+            type="text"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="password">Password</Label>
-          <Input id="password" placeholder="••••••••" type="password" />
+          <Input
+            id="password"
+            placeholder="••••••••"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </LabelInputContainer>
         <LabelInputContainer className="mb-4 text-sm font-bold">
           <Link to="/passwordReset">Forgot Password ?</Link>
         </LabelInputContainer>
-        
+
         <button
           className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
           type="submit"
@@ -74,6 +144,7 @@ function LoginInForm() {
           </button>
         </div>
       </form>
+      <Toaster />
     </div>
   );
 }

@@ -11,6 +11,8 @@ import { LabelInputContainer, BottomGradient } from "../../components/SignUpExtr
 import ItemPicker from "@/components/Item-Picker";
 import { designation } from "@/lib/destignation";
 
+const backend_url =  import.meta.env.VITE_BACKEND_URL;
+
 export default function SignUpFormPage1({
   setCurrentPage,
   email,
@@ -32,11 +34,9 @@ export default function SignUpFormPage1({
   const { mutateAsync: submitForm } = useMutation({
     mutationFn: (userData: UserData) => {
       userData.designation = post;
-      console.log(userData);
-      return axios.post("http://localhost:5000/auth/register", userData);
+      return axios.post(`${backend_url}/auth/register`, userData);
     },
-    onSuccess(data) {
-      console.log(data);
+    onSuccess() {
       setCurrentPage(2);
     },
     onError(error) {
@@ -48,7 +48,6 @@ export default function SignUpFormPage1({
   const onSubmit: SubmitHandler<UserData> = async (data) => {
     try {
       email.current.value = data.email;
-      console.log(data);
       submitForm(data);
     } catch (e) {
       console.log(e);
