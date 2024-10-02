@@ -1,5 +1,5 @@
 import toast, { Toaster } from "react-hot-toast";
-import { LabelInputContainer, BottomGradient } from "./SignUpExtraComponenets";
+import { LabelInputContainer, BottomGradient } from "../../components/SignUpExtraComponenets"
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
@@ -25,7 +25,7 @@ export default function SignUpFormPage2({
 
   const { mutateAsync: checkOTP } = useMutation({
     mutationFn: (OTPDetails: { email: string; OTP: string }) => {
-      return axios.post("##--Link--##", OTPDetails);
+      return axios.post("Link", OTPDetails);
     },
     onSuccess() {
       toast.success("Sign Up Successful");
@@ -45,12 +45,12 @@ export default function SignUpFormPage2({
   };
 
   return (
-    <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input border border-slate-300 bg-white dark:bg-black">
+    <div className="max-w-md sm:w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input border border-slate-300 bg-white dark:bg-black w-[80%]">
       <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
-        Welcome to ComX
+        Welcome to E-Commerce
       </h2>
       <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
-        SignUp to ComX if you can because we don&apos;t have a sign up flow yet
+        SignUp to E-Commerce if you can because we don&apos;t have a sign up flow yet
       </p>
 
       <form className="my-8" onSubmit={handleSubmit}>
@@ -61,12 +61,12 @@ export default function SignUpFormPage2({
               <InputOTPSlot index={0} />
               <InputOTPSlot index={1} />
             </InputOTPGroup>
-            <InputOTPSeparator />
+            { window.innerWidth>400 && <InputOTPSeparator />}
             <InputOTPGroup>
               <InputOTPSlot index={2} />
               <InputOTPSlot index={3} />
             </InputOTPGroup>
-            <InputOTPSeparator />
+            { window.innerWidth>400 && <InputOTPSeparator />}
             <InputOTPGroup>
               <InputOTPSlot index={4} />
               <InputOTPSlot index={5} />

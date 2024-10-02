@@ -1,15 +1,13 @@
-import React, { useState } from "react";
-import ItemPicker from "@/components/Item-Picker";
+import React from "react";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import { useMutation } from "@tanstack/react-query";
 import { UserData, UserDataSchema } from "@/types/UserProfile";
-import { designation } from "@/lib/destignation";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@radix-ui/react-label";
 import { Input } from "@/components/ui/input";
-import { LabelInputContainer, BottomGradient } from "./SignUpExtraComponenets";
+import { LabelInputContainer, BottomGradient } from "../../components/SignUpExtraComponenets"
 
 export default function SignUpFormPage1({
   setCurrentPage,
@@ -27,15 +25,11 @@ export default function SignUpFormPage1({
     resolver: zodResolver(UserDataSchema),
   });
 
-  const [post, setPost] = useState("");
-
   const { mutateAsync: submitForm } = useMutation({
     mutationFn: (userData: UserData) => {
-      console.log(userData);
-      return axios.post("https://comx-hbnf.onrender.com/auth/register", userData);
+      return axios.post("Link", userData);
     },
-    onSuccess(data) {
-      console.log(data);
+    onSuccess() {
       setCurrentPage(2);
     },
     onError(error) {
@@ -45,11 +39,11 @@ export default function SignUpFormPage1({
   });
 
   const onSubmit: SubmitHandler<UserData> = async (data) => {
-    if (post === undefined) setPost("student");
     try {
       email.current.value = data.email;
-      console.log({ ...data, post });
-      submitForm({ ...data, post });
+      console.log(data);
+      submitForm(data);
+      setCurrentPage(2);
     } catch (e) {
       console.log(e);
       toast.error("issue");
@@ -57,12 +51,12 @@ export default function SignUpFormPage1({
   };
 
   return (
-    <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input border border-slate-300 bg-white dark:bg-black">
+    <div className="max-w-md sm:w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input border border-slate-300 bg-white dark:bg-black w-[80%]">
       <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
-        Welcome to ComX
+        Welcome to E-Commerce
       </h2>
       <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
-        SignUp to ComX if you can because we don&apos;t have a sign up flow yet
+        SignUp to E-Commerce if you can because we don&apos;t have a sign up flow yet
       </p>
 
       <form className="my-8" onSubmit={handleSubmit(onSubmit)}>
@@ -121,10 +115,6 @@ export default function SignUpFormPage1({
               {errors.confirmPassword.message}
             </span>
           )}
-        </LabelInputContainer>
-        <LabelInputContainer className="mb-8">
-          <Label htmlFor="password">Designation</Label>
-          <ItemPicker itemList={designation} value={post} setValue={setPost} />
         </LabelInputContainer>
 
         <button
