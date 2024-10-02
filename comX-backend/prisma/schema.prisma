@@ -33,6 +33,7 @@ model Community {
   id          Int               @id @default(autoincrement())
   name        String            @unique
   description String?
+  scope       Scope             @default(PUBLIC)
   joinCode    String?           @unique
   createdAt   DateTime          @default(now())
 
@@ -57,6 +58,11 @@ enum Role {
   OWNER  // The user who created the community
   ADMIN  // Admins with elevated permissions
   MEMBER // Regular members
+}
+
+enum Scope {
+  PRIVATE
+  PUBLIC
 }
 
 

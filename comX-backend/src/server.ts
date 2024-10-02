@@ -22,6 +22,10 @@ app.get("/", (req: Request, res: Response)=>{
 
 const auth = require("./routes/auth.route");
 app.use("/auth", auth);
+const community = require("./routes/community.route");
+app.use("/community", community);
+const member = require("./routes/member.route");
+app.use("/member", member);
 
 app.listen(5000, ()=>{
     console.log("server running on port 5000");

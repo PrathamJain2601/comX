@@ -1,51 +1,9 @@
 import { Request, Response } from "express";
-import { PrismaClient, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { create_token } from "../../utils/token";
 import { responseCodes } from "../../utils/response-codes";
 import { generateOTP, sendOtpEmail } from "./send-email-otp.controller";
-
-const prisma = new PrismaClient({
-    log: [
-        {
-            emit: 'event',
-            level: 'query',
-        },
-        {
-            emit: 'event',
-            level: 'info',
-        },
-        {
-            emit: 'event',
-            level: 'warn',
-        },
-        {
-            emit: 'event',
-            level: 'error',
-        },
-    ],
-});
-
-// Listen for query events
-prisma.$on('query', (e) => {
-    console.log('Query: ' + e.query);
-    console.log('Params: ' + e.params);
-    console.log('Duration: ' + e.duration + 'ms');
-});
-
-// Listen for info events
-prisma.$on('info', (e) => {
-    console.log('Info: ' + e.message);
-});
-
-// Listen for warning events
-prisma.$on('warn', (e) => {
-    console.warn('Warning: ' + e.message);
-});
-
-// Listen for error events
-prisma.$on('error', (e) => {
-    console.error('Error: ' + e.message);
-});
+import { prisma } from "../../config/dbConnect";
 
 export const register = async (req: Request, res: Response) => {
     const { name, username, email, password, designation } = req.body;
@@ -88,7 +46,3 @@ export const register = async (req: Request, res: Response) => {
         return responseCodes.serverError.internalServerError(res, "Internal server error");
     }
 }
-
-// prisma.$on("query", async (e) => {
-//     console.log(`${e.query} ${e.params}`);
-// })
