@@ -14,7 +14,7 @@ export function SidebarMain() {
   const links = [
     {
       label: "Community",
-      href: "http://localhost:5173/community",
+      href: "http://localhost:5173/community/dashboard",
       icon: (
         <IconBrandTabler className="text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),

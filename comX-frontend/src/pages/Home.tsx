@@ -1,9 +1,14 @@
-import React from 'react'
+import DarkLightToggleButton from "@/components/Dark-Light-Toggle-Button";
+import { Link } from "react-router-dom";
 
-function Home() {
+export default function HomePage() {
   return (
-    <div>Home</div>
-  )
+    <>
+      <h1>Home Page</h1>
+      <DarkLightToggleButton />
+      <Link to='/SignUp' >Sign Up</Link>
+      <br/>
+      <Link to='/LogIn' >Log In</Link>
+    </>
+  );
 }
-
-export default Home

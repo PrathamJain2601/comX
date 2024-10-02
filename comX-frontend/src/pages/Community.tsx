@@ -1,16 +1,15 @@
-import { Dashboard } from "@/components/custom-elements/Dashboard";
 import { SidebarMain } from "@/components/example/sidebar-main";
 import { Outlet } from "react-router-dom";
-
 
 function Community() {
   return (
     <>
-      <SidebarMain />
-      <Outlet />
+      <div className="bg-black w-screen">
+        <SidebarMain />
+        <Outlet />
+      </div>
     </>
   );
 }
 
 export default Community;
-

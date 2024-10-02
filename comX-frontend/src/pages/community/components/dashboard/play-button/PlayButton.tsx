@@ -1,16 +1,11 @@
-import "./styles.css";
+import css from "./playButton.module.css";
 import { Suspense, useState } from "react";
 import { motion, MotionConfig, useMotionValue } from "framer-motion";
 import { Shapes } from "./Shapes";
+import { transition } from "./setting";
 import useMeasure from "react-use-measure";
 
 export default function PlayButton() {
-    const transition = {
-        type: "spring",
-        duration: 0.7,
-        bounce: 0.2
-      };
-      
   const [ref, bounds] = useMeasure({ scroll: false });
   const [isHover, setIsHover] = useState(false);
   const [isPress, setIsPress] = useState(false);
@@ -49,17 +44,18 @@ export default function PlayButton() {
           mouseX.set(e.clientX - bounds.x - bounds.width / 2);
           mouseY.set(e.clientY - bounds.y - bounds.height / 2);
         }}
+        className={`${css.button}`}
       >
         <motion.div
-          className="shapes"
+          className={`${css.shapes}`}
           variants={{
             rest: { opacity: 0 },
             hover: { opacity: 1 }
           }}
         >
-          <div className="pink blush" />
-          <div className="blue blush" />
-          <div className="container">
+          <div className={`${css.pink} ${css.blush}`} />
+          <div className={`${css.pink} ${css.blush}`} />
+          <div className={`${css.container}`}>
             <Suspense fallback={null}>
               <Shapes
                 isHover={isHover}
@@ -72,7 +68,7 @@ export default function PlayButton() {
         </motion.div>
         <motion.div
           variants={{ hover: { scale: 0.85 }, press: { scale: 1.1 } }}
-          className="label"
+          className={`${css.label} `}
         >
           play
         </motion.div>

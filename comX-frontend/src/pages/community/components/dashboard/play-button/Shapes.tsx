@@ -1,19 +1,23 @@
 import { motion } from "framer-motion-3d";
 import { MotionConfig } from "framer-motion";
 import { useRef, useLayoutEffect } from "react";
+import { transition } from "./setting";
 import { Canvas, useThree } from "@react-three/fiber";
 import { useSmoothTransform } from "./use-smooth-transform";
 
-// interface PAGEPROPS = {
-//     isHover: any, isPress: any, mouseX:any
-// }
+interface PAGEPROPS1 {
+  isHover:any,
+  isPress:any,
+  mouseX:any,
+  mouseY:any,
+}
 
-export function Shapes({ isHover, isPress, mouseX, mouseY }) {
-    const transition = {
-        type: "spring",
-        duration: 0.7,
-        bounce: 0.2
-      };
+interface PAGEPROPS2 {
+  mouseX:any,
+  mouseY:any,
+}
+
+export const Shapes: React.FC<PAGEPROPS1> = ({ isHover, isPress, mouseX, mouseY }) => {
   const lightRotateX = useSmoothTransform(mouseY, spring, mouseToLightRotation);
   const lightRotateY = useSmoothTransform(mouseX, spring, mouseToLightRotation);
 
@@ -131,15 +135,15 @@ export function Material() {
 }
 
 // Adapted from https://github.com/pmndrs/drei/blob/master/src/core/PerspectiveCamera.tsx
-function Camera({ mouseX, mouseY, ...props }) {
-  const cameraX = useSmoothTransform(mouseX, spring, (x) => x / 350);
-  const cameraY = useSmoothTransform(mouseY, spring, (y) => (-1 * y) / 350);
+export const Camera: React.FC<PAGEPROPS2> = ({ mouseX, mouseY, ...props }) => {
+  const cameraX = useSmoothTransform(mouseX, spring, (x:number) => x / 350);
+  const cameraY = useSmoothTransform(mouseY, spring, (y:number) => (-1 * y) / 350);
 
   const set = useThree(({ set }) => set);
-  const camera = useThree(({ camera }) => camera);
-  const size = useThree(({ size }) => size);
-  const scene = useThree(({ scene }) => scene);
-  const cameraRef = useRef();
+  const camera:any = useThree(({ camera }) => camera);
+  const size:any = useThree(({ size }) => size);
+  const scene:any = useThree(({ scene }) => scene);
+  const cameraRef:any = useRef();
 
   useLayoutEffect(() => {
     const { current: cam } = cameraRef;
@@ -172,4 +176,4 @@ function Camera({ mouseX, mouseY, ...props }) {
 
 const spring = { stiffness: 600, damping: 30 };
 
-const mouseToLightRotation = (v) => (-1 * v) / 140;
+const mouseToLightRotation = (v:number) => (-1 * v) / 140;
