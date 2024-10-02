@@ -33,7 +33,7 @@ export default function SignUpFormPage1({
     mutationFn: (userData: UserData) => {
       userData.designation = post;
       console.log(userData);
-      return axios.post("https://comx-hbnf.onrender.com/auth/register", userData);
+      return axios.post("http://localhost:5000/auth/register", userData);
     },
     onSuccess(data) {
       console.log(data);
