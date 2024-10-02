@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import { useMutation } from "@tanstack/react-query";
@@ -8,6 +8,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@radix-ui/react-label";
 import { Input } from "@/components/ui/input";
 import { LabelInputContainer, BottomGradient } from "../../components/SignUpExtraComponenets"
+import ItemPicker from "@/components/Item-Picker";
+import { designation } from "@/lib/destignation";
 
 export default function SignUpFormPage1({
   setCurrentPage,
@@ -21,15 +23,20 @@ export default function SignUpFormPage1({
     handleSubmit,
     formState: { errors },
   } = useForm<UserData>({
-    defaultValues: {},
+    defaultValues: {designation:"Student"},
     resolver: zodResolver(UserDataSchema),
   });
 
+  const [post,setPost] = useState("");
+
   const { mutateAsync: submitForm } = useMutation({
     mutationFn: (userData: UserData) => {
-      return axios.post("Link", userData);
+      userData.designation = post;
+      console.log(userData);
+      return axios.post("https://comx-hbnf.onrender.com/auth/register", userData);
     },
-    onSuccess() {
+    onSuccess(data) {
+      console.log(data);
       setCurrentPage(2);
     },
     onError(error) {
@@ -43,7 +50,6 @@ export default function SignUpFormPage1({
       email.current.value = data.email;
       console.log(data);
       submitForm(data);
-      setCurrentPage(2);
     } catch (e) {
       console.log(e);
       toast.error("issue");
@@ -67,6 +73,20 @@ export default function SignUpFormPage1({
             placeholder="Vardaan Pahwa"
             type="text"
             {...register("name", { required: true })}
+          />
+          {errors.name && (
+            <span className="text-xs text-red-500 font-bold">
+              {errors.name.message}
+            </span>
+          )}
+        </LabelInputContainer>
+        <LabelInputContainer className="mb-4">
+          <Label htmlFor="username">Name</Label>
+          <Input
+            id="username"
+            placeholder="Vardaan-02"
+            type="text"
+            {...register("username", { required: true })}
           />
           {errors.name && (
             <span className="text-xs text-red-500 font-bold">
@@ -116,6 +136,7 @@ export default function SignUpFormPage1({
             </span>
           )}
         </LabelInputContainer>
+        <ItemPicker itemList={designation} value={post} setValue={setPost}/>
 
         <button
           className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"

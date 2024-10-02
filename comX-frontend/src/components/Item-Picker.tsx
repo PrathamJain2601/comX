@@ -25,7 +25,7 @@ interface InputProps {
   setValue: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const itemPicker: React.FC<InputProps> = ({itemList, value, setValue }) => {
+const ItemPicker: React.FC<InputProps> = ({itemList, value, setValue }) => {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -35,7 +35,7 @@ const itemPicker: React.FC<InputProps> = ({itemList, value, setValue }) => {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="justify-between bg-[#262629] h-12"
+          className="justify-between dark:bg-[#262629] h-12 w-full mb-4"
         >
           {value
             ? itemList.find((item: any) => item.value === value)?.label
@@ -44,10 +44,10 @@ const itemPicker: React.FC<InputProps> = ({itemList, value, setValue }) => {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="p-0">
-        <Command className="bg-[#262629]">
-          <CommandInput placeholder="Search..." className="h-9 bg-[#262629]" />
-          <CommandList className="no-scrollbar h-60 bg-[#262629]">
-            <CommandEmpty className="bg-[#262629] flex justify-center items-center">
+        <Command className="dark:bg-[#262629]">
+          <CommandInput placeholder="Search..." className="h-9 dark:bg-[#262629]" />
+          <CommandList className="no-scrollbar h-60 dark:bg-[#262629]">
+            <CommandEmpty className="dark:bg-[#262629] flex justify-center items-center">
               No Item found.
             </CommandEmpty>
             <CommandGroup>
@@ -77,4 +77,4 @@ const itemPicker: React.FC<InputProps> = ({itemList, value, setValue }) => {
   );
 };
 
-export default itemPicker;
+export default ItemPicker;

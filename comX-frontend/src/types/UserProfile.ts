@@ -1,3 +1,4 @@
+import { designation } from "@/lib/destignation";
 import { z } from "zod";
 
 export type Designation = {
@@ -9,6 +10,7 @@ export type Designation = {
 export const UserDataSchema = z
   .object({
     name: z.string().min(1, "Name is required"),
+    username:z.string(),
     email: z.string().email("Invalid email address"),
     password: z
       .string()
@@ -20,7 +22,7 @@ export const UserDataSchema = z
         "Password must contain at least one special character"
       ), // Require at least one special character
     confirmPassword: z.string(),
-    post: z.any(),
+    designation: z.any(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
