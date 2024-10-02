@@ -33,7 +33,7 @@ export default function SignUpFormPage1({
     mutationFn: (userData: UserData) => {
       userData.designation = post;
       console.log(userData);
-      return axios.post("https://comx-hbnf.onrender.com/auth/register", userData);
+      return axios.post("https://localhost:5000/auth/register", userData);
     },
     onSuccess(data) {
       console.log(data);
@@ -81,7 +81,7 @@ export default function SignUpFormPage1({
           )}
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
-          <Label htmlFor="username">Name</Label>
+          <Label htmlFor="username">Username</Label>
           <Input
             id="username"
             placeholder="Vardaan-02"
@@ -136,7 +136,10 @@ export default function SignUpFormPage1({
             </span>
           )}
         </LabelInputContainer>
-        <ItemPicker itemList={designation} value={post} setValue={setPost}/>
+        <LabelInputContainer className="mb-4">
+          <Label htmlFor="password">Designation</Label>
+          <ItemPicker itemList={designation} value={post} setValue={setPost}/>
+        </LabelInputContainer>
 
         <button
           className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
