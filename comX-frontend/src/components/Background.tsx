@@ -12,7 +12,7 @@ export function Background({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="h-screen relative w-full bg-white dark:bg-background flex flex-col items-center justify-center overflow-hidden">
+    <div className="h-screen relative w-full bg-white dark:bg-background flex flex-col items-center justify-start">
       <div className="w-full absolute inset-0 h-screen">
         <SparklesCore
           id="tsparticlesfullpage"
@@ -24,7 +24,7 @@ export function Background({ children }: { children: React.ReactNode }) {
           particleColor={particleColor()}
         />
       </div>
-      <div className="z-10">{children}</div>
+      <div className="z-10 no-scrollbar">{children}</div>
     </div>
   );
 }

@@ -11,7 +11,7 @@ export default function DarkLightToggleButton() {
   return (
     <div className="relative flex w-fit items-center rounded-full ">
       <button
-        className="text-sm font-medium flex items-center gap-2 px-3 md:pl-3 md:pr-3.5 py-3 md:py-1.5 transition-colors relative z-10 text-slate-800 dark:text-white"
+        className="text-sm font-medium flex items-center gap-2 px-3 md:pl-3 md:pr-3.5 py-3 md:py-1.5 transition-colors relative z-10 text-white"
         onClick={() => {
           dispatch(setLight());
         }}
@@ -20,7 +20,7 @@ export default function DarkLightToggleButton() {
         <span className="relative z-10">Light</span>
       </button>
       <button
-        className="text-sm font-medium flex items-center gap-2 px-3 md:pl-3 md:pr-3.5 py-3 md:py-1.5 transition-colors relative z-10 text-slate-800 dark:text-white"
+        className="text-sm font-medium flex items-center gap-2 px-3 md:pl-3 md:pr-3.5 py-3 md:py-1.5 transition-colors relative z-10 text-white"
         onClick={() => {
           dispatch(setDark());
         }}

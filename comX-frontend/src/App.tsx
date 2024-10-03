@@ -7,6 +7,7 @@ import NotFoundPage from "./pages/404Page";
 import { RootState } from "./state/store";
 import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Dashboard from "./pages/DashBoard";
 
 function App() {
   const router = createBrowserRouter([
@@ -22,6 +23,10 @@ function App() {
     {
       path: "login",
       element: <LoginPage />,
+    },
+    {
+      path: "dashboard",
+      element: <Dashboard />,
     },
   ]);
 

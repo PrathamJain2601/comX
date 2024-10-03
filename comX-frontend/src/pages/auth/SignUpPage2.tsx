@@ -1,5 +1,5 @@
 import toast, { Toaster } from "react-hot-toast";
-import { LabelInputContainer, BottomGradient } from "../../components/SignUpExtraComponenets"
+import { LabelInputContainer, BottomGradient } from "./SignUpExtraComponenets"
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";

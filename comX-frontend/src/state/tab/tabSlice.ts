@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 function checkLocalStorageForTab(): string {
   const item = window.localStorage.getItem("tab");
-  return typeof item === "string" ? item : "Electronics";
+  return typeof item === "string" ? item : "Home";
 }
 
 const initialState: string = checkLocalStorageForTab();

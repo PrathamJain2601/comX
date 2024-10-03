@@ -7,7 +7,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@radix-ui/react-label";
 import { Input } from "@/components/ui/input";
-import { LabelInputContainer, BottomGradient } from "../../components/SignUpExtraComponenets"
+import { LabelInputContainer, BottomGradient } from "./SignUpExtraComponenets"
 import ItemPicker from "@/components/Item-Picker";
 import { designation } from "@/lib/destignation";
 
@@ -56,7 +56,7 @@ export default function SignUpFormPage1({
   };
 
   return (
-    <div className="max-w-md sm:w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input border border-slate-300 bg-white dark:bg-black w-[80%]">
+    <div className="max-w-md sm:w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input border border-slate-300 bg-white dark:bg-black w-[80%] translate-y-12">
       <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
         Welcome to E-Commerce
       </h2>
@@ -147,8 +147,6 @@ export default function SignUpFormPage1({
           Next &rarr;
           <BottomGradient />
         </button>
-
-        <div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-8 h-[1px] w-full" />
       </form>
       <Toaster />
     </div>

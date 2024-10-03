@@ -1,34 +1,36 @@
 import { useState } from "react";
 
-export const useLocalStorage = (key: string) => {
-    let temp:unknown;
-    const [value,setValue] = useState(temp);
-
-    const setItem = (value: unknown) => {
-      try {
-        window.localStorage.setItem(key, JSON.stringify(value));
-        setValue(value);
-      } catch (error) {
-        console.log(error);
-      }
-    };
+export const useLocalStorage = (key: string, initialValue: unknown) => {
   
-    const getItem = () => {
-      try {
-        const item = window.localStorage.getItem(key);
-        return item ? JSON.parse(item) : undefined ;
-      } catch (error) {
-        console.log(error);
-      }
-    };
-  
-    const removeItem = () => {
-      try {
-        window.localStorage.removeItem(key);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-  
-    return { value,setItem, getItem, removeItem };
+  const setItem = (value: unknown) => {
+    try {
+      setValue(value);
+      window.localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+      console.error("Error setting localStorage item:", error);
+    }
   };
+  
+  const getItem = () => {
+    try {
+      const item = window.localStorage.getItem(key);
+      if(!item) {setItem(initialValue);console.log("Hello")}
+      return item ? JSON.parse(item) : initialValue;
+    } catch (error) {
+      console.error("Error getting localStorage item:", error);
+      return initialValue;
+    }
+  };
+  
+  const removeItem = () => {
+    try {
+      window.localStorage.removeItem(key);
+    } catch (error) {
+      console.error("Error removing localStorage item:", error);
+    }
+  };
+  
+  const [value, setValue] = useState(getItem());
+
+  return { value, setItem, getItem, removeItem };
+};

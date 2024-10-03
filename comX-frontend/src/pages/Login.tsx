@@ -44,14 +44,14 @@ function LoginInForm() {
       return response.data;
     },
     onSuccess(data) {
-      console.log("Login successful:", data);
+      console.log("Login successful:", data.data);
       dispatch(
         setUser({
-          name: data.name,
+          name: data.data.name,
           isLoggedIn: true,
-          email: data.email,
-          designation: data.designation,
-          username: data.username,
+          email: data.data.email,
+          designation: data.data.designation,
+          username: data.data.username,
         })
       );
       toast.success("Logged in successfully!");
@@ -78,7 +78,7 @@ function LoginInForm() {
     }
   };
   return (
-    <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input border border-slate-300 bg-white dark:bg-black">
+    <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input border border-slate-300 bg-white dark:bg-black mt-32">
       <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
         Welcome Back to ComX
       </h2>

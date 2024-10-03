@@ -9,7 +9,7 @@ export default function SignUp() {
     value: currentPage,
     setItem: setCurrentPage,
     getItem: getCurrentPage,
-  } = useLocalStorage("page");
+  } = useLocalStorage("page",1);
 
   useEffect(() => {
     setCurrentPage(getCurrentPage());
