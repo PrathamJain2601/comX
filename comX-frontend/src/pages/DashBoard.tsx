@@ -9,10 +9,12 @@ import LastTask from "./dashboard/Last-Task";
 import CommunityCard from "./dashboard/CommunityCard";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import ErrorPage from "./ErrorPage";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useDebugger } from "@/hooks/useDebugger";
+import { dummyCommunities } from "@/lib/DummyData";
+import toast from "react-hot-toast";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -38,37 +40,22 @@ export default function AnimatedDashboard() {
     return <ErrorPage />;
   }
 
+  const { mutateAsync: createCommunity } = useMutation({
+    mutationFn: (data) => {
+      return axios.post(`${backend_url}/community/create-community`,data);
+    },
+    onSuccess(data) {
+      console.log(data);
+    },
+    onError(error:AxiosError) {
+      console.log(error);
+      toast.error("pending");
+    },
+  });
+
   useDebugger(data);
 
-  const [communities, setCommunities] = useState([
-    {
-      id: 1,
-      name: "Google",
-      members: 1500,
-      description:
-        "Google Community is a platform that brings together developers, enthusiasts, and learners to collaborate, share knowledge, and engage in discussions about Google's products and technologies. It fosters a supportive environment for innovation, networking, and skill-building through events, forums, and community-driven initiatives.",
-      founder: "Vardaan",
-      founderAvatar: "../../public/Vardaan_Profile.jpg",
-      coverImage:
-        "https://play-lh.googleusercontent.com/1-hPxafOxdYpYZEOKzNIkSP43HXCNftVJVttoo4ucl7rsMASXW3Xr6GlXURCubE1tA=w3840-h2160-rw",
-      tags: ["Google", "YouTube", "Maps"],
-      age: "15 Years",
-    },
-    {
-      id: 2,
-      name: "Microsoft",
-      members: 2300,
-      description:
-        "Microsoft Community is an online platform that connects users, developers, and IT professionals to share knowledge, seek help, and discuss Microsoft products and services. It provides a collaborative environment for learning, problem-solving, and networking through forums, events, and community-driven resources, empowering users to maximize their experience with Microsoft technologies.!",
-      founder: "Bill Gates",
-      founderAvatar:
-        "https://imageio.forbes.com/specials-images/imageserve/62d599ede3ff49f348f9b9b4/0x0.jpg?format=jpg&crop=821,821,x155,y340,safe&height=416&width=416&fit=bounds",
-      coverImage:
-        "https://blogs.microsoft.com/wp-content/uploads/prod/2012/08/8867.Microsoft_5F00_Logo_2D00_for_2D00_screen.jpg",
-      tags: ["Teams", "Operating System", "X-Box"],
-      age: "9 Years",
-    },
-  ]);
+  const [communities, setCommunities] = useState(dummyCommunities);
 
   const [newCommunity, setNewCommunity] = useState("");
   const [communityDescription, setCommunityDescription] = useState("");
@@ -92,6 +79,7 @@ export default function AnimatedDashboard() {
           age: new Date().toLocaleString(),
         },
       ]);
+      createCommunity()
       setNewCommunity("");
       setCommunityDescription("");
     }
