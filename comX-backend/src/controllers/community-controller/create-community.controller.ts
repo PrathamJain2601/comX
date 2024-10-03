@@ -25,7 +25,7 @@ const generateUniqueJoinCode = async (): Promise<string> => {
 // Create a new community
 export const create_community = async (req: Request, res: Response) => {
   try {
-    const { name, description, scope, userId } = req.body;
+    const { name, description, scope, userId, coverImage } = req.body;
 
     // Check if the user is authenticated
     if (!userId) {
@@ -50,6 +50,7 @@ export const create_community = async (req: Request, res: Response) => {
         description,
         scope: scope || 'PUBLIC', // Default to PUBLIC if not provided
         joinCode,
+        coverImage,
         members: {
           create: {
             userId,

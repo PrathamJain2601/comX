@@ -33,6 +33,7 @@ model Community {
   id          Int               @id @default(autoincrement())
   name        String            @unique
   description String?
+  coverImage  String?
   scope       Scope             @default(PUBLIC)
   joinCode    String?           @unique
   createdAt   DateTime          @default(now())
