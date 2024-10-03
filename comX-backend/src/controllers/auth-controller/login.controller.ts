@@ -1,16 +1,7 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
 import { create_token } from "../../utils/token";
 import { responseCodes } from "../../utils/response-codes";
-
-const prisma = new PrismaClient({
-    log: [
-        {
-            emit: "event",
-            level: "query",
-        },
-    ],
-});
+import { prisma } from "../../config/dbConnect";
 
 export const login = async (req: Request, res: Response) => {
     const { emailOrUsername, password } = req.body;
@@ -38,7 +29,3 @@ export const login = async (req: Request, res: Response) => {
         return responseCodes.serverError.internalServerError(res, "Internal Error");
     }
 };
-
-prisma.$on("query", async (e) => {
-    console.log(`${e.query} ${e.params}`);
-})

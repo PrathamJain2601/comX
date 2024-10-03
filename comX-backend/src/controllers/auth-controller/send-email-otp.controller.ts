@@ -1,16 +1,7 @@
 import nodemailer from 'nodemailer';
 import { Request, Response } from "express";
 import { responseCodes } from '../../utils/response-codes';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient({
-  log: [
-    {
-      emit: "event",
-      level: "query",
-    },
-  ],
-});
+import { prisma } from '../../config/dbConnect';
 
 export function generateOTP(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -64,9 +55,3 @@ export const send_email_otp = async (req: Request, res: Response) => {
     responseCodes.serverError.internalServerError(res, "internal error");
   }
 }
-
-
-
-prisma.$on("query", async (e) => {
-  console.log(`${e.query} ${e.params}`);
-})

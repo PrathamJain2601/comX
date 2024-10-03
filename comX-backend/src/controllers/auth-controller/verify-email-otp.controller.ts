@@ -1,15 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { responseCodes } from "../../utils/response-codes";
-
-const prisma = new PrismaClient({
-    log: [
-      {
-        emit: "event",
-        level: "query",
-      },
-    ],
-  });
+import { prisma } from "../../config/dbConnect";
 
 export const verify_email_otp = async(req: Request, res: Response) => {
     const {email, otp} = req.body;
@@ -40,7 +32,3 @@ export const verify_email_otp = async(req: Request, res: Response) => {
   
       return responseCodes.success.ok(res, "Email verified successfully");
 }
-
-prisma.$on("query", async (e) => {
-    console.log(`${e.query} ${e.params}`);
-  })

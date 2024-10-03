@@ -14,13 +14,56 @@ datasource db {
 }
 
 model User {
-  id          Int      @id @default(autoincrement())
-  email       String   @unique
-  username    String   @unique
+  id          Int          @id @default(autoincrement())
+  email       String       @unique
+  username    String       @unique
   name        String
   password    String
   designation String
   otp         String?   
   isOtpValid  DateTime? 
-  isVerified  Boolean?  @default(false)
+  isVerified  Boolean?     @default(false)
+  registeredAt   DateTime     @default(now())
+
+  // Relationships
+  memberships CommunityMember[]
 }
+
+model Community {
+  id          Int               @id @default(autoincrement())
+  name        String            @unique
+  description String?
+  scope       Scope             @default(PUBLIC)
+  joinCode    String?           @unique
+  createdAt   DateTime          @default(now())
+
+  // Relationships
+  members     CommunityMember[]
+}
+
+model CommunityMember {
+  id           Int        @id @default(autoincrement())
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       Int
+  community    Community  @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  communityId  Int
+  role         Role       @default(MEMBER) // Role can be OWNER, ADMIN, or MEMBER
+
+  joinedAt     DateTime   @default(now())
+
+  @@unique([userId, communityId])
+}
+
+enum Role {
+  OWNER  // The user who created the community
+  ADMIN  // Admins with elevated permissions
+  MEMBER // Regular members
+}
+
+enum Scope {
+  PRIVATE
+  PUBLIC
+}
+
+
+
