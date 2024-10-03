@@ -1,10 +1,9 @@
 import { useEffect } from "react";
 
-export const useDebugger = <T>(value: T) => {
-  useEffect(() => {
-    console.log(value);
-
-  }, [value]);
-
-  return ;
-};
+export const useDebugger = (condition:any) => {
+    useEffect(() => {
+      if (condition) {
+        console.log('Debugging...');
+      }
+    }, [condition]);
+  };

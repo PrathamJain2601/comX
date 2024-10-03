@@ -17,20 +17,21 @@ import { useDebugger } from "@/hooks/useDebugger";
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 const fetchCommunityList = async () => {
-  const response = await axios.get(`${backend_url}/`);
+  const response = await axios.get(
+    `${backend_url}/community/get-all-communities`,
+    {
+      withCredentials: true,
+    }
+  );
   console.log(response);
   return response.data;
 };
 
 export default function AnimatedDashboard() {
-  const { isPending, isError, data, error } = useQuery({
+  const { isError, data, error } = useQuery({
     queryKey: ["communityList"],
     queryFn: fetchCommunityList,
   });
-
-  if (isPending) {
-    return <div>Loading...</div>;
-  }
 
   if (isError) {
     console.error(error);
@@ -84,11 +85,11 @@ export default function AnimatedDashboard() {
           name: newCommunity,
           members: 1,
           description: communityDescription,
-          founder: user.user ? user.user.name : "change this is dashboard",
+          founder: user.user ? user.user.name : "Anonymous",
           founderAvatar: "/placeholder.svg?height=50&width=50",
           coverImage: "/placeholder.svg?height=200&width=400",
           tags: [],
-          age: Date.now().toLocaleString(),
+          age: new Date().toLocaleString(),
         },
       ]);
       setNewCommunity("");
