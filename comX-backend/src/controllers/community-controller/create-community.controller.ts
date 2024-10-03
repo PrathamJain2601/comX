@@ -32,6 +32,14 @@ export const create_community = async (req: Request, res: Response) => {
       return responseCodes.clientError.unauthorized(res, 'Unauthorized');
     }
 
+    const existingCommunity = await prisma.community.findUnique({
+      where: { name },
+    });
+
+    if (existingCommunity) {
+      return responseCodes.clientError.badRequest(res, 'Community name must be unique');
+    }
+
     // Generate a unique join code
     const joinCode = await generateUniqueJoinCode();
 
@@ -45,7 +53,7 @@ export const create_community = async (req: Request, res: Response) => {
         members: {
           create: {
             userId,
-            role: 'OWNER', // Automatically make the creator the owner
+            role: 'OWNER', 
           },
         },
       },
@@ -54,7 +62,21 @@ export const create_community = async (req: Request, res: Response) => {
       },
     });
 
-    return responseCodes.success.created(res, newCommunity, 'Community created successfully');
+    const memberCount = newCommunity.members.length;
+    
+    const membersWithoutIds = newCommunity.members.map(({ id, communityId, ...rest }) => rest); // Exclude id and communityId
+    
+    const owner = newCommunity.members.find(member => member.role === 'OWNER');
+    const ownerWithoutIds = {...owner, id:undefined, communityId: undefined};
+    
+    const responseData = {
+      ...newCommunity,
+      members: membersWithoutIds,
+      memberCount, // Add memberCount to the response
+      owner : ownerWithoutIds
+    };
+
+    return responseCodes.success.created(res, responseData, 'Community created successfully');
   } catch (error) {
     console.error('Error creating community:', error);
     return responseCodes.serverError.internalServerError(res, 'Internal server error');

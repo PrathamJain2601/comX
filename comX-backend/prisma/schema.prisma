@@ -43,9 +43,9 @@ model Community {
 
 model CommunityMember {
   id           Int        @id @default(autoincrement())
-  user         User       @relation(fields: [userId], references: [id])
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId       Int
-  community    Community  @relation(fields: [communityId], references: [id])
+  community    Community  @relation(fields: [communityId], references: [id], onDelete: Cascade)
   communityId  Int
   role         Role       @default(MEMBER) // Role can be OWNER, ADMIN, or MEMBER
 

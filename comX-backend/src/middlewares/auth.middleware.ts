@@ -11,6 +11,7 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
         return responseCodes.clientError.unauthorized(res, "Unauthorized: Invalid or missing token.");
       }
     } catch (error) {
+      console.log(error);
       return responseCodes.serverError.internalServerError(res, "An error occurred during authentication.");
     }
   };
