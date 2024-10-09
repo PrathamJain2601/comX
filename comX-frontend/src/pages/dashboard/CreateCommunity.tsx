@@ -4,6 +4,7 @@ import { Label } from "@radix-ui/react-label";
 import { PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { Textarea } from "@/components/ui/textarea";
 
 interface PROPS {
   handleCreateCommunity: (e: React.FormEvent) => void;
@@ -57,8 +58,7 @@ export default function CreateCommunity({
           >
             Community Description
           </Label>
-          <Input
-            type="text"
+          <Textarea
             id="communityDescription"
             value={communityDescription}
             onChange={(e) => setCommunityDescription(e.target.value)}

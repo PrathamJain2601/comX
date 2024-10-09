@@ -100,7 +100,7 @@ export default function AnimatedDashboard() {
               <Users className="mr-2" /> Your Communities
             </h2>
             <div className="grid grid-cols-1 gap-6">
-              {communities.map((community) => (
+              {communities.map((community:any) => (
                 <CommunityCard key={community.id} community={community} />
               ))}
             </div>

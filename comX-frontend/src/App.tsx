@@ -8,6 +8,7 @@ import { RootState } from "./state/store";
 import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Dashboard from "./pages/DashBoard";
+import Contact from "./pages/Contact";
 
 function App() {
   const router = createBrowserRouter([
@@ -27,6 +28,10 @@ function App() {
     {
       path: "dashboard",
       element: <Dashboard />,
+    },
+    {
+      path: "contact",
+      element: <Contact />,
     },
   ]);
 
