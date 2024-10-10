@@ -19,6 +19,7 @@ model User {
   username    String       @unique
   name        String
   password    String
+  avatar      String?      
   designation String
   otp         String?   
   isOtpValid  DateTime? 
