@@ -1,9 +1,7 @@
 import { useEffect } from "react";
 
-export const useDebugger = (condition:any) => {
-    useEffect(() => {
-      if (condition) {
-        console.log('Debugging...');
-      }
-    }, [condition]);
-  };
+export const useDebugger = (condition: any) => {
+  useEffect(() => {
+    console.log(condition);
+  }, [condition]);
+};

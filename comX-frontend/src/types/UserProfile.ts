@@ -1,4 +1,3 @@
-import { designation } from "@/lib/destignation";
 import { z } from "zod";
 
 export type Designation = {

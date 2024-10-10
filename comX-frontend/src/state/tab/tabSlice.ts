@@ -12,6 +12,7 @@ const tabSlice = createSlice({
   initialState,
   reducers: {
     setTab(state: String, payload) {
+      state;
       window.localStorage.setItem("tab", payload.payload);
       return payload.payload;
     },

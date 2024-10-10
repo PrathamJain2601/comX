@@ -13,10 +13,12 @@ const themeSlice = createSlice({
   initialState,
   reducers: {
     setDark: (state) => {
+      state;
       window.localStorage.setItem("theme", "dark");
       return "dark";  
     },
     setLight: (state) => {
+      state;
       window.localStorage.setItem("theme", "light");
       return "light";  
     },

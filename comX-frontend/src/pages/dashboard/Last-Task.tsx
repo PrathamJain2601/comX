@@ -3,7 +3,7 @@ import { CheckSquare } from "lucide-react";
 import { useState } from "react";
 
 export default function LastTask() {
-  const [tasks, setTasks] = useState([
+  const [tasks] = useState([
     { id: 1, name: "Complete project proposal", date: "2023-06-15" },
     { id: 2, name: "Review pull requests", date: "2023-06-14" },
     { id: 3, name: "Update documentation", date: "2023-06-13" },

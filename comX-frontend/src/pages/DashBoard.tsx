@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Users } from "lucide-react";
 import CreateCommunity from "./dashboard/CreateCommunity";
@@ -25,11 +25,10 @@ const fetchCommunityList = async () => {
       withCredentials: true,
     }
   );
-  console.log(response);
-  return response.data;
+  return response.data.data;
 };
 
-export default function AnimatedDashboard() {
+export default function Dashboard() {
   const { isError, data, error } = useQuery({
     queryKey: ["communityList"],
     queryFn: fetchCommunityList,
@@ -42,12 +41,12 @@ export default function AnimatedDashboard() {
 
   const { mutateAsync: createCommunity } = useMutation({
     mutationFn: (data) => {
-      return axios.post(`${backend_url}/community/create-community`,data);
+      return axios.post(`${backend_url}/community/create-community`, data);
     },
     onSuccess(data) {
       console.log(data);
     },
-    onError(error:AxiosError) {
+    onError(error: AxiosError) {
       console.log(error);
       toast.error("pending");
     },
@@ -56,6 +55,10 @@ export default function AnimatedDashboard() {
   useDebugger(data);
 
   const [communities, setCommunities] = useState(dummyCommunities);
+
+  // useEffect(() => {
+  //   if(Array.isArray(data)) setCommunities(data);
+  // }, [data]);
 
   const [newCommunity, setNewCommunity] = useState("");
   const [communityDescription, setCommunityDescription] = useState("");
@@ -79,7 +82,7 @@ export default function AnimatedDashboard() {
           age: new Date().toLocaleString(),
         },
       ]);
-      createCommunity()
+      createCommunity();
       setNewCommunity("");
       setCommunityDescription("");
     }
@@ -100,8 +103,9 @@ export default function AnimatedDashboard() {
               <Users className="mr-2" /> Your Communities
             </h2>
             <div className="grid grid-cols-1 gap-6">
-              {communities.map((community:any) => (
+              {communities.map((community: any) => (
                 <CommunityCard key={community.id} community={community} />
+                // <div key={community.id}>Hello</div>
               ))}
             </div>
           </motion.div>
