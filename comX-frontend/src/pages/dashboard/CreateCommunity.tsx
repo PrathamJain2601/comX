@@ -5,25 +5,50 @@ import { PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Textarea } from "@/components/ui/textarea";
+import axios, { AxiosError } from "axios";
+import toast from "react-hot-toast";
+import { useMutation } from "@tanstack/react-query";
+import { RootState } from "@/state/store";
+import { useSelector } from "react-redux";
 
-interface PROPS {
-  handleCreateCommunity: (e: React.FormEvent) => void;
-  newCommunity: string;
-  setNewCommunity: React.Dispatch<React.SetStateAction<string>>;
-  communityDescription: string;
-  setCommunityDescription: React.Dispatch<React.SetStateAction<string>>;
-}
+const backend_url = import.meta.env.VITE_BACKEND_URL;
 
-export default function CreateCommunity({
-  handleCreateCommunity,
-  newCommunity,
-  setNewCommunity,
-  communityDescription,
-  setCommunityDescription,
-}: PROPS) {
+export default function CreateCommunity() {
   const [selectedOption, setSelectedOption] = useState<"Public" | "Private">(
     "Public"
   );
+  const [newCommunity, setNewCommunity] = useState("");
+  const [communityDescription, setCommunityDescription] = useState("");
+
+  const { mutateAsync: createCommunity } = useMutation({
+    mutationFn: (data: any) => {
+      return axios.post(`${backend_url}/community/create-community`, data);
+    },
+    onSuccess(data) {
+      console.log(data);
+    },
+    onError(error: AxiosError) {
+      console.log(error);
+      toast.error("pending");
+    },
+  });
+
+  const { user } = useSelector((state: RootState) => state.userDetails);
+
+  const handleCreateCommunity = (e: React.FormEvent) => {
+    e.preventDefault();
+    const data = {
+      name: user?.name,
+      description: communityDescription,
+      scope: selectedOption,
+      userId: user?.id,
+      coverImage: "coverImage",
+    };
+    createCommunity(data);
+    setNewCommunity("");
+    setCommunityDescription("");
+  };
+
   return (
     <motion.div
       className="bg-white p-6 rounded-lg shadow-lg"
@@ -71,6 +96,7 @@ export default function CreateCommunity({
             variant={selectedOption === "Public" ? "default" : "outline"}
             size="lg"
             onClick={() => setSelectedOption("Public")}
+            type="button"
           >
             Public
           </Button>
@@ -79,6 +105,7 @@ export default function CreateCommunity({
             variant={selectedOption === "Private" ? "default" : "outline"}
             size="lg"
             onClick={() => setSelectedOption("Private")}
+            type="button"
           >
             Private
           </Button>
