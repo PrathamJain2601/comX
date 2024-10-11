@@ -4,12 +4,15 @@ import { create_token } from "../../utils/token";
 import { responseCodes } from "../../utils/response-codes";
 import { generateOTP, sendOtpEmail } from "./send-email-otp.controller";
 import { prisma } from "../../config/dbConnect";
+import { registerRequestSchema, RegisterRequest } from "@prathamjain522/comx-common";
 
 export const register = async (req: Request, res: Response) => {
-    const { name, username, email, password, designation } = req.body;
-    if (!name || !username || !email || !password || !designation) {
-        return responseCodes.clientError.notFound(res, "All fields are required");
+    const parseResult = registerRequestSchema.safeParse(req.body);
+    if(!parseResult.success){
+        return responseCodes.clientError.badRequest(res, parseResult.error.errors, "message");
     }
+    const { name, username, email, password, designation}: RegisterRequest = req.body;
+
     // add a function to check strength of password
     try {
         const user = await prisma.user.create({

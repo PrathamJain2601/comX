@@ -17,10 +17,11 @@ const responseCodes = {
         }
     },
     clientError: {
-        badRequest: (res: Response, message = 'Bad Request') => {
+        badRequest: (res: Response, data:unknown = null, message = 'Bad Request') => {
             return res.status(400).json({
                 status: 400,
-                message: message
+                message: message,
+                data: data
             });
         },
         unauthorized: (res: Response, message = 'Unauthorized') => {
