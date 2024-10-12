@@ -1,7 +1,7 @@
 import { Community } from "@/types/Community";
-import { create } from "domain";
 import { motion } from "framer-motion";
 import { Calendar, User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function CommunityCard({
   coverImage,
@@ -16,6 +16,7 @@ export default function CommunityCard({
   const tags = ["Maps", "Tech", "New"];
 
   function timeDifferenceFromNow(dateString: string): string {
+    id;joinCode;
     const now = new Date();
     const targetDate = new Date(dateString);
 
@@ -41,11 +42,14 @@ export default function CommunityCard({
     return result.trim() || "less than a day";
   }
 
+  const navigate = useNavigate();
+
   return (
     <motion.div
       className="bg-gray-50 rounded-lg shadow overflow-hidden"
       whileHover={{ scale: 1.02 }}
       transition={{ type: "spring", stiffness: 400, damping: 10 }}
+      onClick={()=>{navigate(`/community/${name}`)}}
     >
       <div
         className="relative h-48 w-full bg-cover bg-center"

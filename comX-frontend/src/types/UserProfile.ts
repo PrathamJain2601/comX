@@ -43,7 +43,7 @@ export type Member = {
   id: number;
   name: string;
   email: string;
-  role: "member" | "admin" | "banned";
+  role: "member" | "admin" | "banned" | "invite";
   joinDate: string;
   avatar: string;
 };

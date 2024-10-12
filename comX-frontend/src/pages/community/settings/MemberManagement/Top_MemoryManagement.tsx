@@ -11,8 +11,8 @@ export default function Top_MemoryManagement({
   bannedCount: number;
 }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-      <Card className="bg-white shadow-lg transition-all duration-300 hover:shadow-xl">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <Card className="bg-white shadow-lg transition-all duration-300 hover:shadow-xl h-48 flex justify-center flex-col">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg font-medium text-blue-600">
             Members
@@ -29,7 +29,7 @@ export default function Top_MemoryManagement({
         </CardContent>
       </Card>
 
-      <Card className="bg-white shadow-lg transition-all duration-300 hover:shadow-xl">
+      <Card className="bg-white shadow-lg transition-all duration-300 hover:shadow-xl h-48 flex justify-center flex-col">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg font-medium text-green-600">
             Admins
@@ -46,7 +46,24 @@ export default function Top_MemoryManagement({
         </CardContent>
       </Card>
 
-      <Card className="bg-white shadow-lg transition-all duration-300 hover:shadow-xl">
+      <Card className="bg-white shadow-lg transition-all duration-300 hover:shadow-xl h-48 flex justify-center flex-col">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg font-medium text-yellow-400">
+            Admins
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center">
+            <UserCog className="h-12 w-12 text-yellow-400 mr-4" />
+            <div>
+              <p className="text-4xl font-bold text-yellow-600">{adminCount}</p>
+              <p className="text-sm text-yellow-400">System administrators</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-white shadow-lg transition-all duration-300 hover:shadow-xl h-48 flex justify-center flex-col">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg font-medium text-red-600">
             Banned

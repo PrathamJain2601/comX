@@ -23,6 +23,12 @@ import Search_MemberManagement from "./MemberManagement/Search_MemberManagement"
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useDebounce } from "@/hooks/useDebounce";
 import { Member } from "@/types/UserProfile";
+import { motion } from "framer-motion";
+
+const itemAnimation = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 80 } },
+};
 
 export default function MemberManagement() {
   const { value: members, setItem: setMembers } = useLocalStorage("member", [
@@ -74,6 +80,22 @@ export default function MemberManagement() {
       joinDate: "2022-12-19",
       avatar: "/placeholder.svg?height=40&width=40",
     },
+    {
+      id: 7,
+      name: "Vardaan",
+      email: "vardaanpahwa02@gmail.com",
+      role: "invite",
+      joinDate: "2022-08-15",
+      avatar: "/placeholder.svg?height=40&width=40",
+    },
+    {
+      id: 8,
+      name: "Pratham Jain",
+      email: "jainpratham522@gamil.com",
+      role: "invite",
+      joinDate: "2022-01-26",
+      avatar: "/placeholder.svg?height=40&width=40",
+    },
   ]);
 
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -89,6 +111,9 @@ export default function MemberManagement() {
   const memberCount = members.filter((m: Member) => m.role === "member").length;
   const adminCount = members.filter((m: Member) => m.role === "admin").length;
   const bannedCount = members.filter((m: Member) => m.role === "banned").length;
+  const inviteCount = members.filter((m: Member) => m.role === "invite").length;
+
+  console.log(inviteCount);
 
   const handleAction = (action: () => void, message: string) => {
     setConfirmAction(() => action);
@@ -125,6 +150,12 @@ export default function MemberManagement() {
     );
   };
 
+  const acceptMember = (id: number) => {
+    setMembers(
+      members.map((m: Member) => (m.id === id ? { ...m, role: "member" } : m))
+    );
+  };
+
   const removeMember = (id: number) => {
     setMembers(members.filter((m: Member) => m.id !== id));
   };
@@ -137,6 +168,15 @@ export default function MemberManagement() {
 
   return (
     <div className="h-full overflow-scroll w-full no-scrollbar p-4 md:p-8">
+      {/* Page Header */}
+      <motion.div variants={itemAnimation} className="text-center mb-12">
+        <h1 className="text-4xl font-extrabold text-blue-600 leading-snug">
+          Member Management
+        </h1>
+        <p className="mt-2 text-lg text-gray-500">
+          Customize and manage your community experience.
+        </p>
+      </motion.div>
       <Top_MemoryManagement
         memberCount={memberCount}
         adminCount={adminCount}
@@ -235,7 +275,7 @@ export default function MemberManagement() {
 
         <Card className="bg-white shadow-lg transition-all duration-300 hover:shadow-xl overflow-hidden">
           <CardHeader className="bg-gradient-to-r from-green-500 to-emerald-600">
-            <CardTitle className="text-xl font-semibold text-white">
+            <CardTitle className="text-2xl font-semibold text-white">
               Admins
             </CardTitle>
           </CardHeader>
@@ -304,8 +344,64 @@ export default function MemberManagement() {
         </Card>
 
         <Card className="bg-white shadow-lg transition-all duration-300 hover:shadow-xl overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-yellow-400 to-yellow-600">
+            <CardTitle className="text-2xl font-semibold text-white">
+              Requests
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <ul className="divide-y divide-gray-200">
+              {filteredMembers
+                .filter((m: Member) => m.role === "invite")
+                .map((invite: Member) => (
+                  <li
+                    key={invite.id}
+                    className="flex flex-col md:flex-row md:items-center justify-between py-4 transition-all duration-300 hover:bg-yellow-50"
+                  >
+                    <div className="flex items-center mb-2 md:mb-0 ml-4">
+                      <Avatar className="h-10 w-10 mr-3">
+                        <AvatarImage src={invite.avatar} alt={invite.name} />
+                        <AvatarFallback>{invite.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <span className="font-medium text-gray-700 text-lg block">
+                          {invite.name}
+                        </span>
+                        <span className="text-sm text-gray-500 flex items-center">
+                          <Mail className="h-4 w-4 mr-1" />
+                          {invite.email}
+                        </span>
+                        <span className="text-xs text-gray-400 flex items-center mt-1">
+                          <Calendar className="h-3 w-3 mr-1" />
+                          Joined since: {invite.joinDate}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex space-x-2 mt-2 md:mt-0 mr-4">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="bg-green-50 text-green-600 hover:bg-green-100"
+                        onClick={() =>
+                          handleAction(
+                            () => acceptMember(invite.id),
+                            `Accept ${invite.name} as a member?`
+                          )
+                        }
+                      >
+                        <UserCheck className="w-4 h-4 mr-2" />
+                        Accept
+                      </Button>
+                    </div>
+                  </li>
+                ))}
+            </ul>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white shadow-lg transition-all duration-300 hover:shadow-xl overflow-hidden">
           <CardHeader className="bg-gradient-to-r from-red-500 to-pink-600">
-            <CardTitle className="text-xl font-semibold text-white">
+            <CardTitle className="text-2xl font-semibold text-white">
               Banned Members
             </CardTitle>
           </CardHeader>

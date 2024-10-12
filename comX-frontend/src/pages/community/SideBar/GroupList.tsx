@@ -3,16 +3,26 @@ import { cn } from "@/lib/utils";
 import { Group } from "@/types/Groups";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { ChevronDown, Headphones, Mic, Settings, Users } from "lucide-react";
+import React from "react";
 import { useParams } from "react-router-dom";
 
-export default function GroupList({ groups,activeChannel,setActiveChannel }: { groups: Group[],activeChannel:number,setActiveChannel:(value:unknown)=>void }) {
-
-  const {value:expandedCategories, setItem:setExpandedCategories} = useLocalStorage("expandedCategories",
-    Array.from({ length: groups.length }, (_, i) => i + 1)
-  );
+const GroupList = React.memo(function GroupList({
+  groups,
+  activeChannel,
+  setActiveChannel,
+}: {
+  groups: Group[];
+  activeChannel: number;
+  setActiveChannel: React.Dispatch<React.SetStateAction<number>>;
+}) {
+  const { value: expandedCategories, setItem: setExpandedCategories } =
+    useLocalStorage(
+      "expandedCategories",
+      Array.from({ length: groups.length }, (_, i) => i + 1)
+    );
 
   const toggleCategory = (id: number) => {
-    setExpandedCategories((prev:number[]) =>
+    setExpandedCategories((prev: number[]) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
   };
@@ -93,4 +103,6 @@ export default function GroupList({ groups,activeChannel,setActiveChannel }: { g
       </div>
     </>
   );
-}
+});
+
+export default GroupList;

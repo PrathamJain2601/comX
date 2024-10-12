@@ -1,23 +1,59 @@
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { Headphones, Mic, Settings, Users } from "lucide-react";
 import { useParams } from "react-router-dom";
 
-export default function SettingsList({
+export default function CalendarList({
   groups,
   activeChannel,
   setActiveChannel,
+  year,
+  setYear,
 }: {
   groups: any;
   activeChannel: number;
   setActiveChannel: React.Dispatch<React.SetStateAction<number>>;
+  year: string;
+  setYear: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const { name } = useParams();
+
+  const startingYear = 2020;
+  const Years = Array.from(
+    { length: new Date().getFullYear() - startingYear + 1 },
+    (_, index) => startingYear + index
+  );
 
   return (
     <>
       <div className="w-60 bg-white flex flex-col border-r">
         <div className="h-12 shadow-sm flex items-center px-4 font-semibold border-b">
           {name!.charAt(0).toUpperCase() + name!.substring(1).toLowerCase()}
+        </div>
+        <div className="flex justify-center items-center mt-2 w-full">
+          <Select value={year} onValueChange={setYear}>
+            <SelectTrigger className="w-[90%]">
+              <SelectValue placeholder="Select a year" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {Years.map((year) => {
+                  return (
+                    <SelectItem key={year} value={year.toString()}>
+                      {year}
+                    </SelectItem>
+                  );
+                })}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
         <ScrollArea className="flex-grow">
           {groups.map((category: any) => (
