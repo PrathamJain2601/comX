@@ -10,6 +10,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Dashboard from "./pages/DashBoard";
 import Contact from "./pages/Contact";
 import Community from "./pages/Community";
+import Profile from "./pages/profile";
 
 function App() {
   const router = createBrowserRouter([
@@ -37,6 +38,10 @@ function App() {
     {
       path: "community/:name",
       element: <Community />,
+    },
+    {
+      path: "profile/:username",
+      element: <Profile />,
     }
   ]);
 
