@@ -1,22 +1,16 @@
 import { Request, Response } from 'express';
 import { prisma } from '../../config/dbConnect';
 import { responseCodes } from '../../utils/response-codes';
+import { isUserMember } from '../../utils/isUserMember';
 
 // Remove a member from a community
-export const removeMember = async (req: Request, res: Response) => {
+export const remove_member = async (req: Request, res: Response) => {
   try {
     const { removingId, communityId, userId } = req.body;
 
     // Check if the user is the owner or an admin of the community
-    const member = await prisma.communityMember.findUnique({
-      where: {
-        userId_communityId: {
-          userId,
-          communityId,
-        },
-      },
-    });
-
+    const member = await isUserMember(userId, communityId);
+    
     if (!member) {
       return responseCodes.clientError.forbidden(res, 'You are not a member of this community');
     }

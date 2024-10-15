@@ -1,11 +1,16 @@
 import { Request, Response } from 'express';
 import { prisma } from '../../config/dbConnect';
 import { responseCodes } from '../../utils/response-codes';
+import { Role } from '@prisma/client';
 
 // Add a member to a community using joinCode
 export const join_community = async (req: Request, res: Response) => {
   try {
     const { joinCode, userId } = req.body;
+
+    if(!joinCode){
+      return responseCodes.clientError.notFound(res, "join code not found");
+    }
 
     // Check if the user is authenticated
     if (!userId) {
@@ -30,12 +35,17 @@ export const join_community = async (req: Request, res: Response) => {
       return responseCodes.clientError.badRequest(res, 'User is already a member of the community');
     }
 
+    let defaultRole:Role = 'QUEUE';
+    if(community.scope == 'PUBLIC'){
+      defaultRole = 'MEMBER';
+    }
+
     // Add the user as a member
     await prisma.communityMember.create({
       data: {
         userId,
         communityId: community.id,
-        role: 'MEMBER', // By default, the role will be MEMBER
+        role: defaultRole, // By default, the role will be MEMBER
       },
     });
 

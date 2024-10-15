@@ -49,7 +49,7 @@ model CommunityMember {
   userId       Int
   community    Community  @relation(fields: [communityId], references: [id], onDelete: Cascade)
   communityId  Int
-  role         Role       @default(MEMBER) // Role can be OWNER, ADMIN, or MEMBER
+  role         Role       @default(MEMBER) 
 
   joinedAt     DateTime   @default(now())
 
@@ -60,6 +60,8 @@ enum Role {
   OWNER  // The user who created the community
   ADMIN  // Admins with elevated permissions
   MEMBER // Regular members
+  QUEUE
+  BANNED
 }
 
 enum Scope {

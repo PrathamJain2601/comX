@@ -30,7 +30,6 @@ const verify_token = async (req: Request) => {
                     id: decoded.userId,
                 },
             });
-            console.log(user);
             if (user) {
                 if(user.isVerified){
                     req.body.userId = decoded.userId;
