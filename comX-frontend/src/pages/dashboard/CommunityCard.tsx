@@ -49,7 +49,7 @@ export default function CommunityCard({
       className="bg-gray-50 rounded-lg shadow overflow-hidden"
       whileHover={{ scale: 1.02 }}
       transition={{ type: "spring", stiffness: 400, damping: 10 }}
-      onClick={()=>{navigate(`/community/${name}`)}}
+      onClick={()=>{navigate(`/community/${id.toString()}`)}}
     >
       <div
         className="relative h-48 w-full bg-cover bg-center"

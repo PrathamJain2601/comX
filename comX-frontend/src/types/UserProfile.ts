@@ -1,4 +1,5 @@
 import { z } from "zod";
+// import RegisterRequest from "@prathamjain522/comx-common";
 
 export type Designation = {
   value: string;
@@ -30,6 +31,8 @@ export const UserDataSchema = z
 
 export type UserData = z.infer<typeof UserDataSchema>;
 
+// export type UserDate = RegisterRequest;
+
 export type LoginDetails = {
   name: string;
   username: string;
@@ -37,13 +40,16 @@ export type LoginDetails = {
   designation: string;
   isLoggedIn: boolean;
   id:number;
+  avatar:string;
 };
 
 export type Member = {
-  id: number;
+  userId: number;
   name: string;
+  username:string;
+  designation:string;
   email: string;
-  role: "member" | "admin" | "banned" | "invite";
-  joinDate: string;
+  role: "MEMBER" | "ADMIN" | "BANNED" | "QUEUE" | "OWNER";
+  joinedAt: string;
   avatar: string;
 };

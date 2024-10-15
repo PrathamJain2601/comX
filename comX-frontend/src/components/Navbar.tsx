@@ -4,9 +4,22 @@ import { FiMenu, FiX } from "react-icons/fi";
 import DarkLightToggleButton from "./Dark-Light-Toggle-Button";
 import { Link } from "react-router-dom";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/state/store";
+import { Avatar } from "./ui/avatar";
+import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { Button } from "./ui/button";
+import { clearUser } from "@/state/userDetails/userDetails";
+
+function getDesignation(s: string) {
+  s;
+  return "Software Engineer";
+}
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+
+  const loginDetails = useSelector((state: RootState) => state.userDetails);
 
   const { value: tab, setItem: setTab } = useLocalStorage("tab", "Home");
 
@@ -42,6 +55,12 @@ export default function Navbar() {
       },
     },
   };
+
+  const dispatch = useDispatch();
+
+  function logout() {
+    dispatch(clearUser());
+  }
 
   return (
     <nav className="bg-primary p-4 shadow-lg dark:bg-black dark:shadow-[#111]">
@@ -83,28 +102,48 @@ export default function Navbar() {
           </div>
           <div className="hidden md:flex gap-8">
             <DarkLightToggleButton />
-            <div className="flex gap-2">
-              <Link to="/Login">
-                <motion.button
-                  whileHover={{ y: -2 }}
-                  whileTap={{ y: 1 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                  className="bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition-colors duration-300"
-                >
-                  Login
-                </motion.button>
-              </Link>
-              <Link to="/SignUp">
-                <motion.button
-                  whileHover={{ y: -2 }}
-                  whileTap={{ y: 1 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                  className="bg-white text-gray-800 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors duration-300"
-                >
-                  Sign Up
-                </motion.button>
-              </Link>
-            </div>
+            {!loginDetails.user ? (
+              <div className="flex gap-2">
+                <Link to="/Login">
+                  <motion.button
+                    whileHover={{ y: -2 }}
+                    whileTap={{ y: 1 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    className="bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition-colors duration-300"
+                  >
+                    Login
+                  </motion.button>
+                </Link>
+                <Link to="/SignUp">
+                  <motion.button
+                    whileHover={{ y: -2 }}
+                    whileTap={{ y: 1 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    className="bg-white text-gray-800 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors duration-300"
+                  >
+                    Sign Up
+                  </motion.button>
+                </Link>
+              </div>
+            ) : (
+              <>
+                <Link to={`/profile/${loginDetails.user.username}`}>
+                  <div className="flex gap-2 justify-center items-center">
+                    <Avatar>
+                      <AvatarImage src={loginDetails.user.avatar} />
+                      <AvatarFallback>CN</AvatarFallback>
+                    </Avatar>
+                    <div className="text-white flex flex-col justify-center items-center">
+                      <p className="font-bold">{loginDetails.user.name}</p>
+                      <p>{getDesignation(loginDetails.user.designation)}</p>
+                    </div>
+                  </div>
+                </Link>
+                <Button variant="destructive" className="mt-1" onClick={logout}>
+                  Logout
+                </Button>
+              </>
+            )}
           </div>
           <div className="md:hidden">
             <motion.button

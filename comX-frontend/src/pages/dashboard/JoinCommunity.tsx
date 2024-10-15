@@ -1,17 +1,45 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import { motion } from "framer-motion";
 import { LogIn } from "lucide-react";
 import { useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
+
+const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 export default function JoinCommunity() {
   const [joinCode, setJoinCode] = useState("");
 
+  const queryClient = useQueryClient();
+
+  const { mutateAsync: joinCommunity } = useMutation({
+    mutationFn: async (joinCode: string) => {
+      const response = await axios.post(
+        `${backend_url}/member/join-community`,
+        { joinCode },
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    },
+    onSuccess: ({ data }) => {
+      console.log(data);
+      queryClient.invalidateQueries({ queryKey: ["communityList"] });
+      setJoinCode("");
+    },
+    onError(error) {
+      console.log(error);
+      toast.error("Invalid Code");
+    },
+  });
+
   const handleJoinCommunity = (e: React.FormEvent) => {
     e.preventDefault();
     if (joinCode.trim()) {
-      alert(`Joining community with code: ${joinCode}`);
-      setJoinCode("");
+      joinCommunity(joinCode);
     }
   };
 
@@ -51,6 +79,7 @@ export default function JoinCommunity() {
           Join Community
         </motion.button>
       </form>
+      <Toaster />
     </motion.div>
   );
 }

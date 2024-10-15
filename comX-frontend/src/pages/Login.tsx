@@ -33,7 +33,6 @@ function LoginInForm() {
       emailOrUsername: string;
       password: string;
     }) => {
-      console.log(loginData);
       const response = await axios.post(
         `${backend_url}/auth/login`,
         loginData,
@@ -44,7 +43,6 @@ function LoginInForm() {
       return response.data;
     },
     onSuccess(data) {
-      console.log("Login successful:", data.data);
       dispatch(
         setUser({
           name: data.data.name,
@@ -53,10 +51,11 @@ function LoginInForm() {
           designation: data.data.designation,
           username: data.data.username,
           id:data.data.id,
+          avatar: data.data.avatar,
         })
       );
       toast.success("Logged in successfully!");
-      navigate("/");
+      navigate("/dashboard");
     },
     onError(error: unknown) {
       if (axios.isAxiosError(error)) {
@@ -109,7 +108,7 @@ function LoginInForm() {
           />
         </LabelInputContainer>
         <LabelInputContainer className="mb-4 text-sm font-bold">
-          <Link to="/passwordReset">Forgot Password ?</Link>
+          <Link to="/forgot-password">Forgot Password ?</Link>
         </LabelInputContainer>
 
         <button

@@ -6,10 +6,13 @@ import NotificationSettings from "./community/settings/NotificationSettings";
 import MainCalendar from "./community/Calendar/MainCalendar";
 import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
 function Community() {
   const [activeChannel, setActiveChannel] = useState(17);
   const [year, setYear] = useState(DateTime.now().year.toString());
+
+  const {ID} = useParams();
 
   const [currentDate, setCurrentDate] = useState(DateTime.now());
 
@@ -47,7 +50,7 @@ function Community() {
         />
         <div className="bg-white w-screen h-screen flex justify-center items-center">
           {activeChannel === 1 && <BasicInformation />}
-          {activeChannel === 2 && <MemberManagement />}
+          {activeChannel === 2 && <MemberManagement ID={parseInt(ID!,10)}/>}
           {activeChannel === 3 && <Permissions />}
           {activeChannel === 4 && <NotificationSettings />}
           {activeChannel > 4 && activeChannel <= 16 && (

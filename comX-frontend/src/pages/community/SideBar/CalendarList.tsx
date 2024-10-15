@@ -23,7 +23,7 @@ export default function CalendarList({
   year: string;
   setYear: React.Dispatch<React.SetStateAction<string>>;
 }) {
-  const { name } = useParams();
+  const { ID } = useParams();
 
   const startingYear = 2020;
   const Years = Array.from(
@@ -35,7 +35,7 @@ export default function CalendarList({
     <>
       <div className="w-60 bg-white flex flex-col border-r">
         <div className="h-12 shadow-sm flex items-center px-4 font-semibold border-b">
-          {name!.charAt(0).toUpperCase() + name!.substring(1).toLowerCase()}
+          {/* {name!.charAt(0).toUpperCase() + name!.substring(1).toLowerCase()} */}
         </div>
         <div className="flex justify-center items-center mt-2 w-full">
           <Select value={year} onValueChange={setYear}>

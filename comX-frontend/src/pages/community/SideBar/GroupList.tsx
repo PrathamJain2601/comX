@@ -27,13 +27,13 @@ const GroupList = React.memo(function GroupList({
     );
   };
 
-  const { name } = useParams();
+  const { ID } = useParams();
 
   return (
     <>
       <div className="w-60 bg-white flex flex-col border-r">
         <div className="h-12 shadow-sm flex items-center px-4 font-semibold border-b">
-          {name!.charAt(0).toUpperCase() + name!.substring(1).toLowerCase()}
+          {/* {name!.charAt(0).toUpperCase() + name!.substring(1).toLowerCase()} */}
         </div>
         <ScrollArea className="flex-grow">
           {groups.map((category) => (
