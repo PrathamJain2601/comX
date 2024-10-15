@@ -41,6 +41,9 @@ export const get_community_members = async (req: Request, res: Response) => {
       username: member.user.username,
       designation: member.user.designation,
       role: member.role,
+      avatar: member.user.avatar,
+      email: member.user.email,
+      joinedAt: member.joinedAt
     }));
 
     return responseCodes.success.ok(res, { members }, 'Fetched community members successfully');
