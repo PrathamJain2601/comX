@@ -52,6 +52,7 @@ function LoginInForm() {
           email: data.data.email,
           designation: data.data.designation,
           username: data.data.username,
+          id:data.data.id,
         })
       );
       toast.success("Logged in successfully!");

@@ -28,7 +28,6 @@ export const UserDataSchema = z
     path: ["confirmPassword"],
   });
 
-// Type inference
 export type UserData = z.infer<typeof UserDataSchema>;
 
 export type LoginDetails = {
@@ -37,4 +36,14 @@ export type LoginDetails = {
   email: string;
   designation: string;
   isLoggedIn: boolean;
+  id:number;
+};
+
+export type Member = {
+  id: number;
+  name: string;
+  email: string;
+  role: "member" | "admin" | "banned" | "invite";
+  joinDate: string;
+  avatar: string;
 };

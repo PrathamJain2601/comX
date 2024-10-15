@@ -7,14 +7,11 @@ import CreateCommunity from "./dashboard/CreateCommunity";
 import JoinCommunity from "./dashboard/JoinCommunity";
 import LastTask from "./dashboard/Last-Task";
 import CommunityCard from "./dashboard/CommunityCard";
-import { useSelector } from "react-redux";
-import { RootState } from "@/state/store";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import ErrorPage from "./ErrorPage";
-import axios, { AxiosError } from "axios";
-import { useDebugger } from "@/hooks/useDebugger";
+import axios from "axios";
 import { dummyCommunities } from "@/lib/DummyData";
-import toast from "react-hot-toast";
+import { Community } from "@/types/Community";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -39,54 +36,11 @@ export default function Dashboard() {
     return <ErrorPage />;
   }
 
-  const { mutateAsync: createCommunity } = useMutation({
-    mutationFn: (data) => {
-      return axios.post(`${backend_url}/community/create-community`, data);
-    },
-    onSuccess(data) {
-      console.log(data);
-    },
-    onError(error: AxiosError) {
-      console.log(error);
-      toast.error("pending");
-    },
-  });
-
-  useDebugger(data);
-
   const [communities, setCommunities] = useState(dummyCommunities);
 
-  // useEffect(() => {
-  //   if(Array.isArray(data)) setCommunities(data);
-  // }, [data]);
-
-  const [newCommunity, setNewCommunity] = useState("");
-  const [communityDescription, setCommunityDescription] = useState("");
-
-  const user = useSelector((state: RootState) => state.userDetails);
-
-  const handleCreateCommunity = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newCommunity.trim()) {
-      setCommunities([
-        ...communities,
-        {
-          id: communities.length + 1,
-          name: newCommunity,
-          members: 1,
-          description: communityDescription,
-          founder: user.user ? user.user.name : "Anonymous",
-          founderAvatar: "/placeholder.svg?height=50&width=50",
-          coverImage: "/placeholder.svg?height=200&width=400",
-          tags: [],
-          age: new Date().toLocaleString(),
-        },
-      ]);
-      createCommunity();
-      setNewCommunity("");
-      setCommunityDescription("");
-    }
-  };
+  useEffect(() => {
+    if (Array.isArray(data)) setCommunities(data);
+  }, [data]);
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
@@ -103,21 +57,24 @@ export default function Dashboard() {
               <Users className="mr-2" /> Your Communities
             </h2>
             <div className="grid grid-cols-1 gap-6">
-              {communities.map((community: any) => (
-                <CommunityCard key={community.id} community={community} />
-                // <div key={community.id}>Hello</div>
+              {communities.map((community: Community) => (
+                <CommunityCard
+                  key={community.id}
+                  coverImage={community.coverImage}
+                  createdAt={community.createdAt}
+                  description={community.description}
+                  memberCount={community.memberCount}
+                  name={community.name}
+                  owner={community.owner}
+                  id={community.id}
+                  joinCode={community.joinCode}
+                />
               ))}
             </div>
           </motion.div>
 
           <div className="space-y-6">
-            <CreateCommunity
-              handleCreateCommunity={handleCreateCommunity}
-              newCommunity={newCommunity}
-              setNewCommunity={setNewCommunity}
-              communityDescription={communityDescription}
-              setCommunityDescription={setCommunityDescription}
-            />
+            <CreateCommunity/>
             <JoinCommunity />
             <LastTask />
           </div>

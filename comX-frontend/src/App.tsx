@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Dashboard from "./pages/DashBoard";
 import Contact from "./pages/Contact";
+import Community from "./pages/Community";
 
 function App() {
   const router = createBrowserRouter([
@@ -33,6 +34,10 @@ function App() {
       path: "contact",
       element: <Contact />,
     },
+    {
+      path: "community/:name",
+      element: <Community />,
+    }
   ]);
 
   const theme = useSelector((state: RootState) => state.theme);

@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 function checkLocalStorageForTheme(): Theme {
   const item = window.localStorage.getItem("theme");
-  return item === "light" || item === "dark" ? (item as Theme) : "dark";
+  return item === "light" || item === "dark" ? (item as Theme) : "light";
 }
 
 const initialState: Theme = checkLocalStorageForTheme();
