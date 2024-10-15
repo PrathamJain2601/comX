@@ -17,11 +17,14 @@ export const get_community_members = async (req: Request, res: Response) => {
               select: {
                 id: true,
                 name: true,
+                email: true,
                 username: true,
                 designation: true,
+                avatar: true,
               },
             },
             role: true,
+            joinedAt: true
           },
         },
       },
