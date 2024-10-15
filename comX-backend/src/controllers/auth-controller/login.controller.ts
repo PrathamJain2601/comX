@@ -2,9 +2,14 @@ import { Request, Response } from "express";
 import { create_token } from "../../utils/token";
 import { responseCodes } from "../../utils/response-codes";
 import { prisma } from "../../config/dbConnect";
+import { loginRequest, loginRequestSchema } from "@prathamjain522/comx-common";
 
 export const login = async (req: Request, res: Response) => {
-    const { emailOrUsername, password } = req.body;
+    const parseResult = loginRequestSchema.safeParse(req.body);
+    if(!parseResult.success){
+        return responseCodes.clientError.badRequest(res, parseResult.error.errors, "message");
+    }
+    const { emailOrUsername, password }:loginRequest = req.body;
     if (!password || !emailOrUsername) {
         return responseCodes.clientError.notFound(res, "All fields are required");
     }
