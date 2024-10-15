@@ -7,7 +7,7 @@ export function generateOTP(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-export async function sendOtpEmail(toEmail: string, otp: string): Promise<void> {
+export async function sendOtpEmail(toEmail: string, otp: string, subject: string, text: string): Promise<void> {
   try {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -22,8 +22,8 @@ export async function sendOtpEmail(toEmail: string, otp: string): Promise<void> 
     const mailOptions = {
       from: "comX <comX@gmail.com>",
       to: toEmail,
-      subject: 'Email Verification OTP',
-      text: `Your OTP for email verification is: ${otp}. It is valid for 10 minutes.`,
+      subject: subject,
+      text: text,
     };
 
     await prisma.user.update({
@@ -31,6 +31,7 @@ export async function sendOtpEmail(toEmail: string, otp: string): Promise<void> 
         email: toEmail,
       },
       data: {
+        isVerified: false,
         otp: otp,
         isOtpValid: new Date(Date.now() + 10 * 60 * 1000),
       },
@@ -47,7 +48,7 @@ export const send_email_otp = async (req: Request, res: Response) => {
     const { email } = req.body;
     const userEmail = email;
     const otp = generateOTP();
-    await sendOtpEmail(userEmail, otp).then(() => console.log('OTP sent!'));
+    await sendOtpEmail(userEmail, otp, 'Email Verification OTP', `Your OTP for email verification is: ${otp}. It is valid for 10 minutes.`).then(() => console.log('OTP sent!'));
     responseCodes.success.ok(res, {}, "otp sent");
   }
   catch (error) {
