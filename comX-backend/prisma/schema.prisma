@@ -28,6 +28,7 @@ model User {
 
   // Relationships
   memberships CommunityMember[]
+  calendarTasks CommunityCalendar[]
 }
 
 model Community {
@@ -41,6 +42,7 @@ model Community {
 
   // Relationships
   members     CommunityMember[]
+  calendarTasks CommunityCalendar[]
 }
 
 model CommunityMember {
@@ -52,6 +54,20 @@ model CommunityMember {
   role         Role       @default(MEMBER) 
 
   joinedAt     DateTime   @default(now())
+
+  @@unique([userId, communityId])
+}
+
+model CommunityCalendar {
+  id           Int        @id @default(autoincrement())
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       Int
+  community    Community  @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  communityId  Int
+  title        String
+  description  String
+  startTime    DateTime
+  endTime      DateTime
 
   @@unique([userId, communityId])
 }

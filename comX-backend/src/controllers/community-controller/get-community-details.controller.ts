@@ -10,7 +10,7 @@ export const get_community_details = async (req: Request, res: Response) =>{
     if(!verdict){
         return responseCodes.clientError.forbidden(res, "You are not a member of community hence not allowed to get details");
     }
-    const community = prisma.community.findUnique({
+    const community = await prisma.community.findUnique({
         where:{
             id: communityId
         }
