@@ -13,10 +13,12 @@ export default function CommunityCard({
   id,
   joinCode,
 }: Community) {
-  const tags = ["Maps", "Tech", "New"];
 
+  const tags = ["Maps", "Tech", "New"];
+  
   function timeDifferenceFromNow(dateString: string): string {
-    id;joinCode;
+    id;
+    joinCode;
     const now = new Date();
     const targetDate = new Date(dateString);
 
@@ -26,7 +28,7 @@ export default function CommunityCard({
 
     if (days < 0) {
       months--;
-      const lastMonth = new Date(now.getFullYear(), now.getMonth(), 0); 
+      const lastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
       days += lastMonth.getDate();
     }
     if (months < 0) {
@@ -44,12 +46,17 @@ export default function CommunityCard({
 
   const navigate = useNavigate();
 
+  function redirectToCommunity() {
+    
+    navigate(`/community/${id.toString()}`);
+  }
+
   return (
     <motion.div
       className="bg-gray-50 rounded-lg shadow overflow-hidden"
       whileHover={{ scale: 1.02 }}
       transition={{ type: "spring", stiffness: 400, damping: 10 }}
-      onClick={()=>{navigate(`/community/${id.toString()}`)}}
+      onClick={redirectToCommunity}
     >
       <div
         className="relative h-48 w-full bg-cover bg-center"

@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Users } from "lucide-react";
@@ -21,7 +19,7 @@ const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 const fetchCommunityList = async () => {
   const response = await axios.get(
-    `${backend_url}/community/get-all-communities`,
+    `${backend_url}/community/get-user-communities`,
     {
       withCredentials: true,
     }
