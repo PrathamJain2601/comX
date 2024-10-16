@@ -43,7 +43,7 @@ export default function CreateCommunity() {
   const handleCreateCommunity = (e: React.FormEvent) => {
     e.preventDefault();
     const data = {
-      name: user?.name,
+      name: newCommunity,
       description: communityDescription,
       scope: selectedOption,
       userId: user?.id,

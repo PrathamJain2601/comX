@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,15 +18,38 @@ const itemAnimation = {
 };
 
 export default function BasicInformation() {
-  const {ID} = useParams();
+  const { ID } = useParams();
+
+  const { mutateAsync: getCommunityDetails } = useMutation({
+    mutationFn: async (ID: number) => {
+      const response = await axios.post(
+        `${backend_url}/community/get-community-details`,
+        { communityId: ID },
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    },
+    onSuccess( data ) {
+      console.log(data);
+    },
+    onError(error) {
+      console.log(error);
+    },
+  });
+
+  useEffect(() => {
+    getCommunityDetails(parseInt(ID!, 10));
+  },[]);
 
   const { mutateAsync: updateCommunity } = useMutation({
     mutationFn: async (details: {
       name: string;
       description: string;
       coverImage: string | null;
-      communityId: number,
-      scope: string,
+      communityId: number;
+      scope: string;
     }) => {
       const response = await axios.put(
         `${backend_url}/community/update-community`,
@@ -65,8 +88,8 @@ export default function BasicInformation() {
       name,
       description,
       coverImage,
-      scope:"PUBLIC",
-      communityId:parseInt(ID!,10),
+      scope: "PUBLIC",
+      communityId: parseInt(ID!, 10),
     });
   };
 

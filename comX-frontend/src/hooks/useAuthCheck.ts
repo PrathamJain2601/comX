@@ -12,6 +12,6 @@ export default function useAuthCheck(user: LoginDetails | null) {
     if (user) return;
     toast.error("Login Required");
     navigate("/");
-    setTab("Home");
+    setTab(JSON.stringify("Home"));
   });
 }
