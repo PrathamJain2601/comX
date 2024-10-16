@@ -1,14 +1,16 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { UserCog, Users, UserX as UserBan } from "lucide-react";
+import { UserCog, Users, UserX as UserBan, UserRoundPen } from "lucide-react";
 
 export default function Top_MemoryManagement({
   memberCount,
   adminCount,
   bannedCount,
+  inviteCount,
 }: {
   memberCount: number;
   adminCount: number;
   bannedCount: number;
+  inviteCount: number;
 }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -49,15 +51,15 @@ export default function Top_MemoryManagement({
       <Card className="bg-white shadow-lg transition-all duration-300 hover:shadow-xl h-48 flex justify-center flex-col">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg font-medium text-yellow-400">
-            Admins
+            Requests
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center">
-            <UserCog className="h-12 w-12 text-yellow-400 mr-4" />
+            <UserRoundPen className="h-12 w-12 text-yellow-400 mr-4"/>
             <div>
-              <p className="text-4xl font-bold text-yellow-600">{adminCount}</p>
-              <p className="text-sm text-yellow-400">System administrators</p>
+              <p className="text-4xl font-bold text-yellow-600">{inviteCount}</p>
+              <p className="text-sm text-yellow-400">Requests</p>
             </div>
           </div>
         </CardContent>

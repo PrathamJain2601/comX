@@ -1,17 +1,45 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import { motion } from "framer-motion";
 import { LogIn } from "lucide-react";
 import { useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
+
+const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 export default function JoinCommunity() {
   const [joinCode, setJoinCode] = useState("");
 
+  const queryClient = useQueryClient();
+
+  const { mutateAsync: joinCommunity,isPending } = useMutation({
+    mutationFn: async (joinCode: string) => {
+      const response = await axios.post(
+        `${backend_url}/member/join-community`,
+        { joinCode },
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      toast.success("Joined Successfully");
+      queryClient.invalidateQueries({ queryKey: ["communityList"] });
+      setJoinCode("");
+    },
+    onError(error) {
+      console.log(error);
+      toast.error("Invalid Code");
+    },
+  });
+
   const handleJoinCommunity = (e: React.FormEvent) => {
     e.preventDefault();
     if (joinCode.trim()) {
-      alert(`Joining community with code: ${joinCode}`);
-      setJoinCode("");
+      joinCommunity(joinCode);
     }
   };
 
@@ -44,13 +72,14 @@ export default function JoinCommunity() {
         </div>
         <motion.button
           type="submit"
-          className="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition-colors duration-300"
+          className={`w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition-colors duration-300 ${isPending && "bg-green-900 hover:bg-green-900 cursor-not-allowed"}`}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
           Join Community
         </motion.button>
       </form>
+      <Toaster />
     </motion.div>
   );
 }

@@ -7,29 +7,34 @@ import { motion } from "framer-motion";
 import { Textarea } from "@/components/ui/textarea";
 import axios, { AxiosError } from "axios";
 import toast from "react-hot-toast";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RootState } from "@/state/store";
 import { useSelector } from "react-redux";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 export default function CreateCommunity() {
-  const [selectedOption, setSelectedOption] = useState<"Public" | "Private">(
-    "Public"
+  const [selectedOption, setSelectedOption] = useState<"PUBLIC" | "PRIVATE">(
+    "PUBLIC"
   );
   const [newCommunity, setNewCommunity] = useState("");
   const [communityDescription, setCommunityDescription] = useState("");
 
-  const { mutateAsync: createCommunity } = useMutation({
+  const queryClient = useQueryClient();
+
+  const { mutateAsync: createCommunity, isPending } = useMutation({
     mutationFn: (data: any) => {
-      return axios.post(`${backend_url}/community/create-community`, data);
+      return axios.post(`${backend_url}/community/create-community`, data, {
+        withCredentials: true,
+      });
     },
     onSuccess(data) {
       console.log(data);
+      queryClient.invalidateQueries({ queryKey: ["communityList"] });
     },
     onError(error: AxiosError) {
       console.log(error);
-      toast.error("pending");
+      toast.error("Invalid");
     },
   });
 
@@ -93,18 +98,18 @@ export default function CreateCommunity() {
         </div>
         <div className="flex space-x-4">
           <Button
-            variant={selectedOption === "Public" ? "default" : "outline"}
+            variant={selectedOption === "PUBLIC" ? "default" : "outline"}
             size="lg"
-            onClick={() => setSelectedOption("Public")}
+            onClick={() => setSelectedOption("PUBLIC")}
             type="button"
           >
             Public
           </Button>
 
           <Button
-            variant={selectedOption === "Private" ? "default" : "outline"}
+            variant={selectedOption === "PRIVATE" ? "default" : "outline"}
             size="lg"
-            onClick={() => setSelectedOption("Private")}
+            onClick={() => setSelectedOption("PRIVATE")}
             type="button"
           >
             Private
@@ -112,7 +117,9 @@ export default function CreateCommunity() {
         </div>
         <motion.button
           type="submit"
-          className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors duration-300"
+          className={`w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors duration-300 ${
+            isPending && "hover:bg-blue-900 bg-blue-900 cursor-not-allowed"
+          }`}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >

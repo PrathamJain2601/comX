@@ -1,5 +1,6 @@
 import { Community } from "@/types/Community";
 import { Group } from "@/types/Groups";
+import { Member } from "@/types/UserProfile";
 import { LockClosedIcon } from "@radix-ui/react-icons";
 import { Hash, Volume2, Video, Info, Users, Bell } from "lucide-react";
 import { 
@@ -169,3 +170,86 @@ export const Months = [
     link: <CloudSnow className="w-6 h-6 text-blue-500" />,
   },
 ];
+
+export const dummyMembers:Member[] = [
+  {
+    "userId": 1,
+    "name": "John Doe",
+    "username": "JohnDoe",
+    "email": "john@example.com",
+    "designation": "sde1",
+    "role": "MEMBER",
+    "avatar":"https://github.com/shadcn.png",
+    "joinedAt":"12-08-2004",
+  },
+  {
+    "userId": 2,
+    "name": "Jane Smith",
+    "username": "JaneSmith",
+    "email": "jane@example.com",
+    "designation": "sde1",
+    "role": "ADMIN",
+    "avatar":"https://github.com/shadcn.png",
+    "joinedAt":"12-08-2004",
+  },
+  {
+    "userId": 3,
+    "name": "Bob Johnson",
+    "username": "BobJohnson",
+    "email": "bob@example.com",
+    "designation": "sde1",
+    "role": "MEMBER",
+    "avatar":"https://github.com/shadcn.png",
+    "joinedAt":"12-08-2004",
+  },
+  {
+    "userId": 4,
+    "name": "Alice Brown",
+    "username": "AliceBrown",
+    "email": "alice@example.com",
+    "designation": "sde1",
+    "role": "BANNED",
+    "avatar":"https://github.com/shadcn.png",
+    "joinedAt":"12-08-2004",
+  },
+  {
+    "userId": 5,
+    "name": "Charlie Davis",
+    "username": "CharlieDavis",
+    "email": "charlie@example.com",
+    "designation": "sde1",
+    "role": "MEMBER",
+    "avatar":"https://github.com/shadcn.png",
+    "joinedAt":"12-08-2004",
+  },
+  {
+    "userId": 6,
+    "name": "Eva Wilson",
+    "username": "EvaWilson",
+    "email": "eva@example.com",
+    "designation": "sde1",
+    "role": "ADMIN",
+    "avatar":"https://github.com/shadcn.png",
+    "joinedAt":"12-08-2004",
+  },
+  {
+    "userId": 7,
+    "name": "Vardaan",
+    "username": "Vardaan02",
+    "email": "vardaanpahwa02@gmail.com",
+    "designation": "sde1",
+    "role": "QUEUE",
+    "avatar":"https://github.com/shadcn.png",
+    "joinedAt":"12-08-2004",
+  },
+  {
+    "userId": 8,
+    "name": "Pratham Jain",
+    "username": "PrathamJain",
+    "email": "jainpratham522@gamil.com",
+    "designation": "sde1",
+    "role": "QUEUE",
+    "avatar":"https://github.com/shadcn.png",
+    "joinedAt":"12-08-2004",
+  }
+]

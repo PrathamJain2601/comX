@@ -3,18 +3,32 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FiMenu, FiX } from "react-icons/fi";
 import DarkLightToggleButton from "./Dark-Light-Toggle-Button";
 import { Link } from "react-router-dom";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/state/store";
+import { Avatar } from "./ui/avatar";
+import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { Button } from "./ui/button";
+import { clearUser } from "@/state/userDetails/userDetails";
+import { setTab } from "@/state/tab/tabSlice";
+
+function getDesignation(s: string) {
+  s;
+  return "Software Engineer";
+}
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const { value: tab, setItem: setTab } = useLocalStorage("tab", "Home");
+  const loginDetails = useSelector((state: RootState) => state.userDetails);
+
+  const tab = useSelector((state: RootState) => state.tab);
 
   const menuItems = [
     { id: 1, name: "Home", link: "/" },
     { id: 2, name: "About", link: "/about" },
     { id: 3, name: "Services", link: "/services" },
     { id: 4, name: "Contact", link: "/contact" },
+    { id: 5, name: "Dashboard", link: "/dashboard" },
   ];
 
   const menuVariants = {
@@ -43,6 +57,8 @@ export default function Navbar() {
     },
   };
 
+  const dispatch = useDispatch();
+
   return (
     <nav className="bg-primary p-4 shadow-lg dark:bg-black dark:shadow-[#111]">
       <div className="container mx-auto">
@@ -60,7 +76,7 @@ export default function Navbar() {
               <Link
                 to={item.link}
                 key={item.id}
-                onClick={() => setTab(item.name)}
+                onClick={() => dispatch(setTab(item.name))}
               >
                 <motion.div
                   className={`text-gray-300 hover:text-white transition-colors duration-300 relative group underline-offset-8 ${
@@ -83,28 +99,52 @@ export default function Navbar() {
           </div>
           <div className="hidden md:flex gap-8">
             <DarkLightToggleButton />
-            <div className="flex gap-2">
-              <Link to="/Login">
-                <motion.button
-                  whileHover={{ y: -2 }}
-                  whileTap={{ y: 1 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                  className="bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition-colors duration-300"
+            {!loginDetails.user ? (
+              <div className="flex gap-2">
+                <Link to="/Login">
+                  <motion.button
+                    whileHover={{ y: -2 }}
+                    whileTap={{ y: 1 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    className="bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition-colors duration-300"
+                  >
+                    Login
+                  </motion.button>
+                </Link>
+                <Link to="/SignUp">
+                  <motion.button
+                    whileHover={{ y: -2 }}
+                    whileTap={{ y: 1 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    className="bg-white text-gray-800 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors duration-300"
+                  >
+                    Sign Up
+                  </motion.button>
+                </Link>
+              </div>
+            ) : (
+              <>
+                <Link to={`/profile/${loginDetails.user.username}`}>
+                  <div className="flex gap-2 justify-center items-center">
+                    <Avatar>
+                      <AvatarImage src={loginDetails.user.avatar} />
+                      <AvatarFallback>CN</AvatarFallback>
+                    </Avatar>
+                    <div className="text-white flex flex-col justify-center items-center">
+                      <p className="font-bold">{loginDetails.user.name}</p>
+                      <p>{getDesignation(loginDetails.user.designation)}</p>
+                    </div>
+                  </div>
+                </Link>
+                <Button
+                  variant="destructive"
+                  className="mt-1"
+                  onClick={() => dispatch(clearUser())}
                 >
-                  Login
-                </motion.button>
-              </Link>
-              <Link to="/SignUp">
-                <motion.button
-                  whileHover={{ y: -2 }}
-                  whileTap={{ y: 1 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                  className="bg-white text-gray-800 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors duration-300"
-                >
-                  Sign Up
-                </motion.button>
-              </Link>
-            </div>
+                  Logout
+                </Button>
+              </>
+            )}
           </div>
           <div className="md:hidden">
             <motion.button
@@ -132,7 +172,7 @@ export default function Navbar() {
                 <Link
                   to={item.link}
                   key={item.id}
-                  onClick={() => setTab(item.name)}
+                  onClick={() => dispatch(setTab(item.name))}
                 >
                   <motion.div
                     className={`text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium transition-colors duration-300 underline-offset-8 ${

@@ -10,7 +10,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Dashboard from "./pages/DashBoard";
 import Contact from "./pages/Contact";
 import Community from "./pages/Community";
-import Profile from "./pages/profile";
+import Profile from "./pages/Profile";
+import ForgotPassword from "./pages/ForgotPassword";
 
 function App() {
   const router = createBrowserRouter([
@@ -36,13 +37,17 @@ function App() {
       element: <Contact />,
     },
     {
-      path: "community/:name",
+      path: "community/:ID",
       element: <Community />,
     },
     {
       path: "profile/:username",
       element: <Profile />,
-    }
+    },
+    {
+      path: "forgot-password",
+      element: <ForgotPassword />
+    },
   ]);
 
   const theme = useSelector((state: RootState) => state.theme);

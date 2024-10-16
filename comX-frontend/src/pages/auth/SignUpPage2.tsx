@@ -1,5 +1,5 @@
 import toast, { Toaster } from "react-hot-toast";
-import { LabelInputContainer, BottomGradient } from "./SignUpExtraComponenets"
+import { LabelInputContainer, BottomGradient } from "./SignUpExtraComponenets";
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/input-otp";
 import { Label } from "@radix-ui/react-label";
 
-const backend_url =  import.meta.env.VITE_BACKEND_URL;
+const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 export default function SignUpFormPage2({
   setCurrentPage,
@@ -25,11 +25,12 @@ export default function SignUpFormPage2({
 
   const navigate = useNavigate();
 
-  const { mutateAsync: checkOTP } = useMutation({
+  const { mutateAsync: checkOTP, isPending } = useMutation({
     mutationFn: (OTPDetails: { email: string; otp: string }) => {
       return axios.post(`${backend_url}/auth/verify-email-otp`, OTPDetails);
     },
     onSuccess() {
+      setCurrentPage(1);
       navigate("/", { replace: true });
       toast.success("Sign Up Successful");
     },
@@ -45,12 +46,13 @@ export default function SignUpFormPage2({
   };
 
   return (
-    <div className="max-w-md sm:w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input border border-slate-300 bg-white dark:bg-black w-[80%]">
+    <div className="max-w-md sm:w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input border border-slate-300 bg-white dark:bg-black w-[80%] mt-36">
       <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
         Welcome to E-Commerce
       </h2>
       <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
-        SignUp to E-Commerce if you can because we don&apos;t have a sign up flow yet
+        SignUp to E-Commerce if you can because we don&apos;t have a sign up
+        flow yet
       </p>
 
       <form className="my-8" onSubmit={handleSubmit}>
@@ -61,12 +63,12 @@ export default function SignUpFormPage2({
               <InputOTPSlot index={0} />
               <InputOTPSlot index={1} />
             </InputOTPGroup>
-            { window.innerWidth>400 && <InputOTPSeparator />}
+            {window.innerWidth > 400 && <InputOTPSeparator />}
             <InputOTPGroup>
               <InputOTPSlot index={2} />
               <InputOTPSlot index={3} />
             </InputOTPGroup>
-            { window.innerWidth>400 && <InputOTPSeparator />}
+            {window.innerWidth > 400 && <InputOTPSeparator />}
             <InputOTPGroup>
               <InputOTPSlot index={4} />
               <InputOTPSlot index={5} />
@@ -79,7 +81,10 @@ export default function SignUpFormPage2({
         </button>
 
         <button
-          className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] mb-4"
+          className={`bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] mb-2 ${
+            isPending &&
+            "cursor-not-allowed from-zinc-700 dark:from-zinc-700 dark:to-zinc-700 to-neutral-400"
+          }`}
           type="submit"
         >
           Submit &rarr;
@@ -87,13 +92,16 @@ export default function SignUpFormPage2({
         </button>
 
         <button
-          className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+          className={`bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] ${
+            isPending &&
+            "cursor-not-allowed from-zinc-700 dark:from-zinc-700 dark:to-zinc-700 to-neutral-400"
+          }`}
           type="button"
           onClick={() => {
             setCurrentPage(1);
           }}
         >
-          Back &rarr;
+          &larr; Back 
           <BottomGradient />
         </button>
 

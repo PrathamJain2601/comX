@@ -28,12 +28,11 @@ function LoginInForm() {
 
   const dispatch = useDispatch();
 
-  const { mutateAsync: submitForm } = useMutation({
+  const { mutateAsync: submitForm, isPending } = useMutation({
     mutationFn: async (loginData: {
       emailOrUsername: string;
       password: string;
     }) => {
-      console.log(loginData);
       const response = await axios.post(
         `${backend_url}/auth/login`,
         loginData,
@@ -44,7 +43,6 @@ function LoginInForm() {
       return response.data;
     },
     onSuccess(data) {
-      console.log("Login successful:", data.data);
       dispatch(
         setUser({
           name: data.data.name,
@@ -52,11 +50,12 @@ function LoginInForm() {
           email: data.data.email,
           designation: data.data.designation,
           username: data.data.username,
-          id:data.data.id,
+          id: data.data.id,
+          avatar: data.data.avatar,
         })
       );
       toast.success("Logged in successfully!");
-      navigate("/");
+      navigate("/dashboard", { replace: true });
     },
     onError(error: unknown) {
       if (axios.isAxiosError(error)) {
@@ -109,11 +108,14 @@ function LoginInForm() {
           />
         </LabelInputContainer>
         <LabelInputContainer className="mb-4 text-sm font-bold">
-          <Link to="/passwordReset">Forgot Password ?</Link>
+          <Link to="/forgot-password">Forgot Password ?</Link>
         </LabelInputContainer>
 
         <button
-          className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+          className={`bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] ${
+            isPending &&
+            "cursor-not-allowed from-zinc-700 dark:from-zinc-700 dark:to-zinc-700 to-neutral-400"
+          }`}
           type="submit"
         >
           Log In &rarr;

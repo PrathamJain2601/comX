@@ -2,10 +2,19 @@ import Navbar from "@/components/Navbar";
 import { Cover } from "@/components/ui/cover";
 import { SparklesCore } from "@/components/ui/sparkles";
 import { RootState } from "@/state/store";
-import { useSelector } from "react-redux";
+import { setTab } from "@/state/tab/tabSlice";
+import { useEffect } from "react";
+import { Toaster } from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function HomePage() {
   const theme = useSelector((state: RootState) => state.theme);
+  
+  const dispatch = useDispatch();
+
+  useEffect(()=>{
+    dispatch(setTab("Home"));
+  })
 
   function sparkleColor() {
     if (theme === "dark") return "#FFFFFF";
@@ -42,6 +51,7 @@ export default function HomePage() {
 
           <div className="absolute inset-0 w-full h-full bg-white dark:bg-black [mask-image:radial-gradient(350px_200px_at_top,transparent_20%,white)]"></div>
         </div>
+        <Toaster />
       </div>
     </>
   );

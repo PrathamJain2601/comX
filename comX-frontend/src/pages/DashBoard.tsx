@@ -12,6 +12,10 @@ import ErrorPage from "./ErrorPage";
 import axios from "axios";
 import { dummyCommunities } from "@/lib/DummyData";
 import { Community } from "@/types/Community";
+import useAuthCheck from "@/hooks/useAuthCheck";
+import { useSelector } from "react-redux";
+import { RootState } from "@/state/store";
+import { Toaster } from "react-hot-toast";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -26,6 +30,10 @@ const fetchCommunityList = async () => {
 };
 
 export default function Dashboard() {
+  const user = useSelector((state: RootState) => state.userDetails);
+
+  useAuthCheck(user.user);
+
   const { isError, data, error } = useQuery({
     queryKey: ["communityList"],
     queryFn: fetchCommunityList,
@@ -74,12 +82,13 @@ export default function Dashboard() {
           </motion.div>
 
           <div className="space-y-6">
-            <CreateCommunity/>
+            <CreateCommunity />
             <JoinCommunity />
             <LastTask />
           </div>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 }

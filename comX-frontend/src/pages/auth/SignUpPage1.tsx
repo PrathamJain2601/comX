@@ -7,11 +7,11 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@radix-ui/react-label";
 import { Input } from "@/components/ui/input";
-import { LabelInputContainer, BottomGradient } from "./SignUpExtraComponenets"
+import { LabelInputContainer, BottomGradient } from "./SignUpExtraComponenets";
 import ItemPicker from "@/components/Item-Picker";
 import { designation } from "@/lib/destignation";
 
-const backend_url =  import.meta.env.VITE_BACKEND_URL;
+const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 export default function SignUpFormPage1({
   setCurrentPage,
@@ -25,13 +25,13 @@ export default function SignUpFormPage1({
     handleSubmit,
     formState: { errors },
   } = useForm<UserData>({
-    defaultValues: {designation:"Student"},
+    defaultValues: { designation: "Student" },
     resolver: zodResolver(UserDataSchema),
   });
 
-  const [post,setPost] = useState("");
+  const [post, setPost] = useState("");
 
-  const { mutateAsync: submitForm } = useMutation({
+  const { mutateAsync: submitForm, isPending } = useMutation({
     mutationFn: (userData: UserData) => {
       userData.designation = post;
       return axios.post(`${backend_url}/auth/register`, userData);
@@ -47,6 +47,7 @@ export default function SignUpFormPage1({
 
   const onSubmit: SubmitHandler<UserData> = async (data) => {
     try {
+      toast.success("Form Submitted");
       email.current.value = data.email;
       submitForm(data);
     } catch (e) {
@@ -61,7 +62,8 @@ export default function SignUpFormPage1({
         Welcome to E-Commerce
       </h2>
       <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
-        SignUp to E-Commerce if you can because we don&apos;t have a sign up flow yet
+        SignUp to E-Commerce if you can because we don&apos;t have a sign up
+        flow yet
       </p>
 
       <form className="my-8" onSubmit={handleSubmit(onSubmit)}>
@@ -137,11 +139,14 @@ export default function SignUpFormPage1({
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="password">Designation</Label>
-          <ItemPicker itemList={designation} value={post} setValue={setPost}/>
+          <ItemPicker itemList={designation} value={post} setValue={setPost} />
         </LabelInputContainer>
 
         <button
-          className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+          className={`bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] ${
+            isPending &&
+            "cursor-not-allowed from-zinc-700 dark:from-zinc-700 dark:to-zinc-700 to-neutral-400"
+          }`}
           type="submit"
         >
           Next &rarr;

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Trash2,
   UserPlus,
@@ -22,81 +22,110 @@ import Top_MemoryManagement from "./MemberManagement/Top_MemoryManagement";
 import Search_MemberManagement from "./MemberManagement/Search_MemberManagement";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useDebounce } from "@/hooks/useDebounce";
-import { Member } from "@/types/UserProfile";
 import { motion } from "framer-motion";
+import { dummyMembers } from "@/lib/DummyData";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { useSelector } from "react-redux";
+import { RootState } from "@/state/store";
+
+const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 const itemAnimation = {
   hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 80 } },
 };
 
-export default function MemberManagement() {
-  const { value: members, setItem: setMembers } = useLocalStorage("member", [
-    {
-      id: 1,
-      name: "John Doe",
-      email: "john@example.com",
-      role: "member",
-      joinDate: "2023-01-15",
-      avatar: "/placeholder.svg?height=40&width=40",
+export default function MemberManagement({ ID }: { ID: number }) {
+  const user = useSelector((state: RootState) => state.userDetails);
+
+  const { mutateAsync: getMemberList } = useMutation({
+    mutationFn: async (ID: number) => {
+      return axios.post(
+        `${backend_url}/member/get-community-members`,
+        { communityId: ID },
+        {
+          withCredentials: true,
+        }
+      );
     },
-    {
-      id: 2,
-      name: "Jane Smith",
-      email: "jane@example.com",
-      role: "admin",
-      joinDate: "2022-11-03",
-      avatar: "/placeholder.svg?height=40&width=40",
+    onSuccess({ data }) {
+      setMembers(data.data.members);
     },
-    {
-      id: 3,
-      name: "Bob Johnson",
-      email: "bob@example.com",
-      role: "member",
-      joinDate: "2023-03-22",
-      avatar: "/placeholder.svg?height=40&width=40",
+    onError(error) {
+      console.log(error);
     },
-    {
-      id: 4,
-      name: "Alice Brown",
-      email: "alice@example.com",
-      role: "banned",
-      joinDate: "2023-02-08",
-      avatar: "/placeholder.svg?height=40&width=40",
+  });
+
+  const { mutateAsync: promoteMember } = useMutation({
+    mutationFn: async (details: {
+      communityId: number;
+      promoting_id: number;
+    }) => {
+      return axios.post(`${backend_url}/member/promote-member`, details, {
+        withCredentials: true,
+      });
     },
-    {
-      id: 5,
-      name: "Charlie Davis",
-      email: "charlie@example.com",
-      role: "member",
-      joinDate: "2023-04-30",
-      avatar: "/placeholder.svg?height=40&width=40",
+    onSuccess() {
+      getMemberList(ID);
     },
-    {
-      id: 6,
-      name: "Eva Wilson",
-      email: "eva@example.com",
-      role: "admin",
-      joinDate: "2022-12-19",
-      avatar: "/placeholder.svg?height=40&width=40",
+  });
+
+  const { mutateAsync: demoteMember } = useMutation({
+    mutationFn: async (details: {
+      communityId: number;
+      demoting_id: number;
+    }) => {
+      return axios.post(`${backend_url}/member/demote-member`, details, {
+        withCredentials: true,
+      });
     },
-    {
-      id: 7,
-      name: "Vardaan",
-      email: "vardaanpahwa02@gmail.com",
-      role: "invite",
-      joinDate: "2022-08-15",
-      avatar: "/placeholder.svg?height=40&width=40",
+    onSuccess() {
+      getMemberList(ID);
     },
-    {
-      id: 8,
-      name: "Pratham Jain",
-      email: "jainpratham522@gamil.com",
-      role: "invite",
-      joinDate: "2022-01-26",
-      avatar: "/placeholder.svg?height=40&width=40",
+  });
+
+  const { mutateAsync: banMember } = useMutation({
+    mutationFn: async (details: { communityId: number; baning_id: number }) => {
+      return axios.post(`${backend_url}/member/ban-member`, details, {
+        withCredentials: true,
+      });
     },
-  ]);
+    onSuccess() {
+      getMemberList(ID);
+    },
+  });
+
+  const { mutateAsync: removeMember } = useMutation({
+    mutationFn: async (details: {
+      communityId: number;
+      removingId: number;
+    }) => {
+      return axios.post(`${backend_url}/member/remove-member`, details, {
+        withCredentials: true,
+      });
+    },
+    onSuccess() {
+      getMemberList(ID);
+    },
+  });
+
+  const { mutateAsync: acceptMember } = useMutation({
+    mutationFn: async (details: { communityId: number; member_id: number }) => {
+      return axios.post(`${backend_url}/member/accept-join-request`, details, {
+        withCredentials: true,
+      });
+    },
+    onSuccess() {
+      getMemberList(ID);
+    },
+  });
+
+  const [members, setMembers] = useState(dummyMembers);
+
+  useEffect(() => {
+    getMemberList(ID);
+  }, [ID]);
 
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [confirmAction, setConfirmAction] = useState<() => void>(() => {});
@@ -108,12 +137,12 @@ export default function MemberManagement() {
 
   const debouncedSearchTerm = useDebounce(searchTerm);
 
-  const memberCount = members.filter((m: Member) => m.role === "member").length;
-  const adminCount = members.filter((m: Member) => m.role === "admin").length;
-  const bannedCount = members.filter((m: Member) => m.role === "banned").length;
-  const inviteCount = members.filter((m: Member) => m.role === "invite").length;
-
-  console.log(inviteCount);
+  const memberCount = members.filter((m) => m.role === "MEMBER").length;
+  const adminCount = members.filter(
+    (m) => m.role === "ADMIN" || m.role === "OWNER"
+  ).length;
+  const bannedCount = members.filter((m) => m.role === "BANNED").length;
+  const inviteCount = members.filter((m) => m.role === "QUEUE").length;
 
   const handleAction = (action: () => void, message: string) => {
     setConfirmAction(() => action);
@@ -126,45 +155,17 @@ export default function MemberManagement() {
     setShowConfirmDialog(false);
   };
 
-  const promoteMember = (id: number) => {
-    setMembers(
-      members.map((m: Member) => (m.id === id ? { ...m, role: "admin" } : m))
-    );
-  };
-
-  const demoteMember = (id: number) => {
-    setMembers(
-      members.map((m: Member) => (m.id === id ? { ...m, role: "member" } : m))
-    );
-  };
-
-  const banMember = (id: number) => {
-    setMembers(
-      members.map((m: Member) => (m.id === id ? { ...m, role: "banned" } : m))
-    );
-  };
-
-  const reinstateMember = (id: number) => {
-    setMembers(
-      members.map((m: Member) => (m.id === id ? { ...m, role: "member" } : m))
-    );
-  };
-
-  const acceptMember = (id: number) => {
-    setMembers(
-      members.map((m: Member) => (m.id === id ? { ...m, role: "member" } : m))
-    );
-  };
-
-  const removeMember = (id: number) => {
-    setMembers(members.filter((m: Member) => m.id !== id));
-  };
-
   const filteredMembers = members.filter(
-    (member: Member) =>
+    (member) =>
       member.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
       member.email.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
   );
+
+  const isAdmin =
+    filteredMembers.filter(
+      (m) =>
+        (m.role === "ADMIN" || m.role === "OWNER") && m.userId === user.user?.id
+    ).length > 0;
 
   return (
     <div className="h-full overflow-scroll w-full no-scrollbar p-4 md:p-8">
@@ -181,6 +182,7 @@ export default function MemberManagement() {
         memberCount={memberCount}
         adminCount={adminCount}
         bannedCount={bannedCount}
+        inviteCount={inviteCount}
       />
 
       <Search_MemberManagement
@@ -198,10 +200,10 @@ export default function MemberManagement() {
           <CardContent className="p-0">
             <ul className="divide-y divide-gray-200">
               {filteredMembers
-                .filter((m: Member) => m.role === "member")
-                .map((member: Member) => (
+                .filter((m) => m.role === "MEMBER")
+                .map((member) => (
                   <li
-                    key={member.id}
+                    key={member.userId}
                     className="flex flex-col md:flex-row md:items-center justify-between py-4 transition-all duration-300 hover:bg-blue-50"
                   >
                     <div className="flex items-center mb-2 md:mb-0 ml-4">
@@ -219,54 +221,68 @@ export default function MemberManagement() {
                         </span>
                         <span className="text-xs text-gray-400 flex items-center mt-1">
                           <Calendar className="h-3 w-3 mr-1" />
-                          Joined: {member.joinDate}
+                          Joined: {member.joinedAt.slice(0, 10)}
                         </span>
                       </div>
                     </div>
-                    <div className="flex space-x-2 mt-2 md:mt-0 mr-4">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="bg-green-50 text-green-600 hover:bg-green-100"
-                        onClick={() =>
-                          handleAction(
-                            () => promoteMember(member.id),
-                            `Promote ${member.name} to admin?`
-                          )
-                        }
-                      >
-                        <UserPlus className="w-4 h-4 mr-2" />
-                        Promote
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="bg-red-50 text-red-600 hover:bg-red-100"
-                        onClick={() =>
-                          handleAction(
-                            () => banMember(member.id),
-                            `Ban ${member.name}?`
-                          )
-                        }
-                      >
-                        <UserX className="w-4 h-4 mr-2" />
-                        Ban
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="bg-gray-50 text-gray-600 hover:bg-gray-100"
-                        onClick={() =>
-                          handleAction(
-                            () => removeMember(member.id),
-                            `Remove ${member.name}?`
-                          )
-                        }
-                      >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Remove
-                      </Button>
-                    </div>
+                    { isAdmin && 
+                      <div className="flex space-x-2 mt-2 md:mt-0 mr-4">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="bg-green-50 text-green-600 hover:bg-green-100"
+                          onClick={() =>
+                            handleAction(
+                              () =>
+                                promoteMember({
+                                  communityId: ID,
+                                  promoting_id: member.userId,
+                                }),
+                              `Promote ${member.name} to admin?`
+                            )
+                          }
+                        >
+                          <UserPlus className="w-4 h-4 mr-2" />
+                          Promote
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="bg-red-50 text-red-600 hover:bg-red-100"
+                          onClick={() =>
+                            handleAction(
+                              () =>
+                                banMember({
+                                  communityId: ID,
+                                  baning_id: member.userId,
+                                }),
+                              `Ban ${member.name}?`
+                            )
+                          }
+                        >
+                          <UserX className="w-4 h-4 mr-2" />
+                          Ban
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="bg-gray-50 text-gray-600 hover:bg-gray-100"
+                          onClick={() =>
+                            handleAction(
+                              () =>
+                                removeMember({
+                                  communityId: ID,
+                                  removingId: member.userId,
+                                }),
+                              `Remove ${member.name}?`
+                            )
+                          }
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Remove
+                        </Button>
+                      </div>
+                    }
                   </li>
                 ))}
             </ul>
@@ -282,10 +298,10 @@ export default function MemberManagement() {
           <CardContent className="p-0">
             <ul className="divide-y divide-gray-200">
               {filteredMembers
-                .filter((m: Member) => m.role === "admin")
-                .map((admin: Member) => (
+                .filter((m) => m.role === "ADMIN" || m.role === "OWNER")
+                .map((admin) => (
                   <li
-                    key={admin.id}
+                    key={admin.userId}
                     className="flex flex-col md:flex-row md:items-center justify-between py-4 transition-all duration-300 hover:bg-green-50"
                   >
                     <div className="flex items-center mb-2 md:mb-0 ml-4">
@@ -303,40 +319,51 @@ export default function MemberManagement() {
                         </span>
                         <span className="text-xs text-gray-400 flex items-center mt-1">
                           <Calendar className="h-3 w-3 mr-1" />
-                          Admin since: {admin.joinDate}
+                          Admin since: {admin.joinedAt.slice(0, 10)}
                         </span>
                       </div>
                     </div>
-                    <div className="flex space-x-2 mt-2 md:mt-0 mr-4">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="bg-yellow-50 text-yellow-600 hover:bg-yellow-100"
-                        onClick={() =>
-                          handleAction(
-                            () => demoteMember(admin.id),
-                            `Demote ${admin.name} to member?`
-                          )
-                        }
-                      >
-                        <UserMinus className="w-4 h-4 mr-2" />
-                        Demote
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="bg-gray-50 text-gray-600 hover:bg-gray-100"
-                        onClick={() =>
-                          handleAction(
-                            () => removeMember(admin.id),
-                            `Remove ${admin.name}?`
-                          )
-                        }
-                      >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Remove
-                      </Button>
-                    </div>
+                    {admin.role === "ADMIN" &&
+                      admin.userId !== user.user?.id && isAdmin && (
+                        <div className="flex space-x-2 mt-2 md:mt-0 mr-4">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="bg-yellow-50 text-yellow-600 hover:bg-yellow-100"
+                            onClick={() =>
+                              handleAction(
+                                () =>
+                                  demoteMember({
+                                    communityId: ID,
+                                    demoting_id: admin.userId,
+                                  }),
+                                `Demote ${admin.name} to member?`
+                              )
+                            }
+                          >
+                            <UserMinus className="w-4 h-4 mr-2" />
+                            Demote
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="bg-gray-50 text-gray-600 hover:bg-gray-100"
+                            onClick={() =>
+                              handleAction(
+                                () =>
+                                  removeMember({
+                                    communityId: ID,
+                                    removingId: admin.userId,
+                                  }),
+                                `Remove ${admin.name}?`
+                              )
+                            }
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Remove
+                          </Button>
+                        </div>
+                      )}
                   </li>
                 ))}
             </ul>
@@ -352,10 +379,10 @@ export default function MemberManagement() {
           <CardContent className="p-0">
             <ul className="divide-y divide-gray-200">
               {filteredMembers
-                .filter((m: Member) => m.role === "invite")
-                .map((invite: Member) => (
+                .filter((m) => m.role === "QUEUE")
+                .map((invite) => (
                   <li
-                    key={invite.id}
+                    key={invite.userId}
                     className="flex flex-col md:flex-row md:items-center justify-between py-4 transition-all duration-300 hover:bg-yellow-50"
                   >
                     <div className="flex items-center mb-2 md:mb-0 ml-4">
@@ -373,18 +400,22 @@ export default function MemberManagement() {
                         </span>
                         <span className="text-xs text-gray-400 flex items-center mt-1">
                           <Calendar className="h-3 w-3 mr-1" />
-                          Joined since: {invite.joinDate}
+                          Joined since: {invite.joinedAt.slice(0, 10)}
                         </span>
                       </div>
                     </div>
-                    <div className="flex space-x-2 mt-2 md:mt-0 mr-4">
+                    {isAdmin && <div className="flex space-x-2 mt-2 md:mt-0 mr-4">
                       <Button
                         size="sm"
                         variant="outline"
                         className="bg-green-50 text-green-600 hover:bg-green-100"
                         onClick={() =>
                           handleAction(
-                            () => acceptMember(invite.id),
+                            () =>
+                              acceptMember({
+                                communityId: ID,
+                                member_id: invite.userId,
+                              }),
                             `Accept ${invite.name} as a member?`
                           )
                         }
@@ -392,7 +423,7 @@ export default function MemberManagement() {
                         <UserCheck className="w-4 h-4 mr-2" />
                         Accept
                       </Button>
-                    </div>
+                    </div>}
                   </li>
                 ))}
             </ul>
@@ -408,10 +439,10 @@ export default function MemberManagement() {
           <CardContent className="p-0">
             <ul className="divide-y divide-gray-200">
               {filteredMembers
-                .filter((m: Member) => m.role === "banned")
-                .map((banned: Member) => (
+                .filter((m) => m.role === "BANNED")
+                .map((banned) => (
                   <li
-                    key={banned.id}
+                    key={banned.userId}
                     className="flex flex-col md:flex-row md:items-center justify-between py-4 transition-all duration-300 hover:bg-red-50"
                   >
                     <div className="flex items-center mb-2 md:mb-0 ml-4">
@@ -429,18 +460,22 @@ export default function MemberManagement() {
                         </span>
                         <span className="text-xs text-gray-400 flex items-center mt-1">
                           <Calendar className="h-3 w-3 mr-1" />
-                          Banned since: {banned.joinDate}
+                          Banned since: {banned.joinedAt.slice(0, 10)}
                         </span>
                       </div>
                     </div>
-                    <div className="flex space-x-2 mt-2 md:mt-0 mr-4">
+                    {isAdmin && <div className="flex space-x-2 mt-2 md:mt-0 mr-4">
                       <Button
                         size="sm"
                         variant="outline"
                         className="bg-green-50 text-green-600 hover:bg-green-100"
                         onClick={() =>
                           handleAction(
-                            () => reinstateMember(banned.id),
+                            () =>
+                              removeMember({
+                                communityId: ID,
+                                removingId: banned.userId,
+                              }),
                             `Reinstate ${banned.name} as a member?`
                           )
                         }
@@ -448,7 +483,7 @@ export default function MemberManagement() {
                         <UserCheck className="w-4 h-4 mr-2" />
                         Reinstate
                       </Button>
-                    </div>
+                    </div>}
                   </li>
                 ))}
             </ul>
