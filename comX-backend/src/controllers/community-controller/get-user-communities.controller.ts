@@ -5,18 +5,39 @@ export const get_user_communities = async(req: Request, res: Response) => {
     const { userId } = req.body;
     
     try {
-        const userCommunities = await prisma.communityMember.findMany({
-          where: {
-            userId: userId,
+      const userCommunities = await prisma.communityMember.findMany({
+        where: {
+          userId: userId,
+        },
+        include: {
+          community: {
+            include: {
+              members: {
+                where: {
+                  role: 'OWNER',  // Find the owner
+                },
+                include: {
+                  user: true,  // Include the owner user details
+                },
+              },
+            },
           },
-          include: {
-            community: true,
-          },
-        });
+        },
+      });
     
-        const communities = userCommunities.map((membership) => membership.community);
+      const communitiesWithOwners = userCommunities.map((membership) => {
+        const community = membership.community;
+  
+        // Get the owner details from the members array
+        const owner = community.members.length > 0 ? community.members[0].user : null;
+  
+        return {
+          ...community, // Include community details
+          owner,       // Add the owner details
+        };
+      });
     
-        return communities;
+      return responseCodes.success.ok(res, communitiesWithOwners, "all user communities");
       } catch (error) {
         console.log('Error fetching user communities:', error);
         return responseCodes.serverError.internalServerError(res, "internal server error");

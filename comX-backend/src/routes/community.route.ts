@@ -14,6 +14,6 @@ router.get("/get-all-communities",isAuthenticated, get_all_communities);
 router.delete("/delete-community",isAuthenticated, delete_community);
 router.put("/update-community",isAuthenticated, update_community);
 router.post("/get-community-details", isAuthenticated, get_community_details);
-router.get("/get-user-commmunities", isAuthenticated, get_user_communities);
+router.get("/get-user-communities", isAuthenticated, get_user_communities);
 
 module.exports = router;
