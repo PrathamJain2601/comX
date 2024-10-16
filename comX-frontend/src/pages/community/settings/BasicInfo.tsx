@@ -6,6 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Users, FileText, Image, Hash, Key, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { useParams } from "react-router-dom";
+
+const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 const itemAnimation = {
   hidden: { opacity: 0, y: 20 },
@@ -13,8 +18,36 @@ const itemAnimation = {
 };
 
 export default function BasicInformation() {
+  const {ID} = useParams();
+
+  const { mutateAsync: updateCommunity } = useMutation({
+    mutationFn: async (details: {
+      name: string;
+      description: string;
+      coverImage: string | null;
+      communityId: number,
+      scope: string,
+    }) => {
+      const response = await axios.put(
+        `${backend_url}/community/update-community`,
+        details,
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    },
+    onSuccess(data) {
+      console.log(data);
+    },
+    onError(error) {
+      console.log(error);
+    },
+  });
+
   const [coverImage, setCoverImage] = useState<string | null>(null);
   const [description, setDescription] = useState("");
+  const [name, setName] = useState("");
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -25,6 +58,16 @@ export default function BasicInformation() {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleUpdateCommunity = () => {
+    updateCommunity({
+      name,
+      description,
+      coverImage,
+      scope:"PUBLIC",
+      communityId:parseInt(ID!,10),
+    });
   };
 
   return (
@@ -52,6 +95,8 @@ export default function BasicInformation() {
                 id="communityName"
                 placeholder="Vercel"
                 className="w-full transition-all duration-300 focus:ring-2 focus:ring-blue-500"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
             </div>
 
@@ -106,15 +151,15 @@ export default function BasicInformation() {
 
             <div className="space-y-2">
               <Label
-                htmlFor="communityId"
+                htmlFor="scope"
                 className="flex items-center text-sm font-medium"
               >
                 <Hash className="mr-2 h-4 w-4" />
-                Community ID
+                Community Scope
               </Label>
               <Input
-                id="communityId"
-                value="12345"
+                id="scope"
+                value={"Public"}
                 readOnly
                 className="w-full bg-gray-100 text-gray-500 cursor-not-allowed"
               />
@@ -153,7 +198,10 @@ export default function BasicInformation() {
               />
             </div>
 
-            <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-colors duration-300">
+            <Button
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-colors duration-300"
+              onClick={handleUpdateCommunity}
+            >
               Save Changes
             </Button>
           </CardContent>

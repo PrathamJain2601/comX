@@ -3,13 +3,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FiMenu, FiX } from "react-icons/fi";
 import DarkLightToggleButton from "./Dark-Light-Toggle-Button";
 import { Link } from "react-router-dom";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/state/store";
 import { Avatar } from "./ui/avatar";
 import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Button } from "./ui/button";
 import { clearUser } from "@/state/userDetails/userDetails";
+import { setTab } from "@/state/tab/tabSlice";
 
 function getDesignation(s: string) {
   s;
@@ -21,13 +21,14 @@ export default function Navbar() {
 
   const loginDetails = useSelector((state: RootState) => state.userDetails);
 
-  const { value: tab, setItem: setTab } = useLocalStorage("tab", "Home");
+  const tab = useSelector((state: RootState) => state.tab);
 
   const menuItems = [
     { id: 1, name: "Home", link: "/" },
     { id: 2, name: "About", link: "/about" },
     { id: 3, name: "Services", link: "/services" },
     { id: 4, name: "Contact", link: "/contact" },
+    { id: 5, name: "Dashboard", link: "/dashboard" },
   ];
 
   const menuVariants = {
@@ -58,10 +59,6 @@ export default function Navbar() {
 
   const dispatch = useDispatch();
 
-  function logout() {
-    dispatch(clearUser());
-  }
-
   return (
     <nav className="bg-primary p-4 shadow-lg dark:bg-black dark:shadow-[#111]">
       <div className="container mx-auto">
@@ -79,7 +76,7 @@ export default function Navbar() {
               <Link
                 to={item.link}
                 key={item.id}
-                onClick={() => setTab(item.name)}
+                onClick={() => dispatch(setTab(item.name))}
               >
                 <motion.div
                   className={`text-gray-300 hover:text-white transition-colors duration-300 relative group underline-offset-8 ${
@@ -139,7 +136,11 @@ export default function Navbar() {
                     </div>
                   </div>
                 </Link>
-                <Button variant="destructive" className="mt-1" onClick={logout}>
+                <Button
+                  variant="destructive"
+                  className="mt-1"
+                  onClick={() => dispatch(clearUser())}
+                >
                   Logout
                 </Button>
               </>
@@ -171,7 +172,7 @@ export default function Navbar() {
                 <Link
                   to={item.link}
                   key={item.id}
-                  onClick={() => setTab(item.name)}
+                  onClick={() => dispatch(setTab(item.name))}
                 >
                   <motion.div
                     className={`text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium transition-colors duration-300 underline-offset-8 ${

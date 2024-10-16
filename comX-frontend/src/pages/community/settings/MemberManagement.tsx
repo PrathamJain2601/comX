@@ -26,6 +26,8 @@ import { motion } from "framer-motion";
 import { dummyMembers } from "@/lib/DummyData";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import { useSelector } from "react-redux";
+import { RootState } from "@/state/store";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -35,22 +37,87 @@ const itemAnimation = {
 };
 
 export default function MemberManagement({ ID }: { ID: number }) {
+  const user = useSelector((state: RootState) => state.userDetails);
+
   const { mutateAsync: getMemberList } = useMutation({
     mutationFn: async (ID: number) => {
       return axios.post(
         `${backend_url}/member/get-community-members`,
-        { communityId:ID },
+        { communityId: ID },
         {
           withCredentials: true,
         }
       );
     },
-    onSuccess({data}) {
-      console.log(data);
-      setMembers(data.data.members)
+    onSuccess({ data }) {
+      setMembers(data.data.members);
     },
     onError(error) {
       console.log(error);
+    },
+  });
+
+  const { mutateAsync: promoteMember } = useMutation({
+    mutationFn: async (details: {
+      communityId: number;
+      promoting_id: number;
+    }) => {
+      return axios.post(`${backend_url}/member/promote-member`, details, {
+        withCredentials: true,
+      });
+    },
+    onSuccess() {
+      getMemberList(ID);
+    },
+  });
+
+  const { mutateAsync: demoteMember } = useMutation({
+    mutationFn: async (details: {
+      communityId: number;
+      demoting_id: number;
+    }) => {
+      return axios.post(`${backend_url}/member/demote-member`, details, {
+        withCredentials: true,
+      });
+    },
+    onSuccess() {
+      getMemberList(ID);
+    },
+  });
+
+  const { mutateAsync: banMember } = useMutation({
+    mutationFn: async (details: { communityId: number; baning_id: number }) => {
+      return axios.post(`${backend_url}/member/ban-member`, details, {
+        withCredentials: true,
+      });
+    },
+    onSuccess() {
+      getMemberList(ID);
+    },
+  });
+
+  const { mutateAsync: removeMember } = useMutation({
+    mutationFn: async (details: {
+      communityId: number;
+      removingId: number;
+    }) => {
+      return axios.post(`${backend_url}/member/remove-member`, details, {
+        withCredentials: true,
+      });
+    },
+    onSuccess() {
+      getMemberList(ID);
+    },
+  });
+
+  const { mutateAsync: acceptMember } = useMutation({
+    mutationFn: async (details: { communityId: number; member_id: number }) => {
+      return axios.post(`${backend_url}/member/accept-join-request`, details, {
+        withCredentials: true,
+      });
+    },
+    onSuccess() {
+      getMemberList(ID);
     },
   });
 
@@ -71,9 +138,11 @@ export default function MemberManagement({ ID }: { ID: number }) {
   const debouncedSearchTerm = useDebounce(searchTerm);
 
   const memberCount = members.filter((m) => m.role === "MEMBER").length;
-  const adminCount = members.filter((m) => m.role === "ADMIN" || m.role === "OWNER").length;
+  const adminCount = members.filter(
+    (m) => m.role === "ADMIN" || m.role === "OWNER"
+  ).length;
   const bannedCount = members.filter((m) => m.role === "BANNED").length;
-  // const inviteCount = members.filter((m) => m.role === "QUEUE").length;
+  const inviteCount = members.filter((m) => m.role === "QUEUE").length;
 
   const handleAction = (action: () => void, message: string) => {
     setConfirmAction(() => action);
@@ -86,43 +155,17 @@ export default function MemberManagement({ ID }: { ID: number }) {
     setShowConfirmDialog(false);
   };
 
-  const promoteMember = (id: number) => {
-    setMembers(members.map((m) => (m.userId === id ? { ...m, role: "ADMIN" } : m)));
-  };
-
-  const demoteMember = (id: number) => {
-    setMembers(
-      members.map((m) => (m.userId === id ? { ...m, role: "MEMBER" } : m))
-    );
-  };
-
-  const banMember = (id: number) => {
-    setMembers(
-      members.map((m) => (m.userId === id ? { ...m, role: "BANNED" } : m))
-    );
-  };
-
-  const reinstateMember = (id: number) => {
-    setMembers(
-      members.map((m) => (m.userId === id ? { ...m, role: "MEMBER" } : m))
-    );
-  };
-
-  const acceptMember = (id: number) => {
-    setMembers(
-      members.map((m) => (m.userId === id ? { ...m, role: "MEMBER" } : m))
-    );
-  };
-
-  const removeMember = (id: number) => {
-    setMembers(members.filter((m) => m.userId !== id));
-  };
-
   const filteredMembers = members.filter(
     (member) =>
       member.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
       member.email.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
   );
+
+  const isAdmin =
+    filteredMembers.filter(
+      (m) =>
+        (m.role === "ADMIN" || m.role === "OWNER") && m.userId === user.user?.id
+    ).length > 0;
 
   return (
     <div className="h-full overflow-scroll w-full no-scrollbar p-4 md:p-8">
@@ -139,6 +182,7 @@ export default function MemberManagement({ ID }: { ID: number }) {
         memberCount={memberCount}
         adminCount={adminCount}
         bannedCount={bannedCount}
+        inviteCount={inviteCount}
       />
 
       <Search_MemberManagement
@@ -147,7 +191,6 @@ export default function MemberManagement({ ID }: { ID: number }) {
       />
 
       <div className="grid grid-cols-1 gap-6">
-
         <Card className="bg-white shadow-lg transition-all duration-300 hover:shadow-xl overflow-hidden">
           <CardHeader className="bg-gradient-to-r from-blue-500 to-indigo-600">
             <CardTitle className="text-2xl font-semibold text-white">
@@ -178,54 +221,68 @@ export default function MemberManagement({ ID }: { ID: number }) {
                         </span>
                         <span className="text-xs text-gray-400 flex items-center mt-1">
                           <Calendar className="h-3 w-3 mr-1" />
-                          Joined: {member.joinedAt}
+                          Joined: {member.joinedAt.slice(0, 10)}
                         </span>
                       </div>
                     </div>
-                    <div className="flex space-x-2 mt-2 md:mt-0 mr-4">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="bg-green-50 text-green-600 hover:bg-green-100"
-                        onClick={() =>
-                          handleAction(
-                            () => promoteMember(member.userId),
-                            `Promote ${member.name} to admin?`
-                          )
-                        }
-                      >
-                        <UserPlus className="w-4 h-4 mr-2" />
-                        Promote
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="bg-red-50 text-red-600 hover:bg-red-100"
-                        onClick={() =>
-                          handleAction(
-                            () => banMember(member.userId),
-                            `Ban ${member.name}?`
-                          )
-                        }
-                      >
-                        <UserX className="w-4 h-4 mr-2" />
-                        Ban
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="bg-gray-50 text-gray-600 hover:bg-gray-100"
-                        onClick={() =>
-                          handleAction(
-                            () => removeMember(member.userId),
-                            `Remove ${member.name}?`
-                          )
-                        }
-                      >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Remove
-                      </Button>
-                    </div>
+                    { isAdmin && 
+                      <div className="flex space-x-2 mt-2 md:mt-0 mr-4">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="bg-green-50 text-green-600 hover:bg-green-100"
+                          onClick={() =>
+                            handleAction(
+                              () =>
+                                promoteMember({
+                                  communityId: ID,
+                                  promoting_id: member.userId,
+                                }),
+                              `Promote ${member.name} to admin?`
+                            )
+                          }
+                        >
+                          <UserPlus className="w-4 h-4 mr-2" />
+                          Promote
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="bg-red-50 text-red-600 hover:bg-red-100"
+                          onClick={() =>
+                            handleAction(
+                              () =>
+                                banMember({
+                                  communityId: ID,
+                                  baning_id: member.userId,
+                                }),
+                              `Ban ${member.name}?`
+                            )
+                          }
+                        >
+                          <UserX className="w-4 h-4 mr-2" />
+                          Ban
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="bg-gray-50 text-gray-600 hover:bg-gray-100"
+                          onClick={() =>
+                            handleAction(
+                              () =>
+                                removeMember({
+                                  communityId: ID,
+                                  removingId: member.userId,
+                                }),
+                              `Remove ${member.name}?`
+                            )
+                          }
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Remove
+                        </Button>
+                      </div>
+                    }
                   </li>
                 ))}
             </ul>
@@ -262,40 +319,51 @@ export default function MemberManagement({ ID }: { ID: number }) {
                         </span>
                         <span className="text-xs text-gray-400 flex items-center mt-1">
                           <Calendar className="h-3 w-3 mr-1" />
-                          Admin since: {admin.joinedAt}
+                          Admin since: {admin.joinedAt.slice(0, 10)}
                         </span>
                       </div>
                     </div>
-                    {admin.role==="ADMIN" && <div className="flex space-x-2 mt-2 md:mt-0 mr-4">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="bg-yellow-50 text-yellow-600 hover:bg-yellow-100"
-                        onClick={() =>
-                          handleAction(
-                            () => demoteMember(admin.userId),
-                            `Demote ${admin.name} to member?`
-                          )
-                        }
-                      >
-                        <UserMinus className="w-4 h-4 mr-2" />
-                        Demote
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="bg-gray-50 text-gray-600 hover:bg-gray-100"
-                        onClick={() =>
-                          handleAction(
-                            () => removeMember(admin.userId),
-                            `Remove ${admin.name}?`
-                          )
-                        }
-                      >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Remove
-                      </Button>
-                    </div>}
+                    {admin.role === "ADMIN" &&
+                      admin.userId !== user.user?.id && isAdmin && (
+                        <div className="flex space-x-2 mt-2 md:mt-0 mr-4">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="bg-yellow-50 text-yellow-600 hover:bg-yellow-100"
+                            onClick={() =>
+                              handleAction(
+                                () =>
+                                  demoteMember({
+                                    communityId: ID,
+                                    demoting_id: admin.userId,
+                                  }),
+                                `Demote ${admin.name} to member?`
+                              )
+                            }
+                          >
+                            <UserMinus className="w-4 h-4 mr-2" />
+                            Demote
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="bg-gray-50 text-gray-600 hover:bg-gray-100"
+                            onClick={() =>
+                              handleAction(
+                                () =>
+                                  removeMember({
+                                    communityId: ID,
+                                    removingId: admin.userId,
+                                  }),
+                                `Remove ${admin.name}?`
+                              )
+                            }
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Remove
+                          </Button>
+                        </div>
+                      )}
                   </li>
                 ))}
             </ul>
@@ -332,18 +400,22 @@ export default function MemberManagement({ ID }: { ID: number }) {
                         </span>
                         <span className="text-xs text-gray-400 flex items-center mt-1">
                           <Calendar className="h-3 w-3 mr-1" />
-                          Joined since: {invite.joinedAt}
+                          Joined since: {invite.joinedAt.slice(0, 10)}
                         </span>
                       </div>
                     </div>
-                    <div className="flex space-x-2 mt-2 md:mt-0 mr-4">
+                    {isAdmin && <div className="flex space-x-2 mt-2 md:mt-0 mr-4">
                       <Button
                         size="sm"
                         variant="outline"
                         className="bg-green-50 text-green-600 hover:bg-green-100"
                         onClick={() =>
                           handleAction(
-                            () => acceptMember(invite.userId),
+                            () =>
+                              acceptMember({
+                                communityId: ID,
+                                member_id: invite.userId,
+                              }),
                             `Accept ${invite.name} as a member?`
                           )
                         }
@@ -351,7 +423,7 @@ export default function MemberManagement({ ID }: { ID: number }) {
                         <UserCheck className="w-4 h-4 mr-2" />
                         Accept
                       </Button>
-                    </div>
+                    </div>}
                   </li>
                 ))}
             </ul>
@@ -388,18 +460,22 @@ export default function MemberManagement({ ID }: { ID: number }) {
                         </span>
                         <span className="text-xs text-gray-400 flex items-center mt-1">
                           <Calendar className="h-3 w-3 mr-1" />
-                          Banned since: {banned.userId}
+                          Banned since: {banned.joinedAt.slice(0, 10)}
                         </span>
                       </div>
                     </div>
-                    <div className="flex space-x-2 mt-2 md:mt-0 mr-4">
+                    {isAdmin && <div className="flex space-x-2 mt-2 md:mt-0 mr-4">
                       <Button
                         size="sm"
                         variant="outline"
                         className="bg-green-50 text-green-600 hover:bg-green-100"
                         onClick={() =>
                           handleAction(
-                            () => reinstateMember(banned.userId),
+                            () =>
+                              removeMember({
+                                communityId: ID,
+                                removingId: banned.userId,
+                              }),
                             `Reinstate ${banned.name} as a member?`
                           )
                         }
@@ -407,7 +483,7 @@ export default function MemberManagement({ ID }: { ID: number }) {
                         <UserCheck className="w-4 h-4 mr-2" />
                         Reinstate
                       </Button>
-                    </div>
+                    </div>}
                   </li>
                 ))}
             </ul>

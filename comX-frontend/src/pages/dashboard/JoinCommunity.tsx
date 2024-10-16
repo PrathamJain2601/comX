@@ -14,7 +14,7 @@ export default function JoinCommunity() {
 
   const queryClient = useQueryClient();
 
-  const { mutateAsync: joinCommunity } = useMutation({
+  const { mutateAsync: joinCommunity,isPending } = useMutation({
     mutationFn: async (joinCode: string) => {
       const response = await axios.post(
         `${backend_url}/member/join-community`,
@@ -25,8 +25,8 @@ export default function JoinCommunity() {
       );
       return response.data;
     },
-    onSuccess: ({ data }) => {
-      console.log(data);
+    onSuccess: () => {
+      toast.success("Joined Successfully");
       queryClient.invalidateQueries({ queryKey: ["communityList"] });
       setJoinCode("");
     },
@@ -72,7 +72,7 @@ export default function JoinCommunity() {
         </div>
         <motion.button
           type="submit"
-          className="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition-colors duration-300"
+          className={`w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition-colors duration-300 ${isPending && "bg-green-900 hover:bg-green-900 cursor-not-allowed"}`}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
