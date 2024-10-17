@@ -50,7 +50,12 @@ export const join_community = async (req: Request, res: Response) => {
     });
 
     // Return success response
-    return responseCodes.success.ok(res, { communityId: community.id }, 'Joined the community successfully');
+    if(defaultRole == "MEMBER"){
+      return responseCodes.success.ok(res, { communityId: community.id }, 'Joined the community successfully');
+    }
+    else{
+      return responseCodes.success.ok(res, "Join request Sent");
+    }
   } catch (error) {
     console.error('Error joining community:', error);
     return responseCodes.serverError.internalServerError(res, 'Internal server error');
