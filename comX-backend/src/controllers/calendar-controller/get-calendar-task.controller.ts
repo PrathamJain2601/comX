@@ -20,6 +20,7 @@ export const get_calendar_task = async(req:Request, res: Response) => {
                 communityId: communityId
             },
             select:{
+                id: true,
                 title: true,
                 description: true,
                 startTime: true,
