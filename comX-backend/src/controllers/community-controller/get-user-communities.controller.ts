@@ -9,6 +9,9 @@ export const get_user_communities = async (req: Request, res: Response) => {
     const userCommunities = await prisma.communityMember.findMany({
       where: {
         userId: userId,
+        role: {
+          not: "QUEUE"
+        }
       },
       include: {
         community: {

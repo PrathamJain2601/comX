@@ -4,6 +4,7 @@ import { create_token } from "../../utils/token";
 import { responseCodes } from "../../utils/response-codes";
 import { generateOTP, sendOtpEmail } from "./send-email-otp.controller";
 import { prisma } from "../../config/dbConnect";
+import bcryptjs from "bcryptjs";
 import { registerRequestSchema, registerRequest } from "@prathamjain522/comx-common";
 
 export const register = async (req: Request, res: Response) => {
@@ -13,6 +14,9 @@ export const register = async (req: Request, res: Response) => {
     }
     const { name, username, email, password, designation}: registerRequest = req.body;
 
+    // const hashedPassword = await bcryptjs.hash(password, 16);
+    const hashedPassword = password;
+
     // add a function to check strength of password
     try {
         const user = await prisma.user.create({
@@ -20,7 +24,7 @@ export const register = async (req: Request, res: Response) => {
                 email: email,
                 name: name,
                 username: username,
-                password: password,
+                password: hashedPassword,
                 designation: designation
             }
         })

@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { create_token } from "../../utils/token";
 import { responseCodes } from "../../utils/response-codes";
 import { prisma } from "../../config/dbConnect";
+import bcryptjs from "bcryptjs";
 import { loginRequest, loginRequestSchema } from "@prathamjain522/comx-common";
 
 export const login = async (req: Request, res: Response) => {
@@ -25,6 +26,11 @@ export const login = async (req: Request, res: Response) => {
         if(!user){
             return responseCodes.clientError.notFound(res, "User not found");
         }
+
+        // const match = await bcryptjs.compare(password, user.password);
+        // if(!match){
+        //     return responseCodes.clientError.forbidden(res, "wrong email or password");
+        // }
 
         if(password != user.password){
             return responseCodes.clientError.forbidden(res, "wrong email or password");
