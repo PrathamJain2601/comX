@@ -2,13 +2,20 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, X } from "lucide-react";
 import { DateTime } from "luxon";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { useParams } from "react-router-dom";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useDebugger } from "@/hooks/useDebugger";
 
+const backend_url = import.meta.env.VITE_BACKEND_URL;
 interface CalendarEvent {
   id: string;
   title: string;
-  start: DateTime;
-  end: DateTime;
-  color: string;
+  description: string;
+  startTime: string;
+  endTime: string;
 }
 
 const colorPalette = [
@@ -19,6 +26,10 @@ const colorPalette = [
   "bg-purple-400",
   "bg-pink-400",
 ];
+
+const randomColor = () => {
+  return colorPalette[Math.round(Math.random() * 100) % 6];
+};
 
 const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -33,31 +44,66 @@ export default function MainCalendar({
     null
   );
 
+  const { ID } = useParams();
+
+  const { mutateAsync: getCalendarTasks } = useMutation({
+    mutationFn: async (communityId: number) => {
+      const response = await axios.post(
+        `${backend_url}/calendar/get-calendar-task`,
+        { communityId },
+        { withCredentials: true }
+      );
+      return response.data;
+    },
+    onSuccess({ data }) {
+      setEvents(data);
+    },
+    onError(error) {
+      console.log(error);
+    },
+  });
+
+  useDebugger(events);
+
+  const { mutateAsync: setCalendarTask } = useMutation({
+    mutationFn: async (details: {
+      communityId: number;
+      startTime: Date;
+      endTime: Date;
+      title: string;
+      description: string;
+    }) => {
+      const response = await axios.post(
+        `${backend_url}/calendar/set-calendar-task`,
+        details,
+        { withCredentials: true }
+      );
+      return response.data;
+    },
+    onSuccess(data) {
+      getCalendarTasks(parseInt(ID!, 10));
+      console.log(data);
+    },
+    onError(error) {
+      console.log(error);
+    },
+  });
+
   useEffect(() => {
-    // Generate some sample events
-    const sampleEvents = Array.from({ length: 5 }, (_, i) => ({
-      id: i.toString(),
-      title: `Event ${i + 1}`,
-      start: DateTime.now().plus({ days: Math.floor(Math.random() * 30) }),
-      end: DateTime.now().plus({ days: Math.floor(Math.random() * 30) + 1 }),
-      color: colorPalette[Math.floor(Math.random() * colorPalette.length)],
-    }));
-    setEvents(sampleEvents);
+    getCalendarTasks(parseInt(ID!, 10));
   }, []);
 
-  const handleEventSave = (event: CalendarEvent) => {
-    if (selectedEvent) {
-      setEvents(events.map((e) => (e.id === selectedEvent.id ? event : e)));
-    } else {
-      setEvents([
-        ...events,
-        {
-          ...event,
-          id: Date.now().toString(),
-          color: colorPalette[Math.floor(Math.random() * colorPalette.length)],
-        },
-      ]);
-    }
+  const handleEventSave = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    setCalendarTask({
+      communityId: parseInt(ID!, 10),
+      startTime: new Date(formData.get("start") as string),
+      endTime: new Date(formData.get("end") as string),
+      title: formData.get("title") as string,
+      description: formData.get("description") as string,
+    });
+
     setShowModal(false);
     setSelectedEvent(null);
   };
@@ -100,10 +146,12 @@ export default function MainCalendar({
             <div key={`padding-${index}`} className="p-2"></div>
           ))}
         {days.map((day) => {
-          const dayEvents = events.filter(
-            (event) =>
-              event.start.hasSame(day, "day") || event.end.hasSame(day, "day")
-          );
+          const dayEvents = events.filter((event) => {
+            const start = DateTime.fromJSDate(new Date(event.startTime));
+            const end = DateTime.fromJSDate(new Date(event.endTime));
+
+            return day >= start && day <= end;
+          });
           return (
             <motion.div
               key={day.toISO()}
@@ -122,7 +170,7 @@ export default function MainCalendar({
               {dayEvents.map((event) => (
                 <motion.div
                   key={event.id}
-                  className={`${event.color} text-white text-xs p-1 mt-1 rounded-md cursor-pointer`}
+                  className={`${randomColor()} text-white text-xs p-1 mt-1 rounded-md cursor-pointer`}
                   whileHover={{ scale: 1.1 }}
                   onClick={() => {
                     setSelectedEvent(event);
@@ -141,8 +189,6 @@ export default function MainCalendar({
 
   return (
     <div className="flex flex-col h-screen text-black">
-
-
       <main className="flex-grow p-4 overflow-auto">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -152,7 +198,7 @@ export default function MainCalendar({
           {renderCalendar()}
         </motion.div>
       </main>
-]
+      ]
       <motion.button
         className="fixed bottom-8 right-8 bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
         whileHover={{ scale: 1.1, rotate: 90 }}
@@ -161,7 +207,6 @@ export default function MainCalendar({
       >
         <Plus size={24} />
       </motion.button>
-
       <AnimatePresence>
         {showModal && (
           <motion.div
@@ -190,52 +235,58 @@ export default function MainCalendar({
               </h2>
               <form
                 onSubmit={(e) => {
-                  e.preventDefault();
-                  const formData = new FormData(e.currentTarget);
-                  const newEvent: CalendarEvent = {
-                    id: selectedEvent?.id || Date.now().toString(),
-                    title: formData.get("title") as string,
-                    start: DateTime.fromISO(formData.get("start") as string),
-                    end: DateTime.fromISO(formData.get("end") as string),
-                    color:
-                      selectedEvent?.color ||
-                      colorPalette[
-                        Math.floor(Math.random() * colorPalette.length)
-                      ],
-                  };
-                  handleEventSave(newEvent);
+                  handleEventSave(e);
                 }}
+                className="flex flex-col gap-4"
               >
-                <input
+                <Input
                   type="text"
                   name="title"
                   placeholder="Event Title"
                   defaultValue={selectedEvent?.title}
-                  className="w-full p-2 mb-4 border rounded bg-white border-gray-300"
+                  className="w-full p-2 border rounded bg-white border-gray-300"
                   required
                 />
-                <input
+                <Textarea
+                  name="description"
+                  defaultValue={selectedEvent?.description}
+                  placeholder="Event Description"
+                  className="w-full p-2 border rounded bg-white border-gray-300"
+                  required
+                />
+                <Input
                   type="datetime-local"
                   name="start"
                   defaultValue={
                     selectedEvent
-                      ? selectedEvent.start.toFormat("yyyy-MM-dd'T'HH:mm")
+                      ? DateTime.fromJSDate(
+                          new Date(selectedEvent.startTime)
+                        ).toFormat("yyyy-MM-dd'T'HH:mm")
                       : ""
                   }
-                  className="w-full p-2 mb-4 border rounded bg-white border-gray-300"
+                  className="w-full p-2 border rounded bg-white border-gray-300"
                   required
                 />
-                <input
+                <Input
                   type="datetime-local"
                   name="end"
                   defaultValue={
                     selectedEvent
-                      ? selectedEvent.end.toFormat("yyyy-MM-dd'T'HH:mm")
+                      ? DateTime.fromJSDate(
+                          new Date(selectedEvent.endTime)
+                        ).toFormat("yyyy-MM-dd'T'HH:mm")
                       : ""
                   }
-                  className="w-full p-2 mb-4 border rounded bg-white border-gray-300"
+                  className="w-full p-2 border rounded bg-white border-gray-300"
                   required
                 />
+                <div>
+                  {/* colorPalette.map((),()=>{
+                    <button className="rounded-full bg-red-400 h-6 w-6"></button>
+                  }) */}
+                  
+                  <button></button>
+                </div>
                 <div className="flex justify-between">
                   <motion.button
                     type="submit"
