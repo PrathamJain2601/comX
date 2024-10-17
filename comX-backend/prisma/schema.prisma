@@ -65,11 +65,11 @@ model CommunityCalendar {
   community    Community  @relation(fields: [communityId], references: [id], onDelete: Cascade)
   communityId  Int
   title        String
+  color        String     
   description  String
   startTime    DateTime
   endTime      DateTime
 
-  @@unique([userId, communityId])
 }
 
 enum Role {

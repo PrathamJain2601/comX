@@ -5,11 +5,11 @@ import { prisma } from "../../config/dbConnect";
 
 export const set_calendar_task = async(req:Request, res: Response) => {
     try{
-        const {communityId, userId, startTime, endTime, title, description} = req.body;
+        const {communityId, userId, startTime, endTime, title, description, color} = req.body;
         if(!communityId){
             return responseCodes.clientError.notFound(res, "communityId not found");
         }
-        if(!startTime || !endTime || !title || !description){
+        if(!startTime || !endTime || !title || !description || !color){
             return responseCodes.clientError.badRequest(res, "all fields are required");
         }
 
@@ -45,6 +45,7 @@ export const set_calendar_task = async(req:Request, res: Response) => {
             description: description,
             startTime: start,
             endTime: end,
+            color: color
         },
         });
 
