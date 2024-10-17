@@ -3,8 +3,7 @@ import { prisma } from '../../config/dbConnect';
 import { responseCodes } from '../../utils/response-codes';
 
 // Fetch all members of a community by community ID
-export const 
-get_community_members = async (req: Request, res: Response) => {
+export const get_community_members = async (req: Request, res: Response) => {
   try {
     const { communityId } = req.body; // Assume communityId is passed as a URL parameter
 

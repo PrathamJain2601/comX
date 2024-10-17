@@ -23,7 +23,8 @@ export const get_calendar_task = async(req:Request, res: Response) => {
                 title: true,
                 description: true,
                 startTime: true,
-                endTime: true
+                endTime: true,
+                color: true
             }
         })
         return responseCodes.success.created(res, tasks, "Task created");
