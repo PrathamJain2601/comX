@@ -47,9 +47,11 @@ export default function CommunityCard({
   const navigate = useNavigate();
 
   function redirectToCommunity() {
-    
     navigate(`/community/${id.toString()}`);
   }
+
+  // Hta dena
+  if(coverImage==="coverImage") coverImage="../../public/Community.webp"
 
   return (
     <motion.div
@@ -69,7 +71,7 @@ export default function CommunityCard({
         <p className="text-sm text-gray-600 mb-4">{description}</p>
         <div className="flex items-center mb-4">
           <img
-            src={owner.avatar}
+            src={owner.avatar? owner.avatar : "https://github.com/shadcn.png"}
             alt={owner.name}
             width={40}
             height={40}

@@ -127,7 +127,13 @@ export default function Navbar() {
                 <Link to={`/profile/${loginDetails.user.username}`}>
                   <div className="flex gap-2 justify-center items-center">
                     <Avatar>
-                      <AvatarImage src={loginDetails.user.avatar} />
+                      <AvatarImage
+                        src={
+                          loginDetails.user.avatar
+                            ? loginDetails.user.avatar
+                            : "https://github.com/shadcn.png"
+                        }
+                      />
                       <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
                     <div className="text-white flex flex-col justify-center items-center">

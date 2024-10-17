@@ -16,6 +16,7 @@ interface CalendarEvent {
   description: string;
   startTime: string;
   endTime: string;
+  color:string;
 }
 
 const colorPalette = [
@@ -26,10 +27,6 @@ const colorPalette = [
   "bg-purple-400",
   "bg-pink-400",
 ];
-
-const randomColor = () => {
-  return colorPalette[Math.round(Math.random() * 100) % 6];
-};
 
 const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -43,6 +40,7 @@ export default function MainCalendar({
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
     null
   );
+  const [color,setColor] = useState("bg-green-400");
 
   const { ID } = useParams();
 
@@ -72,6 +70,7 @@ export default function MainCalendar({
       endTime: Date;
       title: string;
       description: string;
+      color:string
     }) => {
       const response = await axios.post(
         `${backend_url}/calendar/set-calendar-task`,
@@ -102,8 +101,10 @@ export default function MainCalendar({
       endTime: new Date(formData.get("end") as string),
       title: formData.get("title") as string,
       description: formData.get("description") as string,
+      color:color,
     });
 
+    setColor("bg-green-400");
     setShowModal(false);
     setSelectedEvent(null);
   };
@@ -170,7 +171,7 @@ export default function MainCalendar({
               {dayEvents.map((event) => (
                 <motion.div
                   key={event.id}
-                  className={`${randomColor()} text-white text-xs p-1 mt-1 rounded-md cursor-pointer`}
+                  className={`${event.color} text-white text-xs p-1 mt-1 rounded-md cursor-pointer`}
                   whileHover={{ scale: 1.1 }}
                   onClick={() => {
                     setSelectedEvent(event);
@@ -280,12 +281,10 @@ export default function MainCalendar({
                   className="w-full p-2 border rounded bg-white border-gray-300"
                   required
                 />
-                <div>
-                  {/* colorPalette.map((),()=>{
-                    <button className="rounded-full bg-red-400 h-6 w-6"></button>
-                  }) */}
-                  
-                  <button></button>
+                <div className="flex gap-2">
+                  {colorPalette.map((item) => {
+                    return <button className={`rounded-full ${item} h-6 w-6 border-black ${item===color && "border-2"}`} onClick={()=>setColor(item)}/>;
+                  })}
                 </div>
                 <div className="flex justify-between">
                   <motion.button
