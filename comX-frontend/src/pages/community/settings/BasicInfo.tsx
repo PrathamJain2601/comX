@@ -20,6 +20,16 @@ const itemAnimation = {
 export default function BasicInformation() {
   const { ID } = useParams();
 
+  const [community, setCommunity] = useState({
+    id: 0,
+    name: "",
+    description: "",
+    coverImage: "",
+    scope: "PUBLIC",
+    joinCode:"000000",
+    createdAt:"",
+  });
+
   const { mutateAsync: getCommunityDetails } = useMutation({
     mutationFn: async (ID: number) => {
       const response = await axios.post(
@@ -31,8 +41,8 @@ export default function BasicInformation() {
       );
       return response.data;
     },
-    onSuccess( data ) {
-      console.log(data);
+    onSuccess({ data }) {
+      setCommunity(data);
     },
     onError(error) {
       console.log(error);
@@ -41,7 +51,7 @@ export default function BasicInformation() {
 
   useEffect(() => {
     getCommunityDetails(parseInt(ID!, 10));
-  },[]);
+  }, []);
 
   const { mutateAsync: updateCommunity } = useMutation({
     mutationFn: async (details: {
@@ -60,8 +70,8 @@ export default function BasicInformation() {
       );
       return response.data;
     },
-    onSuccess(data) {
-      console.log(data);
+    onSuccess() {
+      getCommunityDetails(parseInt(ID!, 10));
     },
     onError(error) {
       console.log(error);
@@ -116,7 +126,7 @@ export default function BasicInformation() {
               </Label>
               <Input
                 id="communityName"
-                placeholder="Vercel"
+                placeholder={community.name}
                 className="w-full transition-all duration-300 focus:ring-2 focus:ring-blue-500"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -133,7 +143,7 @@ export default function BasicInformation() {
               </Label>
               <Textarea
                 id="communityDescription"
-                placeholder="Describe your community"
+                placeholder={community.description}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="w-full min-h-[100px] transition-all duration-300 focus:ring-2 focus:ring-blue-500"
@@ -182,7 +192,7 @@ export default function BasicInformation() {
               </Label>
               <Input
                 id="scope"
-                value={"Public"}
+                value={community.scope}
                 readOnly
                 className="w-full bg-gray-100 text-gray-500 cursor-not-allowed"
               />
@@ -198,7 +208,7 @@ export default function BasicInformation() {
               </Label>
               <Input
                 id="joinCode"
-                value="VERCEL2023"
+                value={community.joinCode}
                 readOnly
                 className="w-full bg-gray-100 text-gray-500 cursor-not-allowed"
               />
@@ -214,8 +224,8 @@ export default function BasicInformation() {
               </Label>
               <Input
                 id="createdAt"
-                type="date"
-                value="2023-06-01"
+                type="string"
+                value={community.createdAt.slice(0,10)}
                 readOnly
                 className="w-full bg-gray-100 text-gray-500 cursor-not-allowed"
               />
