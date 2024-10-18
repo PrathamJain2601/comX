@@ -32,7 +32,7 @@ export const join_community = async (req: Request, res: Response) => {
     // Check if the user is already a member of the community
     const isAlreadyMember = community.members.some(member => member.userId === userId);
     if (isAlreadyMember) {
-      return responseCodes.clientError.badRequest(res, 'User is already a member of the community');
+      return responseCodes.clientError.badRequest(res, {}, 'User is already a member of the community');
     }
 
     let defaultRole:Role = 'QUEUE';

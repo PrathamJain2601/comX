@@ -5,7 +5,9 @@ import { responseCodes } from "../../utils/response-codes";
 import { generateOTP, sendOtpEmail } from "./send-email-otp.controller";
 import { prisma } from "../../config/dbConnect";
 import bcryptjs from "bcryptjs";
+import fs from "fs";
 import { registerRequestSchema, registerRequest } from "@prathamjain522/comx-common";
+import { uploadOnCloudinary } from "../../utils/cloudinary";
 
 export const register = async (req: Request, res: Response) => {
     const parseResult = registerRequestSchema.safeParse(req.body);
@@ -14,18 +16,37 @@ export const register = async (req: Request, res: Response) => {
     }
     const { name, username, email, password, designation}: registerRequest = req.body;
 
+    if(!name || !username || !email || !password || !designation){
+        responseCodes.clientError.notFound(res, "all fields are required");
+    }
+
     // const hashedPassword = await bcryptjs.hash(password, 16);
     const hashedPassword = password;
 
     // add a function to check strength of password
     try {
+
+        let avatarUrl;
+        if(req.file){
+            const localFilePath = req.file.path;
+            const cloudinaryResult = await uploadOnCloudinary(localFilePath);
+
+            if(!cloudinaryResult){
+                return responseCodes.serverError.internalServerError(res, "cloudinary upload failed");
+            }
+            
+            avatarUrl = cloudinaryResult.url;
+            fs.unlinkSync(localFilePath);
+        }
+
         const user = await prisma.user.create({
             data: {
                 email: email,
                 name: name,
                 username: username,
                 password: hashedPassword,
-                designation: designation
+                designation: designation,
+                avatar: avatarUrl
             }
         })
         await create_token(res, user);
