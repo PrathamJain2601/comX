@@ -5,6 +5,7 @@ import { responseCodes } from "../utils/response-codes";
 export const isAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const isValid = await verify_token(req);
+      console.log("isValid ", req.body);
       if (isValid) {
         next();
       } else {
