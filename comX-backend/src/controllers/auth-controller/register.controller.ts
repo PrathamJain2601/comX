@@ -20,8 +20,8 @@ export const register = async (req: Request, res: Response) => {
         responseCodes.clientError.notFound(res, "all fields are required");
     }
 
-    // const hashedPassword = await bcryptjs.hash(password, 16);
-    const hashedPassword = password;
+    const hashedPassword = await bcryptjs.hash(password, 16);
+    // const hashedPassword = password;
 
     // add a function to check strength of password
     try {
@@ -51,7 +51,7 @@ export const register = async (req: Request, res: Response) => {
         })
         await create_token(res, user);
         const otp = generateOTP();
-        await sendOtpEmail(user.email, otp, 'Email Verification OTP', `Your OTP for email verification is: ${otp}. It is valid for 10 minutes.`);
+        sendOtpEmail(user.email, otp, 'Email Verification OTP', `Your OTP for email verification is: ${otp}. It is valid for 10 minutes.`);
         user.password = "";
         return responseCodes.success.created(res, user, "User created successfully");
     }
