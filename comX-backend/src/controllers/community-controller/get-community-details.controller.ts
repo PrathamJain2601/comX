@@ -5,7 +5,8 @@ import { isUserMember } from "../../utils/isUserMember";
 
 export const get_community_details = async (req: Request, res: Response) =>{
     try{
-    const { communityId, userId } = req.body;
+    const { userId } = req.body;
+    const communityId = Number(req.params.id);
     const verdict = isUserMember(userId, communityId);
     if(!verdict){
         return responseCodes.clientError.forbidden(res, "You are not a member of community hence not allowed to get details");

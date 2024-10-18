@@ -5,6 +5,6 @@ import { get_calendar_task } from "../controllers/calendar-controller/get-calend
 const router = Router();
 
 router.post("/set-calendar-task", isAuthenticated, set_calendar_task);
-router.post("/get-calendar-task", isAuthenticated, get_calendar_task);
+router.get("/get-calendar-task/:id", isAuthenticated, get_calendar_task);
 
 module.exports = router;

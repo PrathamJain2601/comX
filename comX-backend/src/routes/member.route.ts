@@ -10,7 +10,7 @@ import { accept_join_request } from "../controllers/member-controller/accept-joi
 
 const router = Router();
 
-router.post("/get-community-members", isAuthenticated, get_community_members);
+router.get("/get-community-members/:id", isAuthenticated, get_community_members);
 router.post("/join-community", isAuthenticated, join_community);
 router.post("/remove-member", isAuthenticated, remove_member);
 router.post("/promote-member", isAuthenticated, promote_member);

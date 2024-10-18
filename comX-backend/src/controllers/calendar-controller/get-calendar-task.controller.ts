@@ -5,7 +5,8 @@ import { prisma } from "../../config/dbConnect";
 
 export const get_calendar_task = async(req:Request, res: Response) => {
     try{
-        const {communityId, userId} = req.body;
+        const {userId} = req.body;
+        const communityId = Number(req.params.id);
         if(!communityId){
             return responseCodes.clientError.notFound(res, "communityId not found");
         }
@@ -28,7 +29,7 @@ export const get_calendar_task = async(req:Request, res: Response) => {
                 color: true
             }
         })
-        return responseCodes.success.created(res, tasks, "Task created");
+        return responseCodes.success.created(res, tasks, "get Tasks");
     }
     catch(error){
         console.log("get calendar task error", error);
