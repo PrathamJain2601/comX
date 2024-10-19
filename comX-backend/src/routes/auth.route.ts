@@ -7,10 +7,11 @@ import { send_forgot_password_otp } from "../controllers/auth-controller/send-fo
 import { verify_forgot_password_otp, change_password } from "../controllers/auth-controller/verify-forgot-password-otp.controller";
 import { send_email_otp } from "../controllers/auth-controller/send-email-otp.controller";
 import { isAuthenticated } from "../middlewares/auth.middleware";
+import { upload } from "../middlewares/multer.middleware";
 
 const router = Router();
 
-router.post("/register", register);
+router.post("/register", upload.single("file"), register);
 router.post("/login", login);
 router.get("/logout",isAuthenticated, logout);
 router.post("/send-email-otp", send_email_otp);

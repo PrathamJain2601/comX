@@ -1,12 +1,20 @@
 import { Request, Response } from 'express';
 import { prisma } from '../../config/dbConnect';
 import { responseCodes } from '../../utils/response-codes'; // Importing response codes
+import fs from "fs";
+import { uploadOnCloudinary } from '../../utils/cloudinary';
 
 export const update_community = async (req: Request, res: Response) => {
   try {
-    const { communityId, userId, name, description, scope } = req.body;
+    const { userId, name, description, scope } = req.body;
+
+    const communityId = Number(req.body.communityId);
+    if(!communityId){
+      return responseCodes.clientError.notFound(res, "community id is required");
+    }
 
     // Check if the user is authenticated
+    console.log("userid ", userId);
     if (!userId) {
       return responseCodes.clientError.unauthorized(res, 'Unauthorized');
     }
@@ -49,6 +57,22 @@ export const update_community = async (req: Request, res: Response) => {
       return responseCodes.clientError.badRequest(res, 'No valid fields provided for update');
     }
 
+    let coverImageUrl = null;
+        if(req.file){
+            const localFilePath = req.file.path;
+            const cloudinaryResult = await uploadOnCloudinary(localFilePath);
+
+            if(!cloudinaryResult){
+                return responseCodes.serverError.internalServerError(res, "cloudinary upload failed");
+            }
+            
+            coverImageUrl = cloudinaryResult.url;
+            fs.unlinkSync(localFilePath);
+        }
+      
+    if(coverImageUrl){
+      dataToUpdate.coverImage = coverImageUrl;
+    }
     // Update the community
     const updatedCommunity = await prisma.community.update({
       where: { id: communityId },
