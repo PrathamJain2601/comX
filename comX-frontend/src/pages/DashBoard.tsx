@@ -35,6 +35,7 @@ export default function Dashboard() {
   const { isError, data, error } = useQuery({
     queryKey: ["communityList"],
     queryFn: fetchCommunityList,
+    staleTime: Infinity,
   });
 
   if (isError) {

@@ -58,6 +58,7 @@ export default function MainCalendar({
     },
     onError(error) {
       console.log(error);
+      
     },
   });
 
