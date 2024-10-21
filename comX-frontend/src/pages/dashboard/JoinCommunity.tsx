@@ -30,9 +30,8 @@ export default function JoinCommunity() {
       queryClient.invalidateQueries({ queryKey: ["communityList"] });
       setJoinCode("");
     },
-    onError(error) {
-      console.log(error);
-      toast.error("Invalid Code");
+    onError(error:any) {
+      toast.error(error.response.data.message);
     },
   });
 

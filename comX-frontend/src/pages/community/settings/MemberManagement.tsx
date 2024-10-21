@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Trash2,
   UserPlus,
@@ -18,16 +18,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Top_MemoryManagement from "./MemberManagement/Top_MemoryManagement";
-import Search_MemberManagement from "./MemberManagement/Search_MemberManagement";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useDebounce } from "@/hooks/useDebounce";
-import { motion } from "framer-motion";
-import { dummyMembers } from "@/lib/DummyData";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
+import { Member } from "@/types/UserProfile";
+import Top_MemoryManagement from "./MemberManagement/Top_MemoryManagement";
+import Search_MemberManagement from "./MemberManagement/Search_MemberManagement";
+import { motion } from "framer-motion";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -38,95 +38,102 @@ const itemAnimation = {
 
 export default function MemberManagement({ ID }: { ID: number }) {
   const user = useSelector((state: RootState) => state.userDetails);
+  const queryClient = useQueryClient();
 
-  const { mutateAsync: getMemberList } = useMutation({
-    mutationFn: async (ID: number) => {
-      return axios.post(
-        `${backend_url}/member/get-community-members`,
-        { communityId: ID },
-        {
-          withCredentials: true,
-        }
+  const {
+    data: members = [],
+    error,
+    isLoading,
+  } = useQuery<Member[], Error>({
+    queryKey: [`Member-List/${ID}`],
+    queryFn: async () => {
+      const response = await axios.get(
+        `${backend_url}/member/get-community-members/${ID}`,
+        { withCredentials: true }
       );
+      return response.data.data.members;
     },
-    onSuccess({ data }) {
-      setMembers(data.data.members);
-    },
-    onError(error) {
-      console.log(error);
-    },
+    staleTime: Infinity,
   });
 
-  const { mutateAsync: promoteMember } = useMutation({
-    mutationFn: async (details: {
-      communityId: number;
-      promoting_id: number;
-    }) => {
-      return axios.post(`${backend_url}/member/promote-member`, details, {
-        withCredentials: true,
-      });
-    },
-    onSuccess() {
-      getMemberList(ID);
-    },
-  });
+  // Function to handle invalidating queries
+  const invalidateMembers = () => {
+    queryClient.invalidateQueries({ queryKey: [`Member-List/${ID}`] });
+  };
 
-  const { mutateAsync: demoteMember } = useMutation({
-    mutationFn: async (details: {
-      communityId: number;
-      demoting_id: number;
-    }) => {
-      return axios.post(`${backend_url}/member/demote-member`, details, {
-        withCredentials: true,
-      });
-    },
-    onSuccess() {
-      getMemberList(ID);
-    },
-  });
+  // Mutation handlers
+  const mutations = {
+    promote: useMutation({
+      mutationFn: async (details: {
+        communityId: number;
+        promoting_id: number;
+      }) => {
+        return axios.post(`${backend_url}/member/promote-member`, details, {
+          withCredentials: true,
+        });
+      },
+      onSuccess: invalidateMembers,
+    }),
+    demote: useMutation({
+      mutationFn: async (details: {
+        communityId: number;
+        demoting_id: number;
+      }) => {
+        return axios.post(`${backend_url}/member/demote-member`, details, {
+          withCredentials: true,
+        });
+      },
+      onSuccess: invalidateMembers,
+    }),
+    ban: useMutation({
+      mutationFn: async (details: {
+        communityId: number;
+        baning_id: number;
+      }) => {
+        return axios.post(`${backend_url}/member/ban-member`, details, {
+          withCredentials: true,
+        });
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: [`Member-List/${ID}`] });
+        queryClient.invalidateQueries({ queryKey: ["communityList"] });
+      },
+    }),
+    remove: useMutation({
+      mutationFn: async (details: {
+        communityId: number;
+        removingId: number;
+      }) => {
+        return axios.post(`${backend_url}/member/remove-member`, details, {
+          withCredentials: true,
+        });
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: [`Member-List/${ID}`] });
+        queryClient.invalidateQueries({ queryKey: ["communityList"] });
+      },
+    }),
+    accept: useMutation({
+      mutationFn: async (details: {
+        communityId: number;
+        member_id: number;
+      }) => {
+        return axios.post(
+          `${backend_url}/member/accept-join-request`,
+          details,
+          {
+            withCredentials: true,
+          }
+        );
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: [`Member-List/${ID}`] });
+        queryClient.invalidateQueries({ queryKey: ["communityList"] });
+      },
+    }),
+  };
 
-  const { mutateAsync: banMember } = useMutation({
-    mutationFn: async (details: { communityId: number; baning_id: number }) => {
-      return axios.post(`${backend_url}/member/ban-member`, details, {
-        withCredentials: true,
-      });
-    },
-    onSuccess() {
-      getMemberList(ID);
-    },
-  });
-
-  const { mutateAsync: removeMember } = useMutation({
-    mutationFn: async (details: {
-      communityId: number;
-      removingId: number;
-    }) => {
-      return axios.post(`${backend_url}/member/remove-member`, details, {
-        withCredentials: true,
-      });
-    },
-    onSuccess() {
-      getMemberList(ID);
-    },
-  });
-
-  const { mutateAsync: acceptMember } = useMutation({
-    mutationFn: async (details: { communityId: number; member_id: number }) => {
-      return axios.post(`${backend_url}/member/accept-join-request`, details, {
-        withCredentials: true,
-      });
-    },
-    onSuccess() {
-      getMemberList(ID);
-    },
-  });
-
-  const [members, setMembers] = useState(dummyMembers);
-
-  useEffect(() => {
-    getMemberList(ID);
-  }, [ID]);
-
+  // Confirmation dialog state
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [confirmAction, setConfirmAction] = useState<() => void>(() => {});
   const [confirmMessage, setConfirmMessage] = useState("");
@@ -134,15 +141,28 @@ export default function MemberManagement({ ID }: { ID: number }) {
     "search_member",
     ""
   );
-
   const debouncedSearchTerm = useDebounce(searchTerm);
 
+  // Counting members based on their roles
   const memberCount = members.filter((m) => m.role === "MEMBER").length;
   const adminCount = members.filter(
     (m) => m.role === "ADMIN" || m.role === "OWNER"
   ).length;
   const bannedCount = members.filter((m) => m.role === "BANNED").length;
   const inviteCount = members.filter((m) => m.role === "QUEUE").length;
+
+  // Filtered members based on search
+  const filteredMembers = members.filter(
+    (member) =>
+      member.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+      member.email.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+  );
+
+  // Check if the current user is an admin
+  const isAdmin = filteredMembers.some(
+    (m) =>
+      (m.role === "ADMIN" || m.role === "OWNER") && m.userId === user.user?.id
+  );
 
   const handleAction = (action: () => void, message: string) => {
     setConfirmAction(() => action);
@@ -155,17 +175,14 @@ export default function MemberManagement({ ID }: { ID: number }) {
     setShowConfirmDialog(false);
   };
 
-  const filteredMembers = members.filter(
-    (member) =>
-      member.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-      member.email.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
-  );
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
-  const isAdmin =
-    filteredMembers.filter(
-      (m) =>
-        (m.role === "ADMIN" || m.role === "OWNER") && m.userId === user.user?.id
-    ).length > 0;
+  // Handle error case
+  if (error) {
+    return <div>Error loading members: {error.message}</div>;
+  }
 
   return (
     <div className="h-full overflow-scroll w-full no-scrollbar p-4 md:p-8">
@@ -225,7 +242,7 @@ export default function MemberManagement({ ID }: { ID: number }) {
                         </span>
                       </div>
                     </div>
-                    { isAdmin && 
+                    {isAdmin && (
                       <div className="flex space-x-2 mt-2 md:mt-0 mr-4">
                         <Button
                           size="sm"
@@ -234,7 +251,7 @@ export default function MemberManagement({ ID }: { ID: number }) {
                           onClick={() =>
                             handleAction(
                               () =>
-                                promoteMember({
+                                mutations.promote.mutateAsync({
                                   communityId: ID,
                                   promoting_id: member.userId,
                                 }),
@@ -252,7 +269,7 @@ export default function MemberManagement({ ID }: { ID: number }) {
                           onClick={() =>
                             handleAction(
                               () =>
-                                banMember({
+                                mutations.ban.mutateAsync({
                                   communityId: ID,
                                   baning_id: member.userId,
                                 }),
@@ -270,7 +287,7 @@ export default function MemberManagement({ ID }: { ID: number }) {
                           onClick={() =>
                             handleAction(
                               () =>
-                                removeMember({
+                                mutations.remove.mutateAsync({
                                   communityId: ID,
                                   removingId: member.userId,
                                 }),
@@ -282,7 +299,7 @@ export default function MemberManagement({ ID }: { ID: number }) {
                           Remove
                         </Button>
                       </div>
-                    }
+                    )}
                   </li>
                 ))}
             </ul>
@@ -324,7 +341,8 @@ export default function MemberManagement({ ID }: { ID: number }) {
                       </div>
                     </div>
                     {admin.role === "ADMIN" &&
-                      admin.userId !== user.user?.id && isAdmin && (
+                      admin.userId !== user.user?.id &&
+                      isAdmin && (
                         <div className="flex space-x-2 mt-2 md:mt-0 mr-4">
                           <Button
                             size="sm"
@@ -333,7 +351,7 @@ export default function MemberManagement({ ID }: { ID: number }) {
                             onClick={() =>
                               handleAction(
                                 () =>
-                                  demoteMember({
+                                  mutations.demote.mutateAsync({
                                     communityId: ID,
                                     demoting_id: admin.userId,
                                   }),
@@ -351,7 +369,7 @@ export default function MemberManagement({ ID }: { ID: number }) {
                             onClick={() =>
                               handleAction(
                                 () =>
-                                  removeMember({
+                                  mutations.remove.mutateAsync({
                                     communityId: ID,
                                     removingId: admin.userId,
                                   }),
@@ -404,26 +422,28 @@ export default function MemberManagement({ ID }: { ID: number }) {
                         </span>
                       </div>
                     </div>
-                    {isAdmin && <div className="flex space-x-2 mt-2 md:mt-0 mr-4">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="bg-green-50 text-green-600 hover:bg-green-100"
-                        onClick={() =>
-                          handleAction(
-                            () =>
-                              acceptMember({
-                                communityId: ID,
-                                member_id: invite.userId,
-                              }),
-                            `Accept ${invite.name} as a member?`
-                          )
-                        }
-                      >
-                        <UserCheck className="w-4 h-4 mr-2" />
-                        Accept
-                      </Button>
-                    </div>}
+                    {isAdmin && (
+                      <div className="flex space-x-2 mt-2 md:mt-0 mr-4">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="bg-green-50 text-green-600 hover:bg-green-100"
+                          onClick={() =>
+                            handleAction(
+                              () =>
+                                mutations.accept.mutateAsync({
+                                  communityId: ID,
+                                  member_id: invite.userId,
+                                }),
+                              `Accept ${invite.name} as a member?`
+                            )
+                          }
+                        >
+                          <UserCheck className="w-4 h-4 mr-2" />
+                          Accept
+                        </Button>
+                      </div>
+                    )}
                   </li>
                 ))}
             </ul>
@@ -464,26 +484,28 @@ export default function MemberManagement({ ID }: { ID: number }) {
                         </span>
                       </div>
                     </div>
-                    {isAdmin && <div className="flex space-x-2 mt-2 md:mt-0 mr-4">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="bg-green-50 text-green-600 hover:bg-green-100"
-                        onClick={() =>
-                          handleAction(
-                            () =>
-                              removeMember({
-                                communityId: ID,
-                                removingId: banned.userId,
-                              }),
-                            `Reinstate ${banned.name} as a member?`
-                          )
-                        }
-                      >
-                        <UserCheck className="w-4 h-4 mr-2" />
-                        Reinstate
-                      </Button>
-                    </div>}
+                    {isAdmin && (
+                      <div className="flex space-x-2 mt-2 md:mt-0 mr-4">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="bg-green-50 text-green-600 hover:bg-green-100"
+                          onClick={() =>
+                            handleAction(
+                              () =>
+                                mutations.remove.mutateAsync({
+                                  communityId: ID,
+                                  removingId: banned.userId,
+                                }),
+                              `Reinstate ${banned.name} as a member?`
+                            )
+                          }
+                        >
+                          <UserCheck className="w-4 h-4 mr-2" />
+                          Reinstate
+                        </Button>
+                      </div>
+                    )}
                   </li>
                 ))}
             </ul>

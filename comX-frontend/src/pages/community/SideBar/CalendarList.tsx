@@ -7,8 +7,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { Headphones, Mic, Settings, Users } from "lucide-react";
 import { useParams } from "react-router-dom";
+
+const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 export default function CalendarList({
   groups,
@@ -25,17 +29,52 @@ export default function CalendarList({
 }) {
   const { ID } = useParams();
 
+  const {
+    data: community = {
+      id: 1,
+      name: "",
+      scope: "",
+      description: "",
+      coverImage: "",
+      createdAt: "",
+      joinCode: "",
+    },
+    isLoading,
+  } = useQuery({
+    queryKey: [`communityDetails/${ID}`],
+    queryFn: async () => {
+      const response = await axios.get(
+        `${backend_url}/community/get-community-details/${ID}`,
+        { withCredentials: true }
+      );
+      return response.data.data;
+    },
+    staleTime: Infinity,
+  });
+
   const startingYear = 2020;
   const Years = Array.from(
     { length: new Date().getFullYear() - startingYear + 1 },
     (_, index) => startingYear + index
   );
 
+  if (isLoading) {
+    return <div>Loading . . .</div>;
+  }
+
   return (
     <>
       <div className="w-60 bg-white flex flex-col border-r">
-        <div className="h-12 shadow-sm flex items-center px-4 font-semibold border-b">
-          {/* {name!.charAt(0).toUpperCase() + name!.substring(1).toLowerCase()} */}
+        <div className="h-12 shadow-sm flex items-center px-4 font-semibold border-b justify-around">
+          <p>
+            {community.name.length < 10
+              ? community.name!.charAt(0).toUpperCase() +
+                community.name!.substring(1, community.name.length)
+              : community.name!.charAt(0).toUpperCase() +
+                community.name!.substring(1, 7).toLowerCase() +
+                "..."}{" "}
+          </p>
+          <p>( {community.joinCode} )</p>
         </div>
         <div className="flex justify-center items-center mt-2 w-full">
           <Select value={year} onValueChange={setYear}>

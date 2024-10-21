@@ -2,9 +2,13 @@ import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { cn } from "@/lib/utils";
 import { Group } from "@/types/Groups";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { ChevronDown, Headphones, Mic, Settings, Users } from "lucide-react";
 import React from "react";
 import { useParams } from "react-router-dom";
+
+const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 const GroupList = React.memo(function GroupList({
   groups,
@@ -29,11 +33,46 @@ const GroupList = React.memo(function GroupList({
 
   const { ID } = useParams();
 
+  const {
+    data: community = {
+      id: 1,
+      name: "",
+      scope: "",
+      description: "",
+      coverImage: "",
+      createdAt: "",
+      joinCode: "",
+    },
+    isLoading,
+  } = useQuery({
+    queryKey: [`communityDetails/${ID}`],
+    queryFn: async () => {
+      const response = await axios.get(
+        `${backend_url}/community/get-community-details/${ID}`,
+        { withCredentials: true }
+      );
+      return response.data.data;
+    },
+    staleTime: Infinity,
+  });
+
+  if (isLoading) {
+    return <div>Loading . . .</div>;
+  }
+
   return (
     <>
       <div className="w-60 bg-white flex flex-col border-r">
-        <div className="h-12 shadow-sm flex items-center px-4 font-semibold border-b">
-          {/* {name!.charAt(0).toUpperCase() + name!.substring(1).toLowerCase()} */}
+        <div className="h-12 shadow-sm flex items-center px-4 font-semibold border-b justify-around">
+          <p>
+            {community.name.length < 10
+              ? community.name!.charAt(0).toUpperCase() +
+                community.name!.substring(1, community.name.length)
+              : community.name!.charAt(0).toUpperCase() +
+                community.name!.substring(1, 7).toLowerCase() +
+                "..."}{" "}
+          </p>
+          <p>( {community.joinCode} )</p>
         </div>
         <ScrollArea className="flex-grow">
           {groups.map((category) => (

@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Users, FileText, Image, Hash, Key, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -20,68 +21,76 @@ const itemAnimation = {
 export default function BasicInformation() {
   const { ID } = useParams();
 
-  const [community, setCommunity] = useState({
-    id: 0,
-    name: "",
-    description: "",
-    coverImage: "",
-    scope: "PUBLIC",
-    joinCode:"000000",
-    createdAt:"",
-  });
+  const queryClient = useQueryClient();
 
-  const { mutateAsync: getCommunityDetails } = useMutation({
-    mutationFn: async (ID: number) => {
-      const response = await axios.post(
-        `${backend_url}/community/get-community-details`,
-        { communityId: ID },
-        {
-          withCredentials: true,
-        }
+  const {
+    data: community = {
+      id: 1,
+      name: "",
+      scope: "",
+      description: "",
+      coverImage: "",
+      createdAt: "",
+      joinCode: "",
+    },
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: [`communityDetails/${ID}`],
+    queryFn: async () => {
+      const response = await axios.get(
+        `${backend_url}/community/get-community-details/${ID}`,
+        { withCredentials: true }
       );
-      return response.data;
+      return response.data.data;
     },
-    onSuccess({ data }) {
-      setCommunity(data);
-    },
-    onError(error) {
-      console.log(error);
-    },
+    staleTime: Infinity,
   });
-
-  useEffect(() => {
-    getCommunityDetails(parseInt(ID!, 10));
-  }, []);
 
   const { mutateAsync: updateCommunity } = useMutation({
     mutationFn: async (details: {
-      name: string;
-      description: string;
+      name: string | null;
+      description: string | null;
       coverImage: string | null;
-      communityId: number;
       scope: string;
+      communityId: number;
     }) => {
       const response = await axios.put(
         `${backend_url}/community/update-community`,
         details,
-        {
-          withCredentials: true,
-        }
+        { withCredentials: true }
       );
       return response.data;
     },
     onSuccess() {
-      getCommunityDetails(parseInt(ID!, 10));
+      queryClient.invalidateQueries({
+        queryKey: [`communityDetails/${ID}`],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["communityList"],
+      });
+      toast.success("Community Details Updated");
     },
     onError(error) {
-      console.log(error);
+      console.error("Update failed:", error);
     },
   });
 
+  // State variables
   const [coverImage, setCoverImage] = useState<string | null>(null);
   const [description, setDescription] = useState("");
   const [name, setName] = useState("");
 
+  // Effect to set initial state values when community data is loaded
+  useEffect(() => {
+    if (community) {
+      setName(community.name);
+      setDescription(community.description);
+      setCoverImage(community.coverImage); // Ensure cover image is set
+    }
+  }, [community]);
+
+  // Handle image upload
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -93,15 +102,30 @@ export default function BasicInformation() {
     }
   };
 
-  const handleUpdateCommunity = () => {
-    updateCommunity({
-      name,
-      description,
-      coverImage,
-      scope: "PUBLIC",
-      communityId: parseInt(ID!, 10),
-    });
+  // Update community function
+  const handleUpdateCommunity = async () => {
+    try {
+      await updateCommunity({
+        name,
+        description,
+        coverImage,
+        scope: "PUBLIC",
+        communityId: parseInt(ID!, 10),
+      });
+    } catch (error) {
+      console.error("Update operation error:", error);
+    }
   };
+
+  // Show loading state
+  if (isLoading) {
+    return <div>Loading . . .</div>;
+  }
+
+  // Handle error state
+  if (error) {
+    return <div>Error loading community details.</div>;
+  }
 
   return (
     <>
@@ -172,13 +196,6 @@ export default function BasicInformation() {
                   onChange={handleImageUpload}
                   className="w-full"
                 />
-                {coverImage && (
-                  <img
-                    src={coverImage}
-                    alt="Cover"
-                    className="w-16 h-16 object-cover rounded-md animate-fade-in"
-                  />
-                )}
               </div>
             </div>
 
@@ -225,7 +242,7 @@ export default function BasicInformation() {
               <Input
                 id="createdAt"
                 type="string"
-                value={community.createdAt.slice(0,10)}
+                value={community.createdAt.slice(0, 10)}
                 readOnly
                 className="w-full bg-gray-100 text-gray-500 cursor-not-allowed"
               />
