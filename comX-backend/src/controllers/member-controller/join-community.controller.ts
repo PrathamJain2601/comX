@@ -12,11 +12,6 @@ export const join_community = async (req: Request, res: Response) => {
       return responseCodes.clientError.notFound(res, "join code not found");
     }
 
-    // Check if the user is authenticated
-    if (!userId) {
-      return responseCodes.clientError.unauthorized(res, 'Unauthorized');
-    }
-
     // Find the community by joinCode
     const community = await prisma.community.findUnique({
       where: { joinCode },
@@ -30,8 +25,11 @@ export const join_community = async (req: Request, res: Response) => {
     }
 
     // Check if the user is already a member of the community
-    const isAlreadyMember = community.members.some(member => member.userId === userId);
+    const isAlreadyMember = community.members.find(member => member.userId === userId);
     if (isAlreadyMember) {
+      if(isAlreadyMember.role == "BANNED"){
+        return responseCodes.clientError.badRequest(res, {}, 'You are banned from the community');
+      }
       return responseCodes.clientError.badRequest(res, {}, 'User is already a member of the community');
     }
 

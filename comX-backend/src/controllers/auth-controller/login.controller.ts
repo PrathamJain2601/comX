@@ -32,10 +32,6 @@ export const login = async (req: Request, res: Response) => {
             return responseCodes.clientError.forbidden(res, "wrong email or password");
         }
 
-        // if(password != user.password){
-        //     return responseCodes.clientError.forbidden(res, "wrong email or password");
-        // }
-
         await create_token(res, user);
         user.password = "";
         return responseCodes.success.ok(res, user, "Logged in successfully");
