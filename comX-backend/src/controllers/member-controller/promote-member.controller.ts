@@ -5,17 +5,7 @@ import { prisma } from "../../config/dbConnect";
 
 export const promote_member = async (req: Request, res: Response) => {
     try{
-        const {userId, communityId, promoting_id} = req.body;
-            
-        const promoter = await isUserMember(userId, communityId);
-        
-        if(!promoter){
-            return responseCodes.clientError.forbidden(res, 'You are not a member of this community');
-        }
-        
-        if (promoter.role !== 'OWNER' && promoter.role !== 'ADMIN') {
-            return responseCodes.clientError.forbidden(res, 'Only owners and admins can promote members');
-        }
+        const {communityId, promoting_id} = req.body;
         
         const member = await isUserMember(promoting_id, communityId);
         

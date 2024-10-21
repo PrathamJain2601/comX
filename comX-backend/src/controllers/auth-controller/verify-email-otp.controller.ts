@@ -4,6 +4,9 @@ import { prisma } from "../../config/dbConnect";
 
 export const verify_email_otp = async(req: Request, res: Response) => {
     const {email, otp} = req.body;
+    if(!email || !otp){
+      return responseCodes.clientError.badRequest(res, "need otp and email");
+    }
     const user = await prisma.user.findUnique({
         where:{
             email: email

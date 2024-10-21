@@ -5,17 +5,7 @@ import { prisma } from "../../config/dbConnect";
 
 export const demote_member = async (req: Request, res: Response) => {
     try{
-        const {userId, communityId, demoting_id} = req.body;
-            
-        const demoter = await isUserMember(userId, communityId);
-        
-        if(!demoter){
-            return responseCodes.clientError.forbidden(res, 'You are not a member of this community');
-        }
-        
-        if (demoter.role !== 'OWNER' && demoter.role !== 'ADMIN') {
-            return responseCodes.clientError.forbidden(res, 'Only owners and admins can demote members');
-        }
+        const {communityId, demoting_id} = req.body;
         
         const member = await isUserMember(demoting_id, communityId);
         

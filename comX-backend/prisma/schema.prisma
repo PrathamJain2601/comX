@@ -14,67 +14,74 @@ datasource db {
 }
 
 model User {
-  id          Int          @id @default(autoincrement())
-  email       String       @unique
-  username    String       @unique
-  name        String
-  password    String
-  avatar      String?      
-  designation String
-  otp         String?   
-  isOtpValid  DateTime? 
-  isVerified  Boolean?     @default(false)
-  registeredAt   DateTime     @default(now())
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  username     String    @unique
+  name         String
+  password     String
+  avatar       String?
+  designation  String
+  otp          String?
+  isOtpValid   DateTime?
+  isVerified   Boolean?  @default(false)
+  registeredAt DateTime  @default(now())
 
   // Relationships
-  memberships CommunityMember[]
+  memberships   CommunityMember[]
   calendarTasks CommunityCalendar[]
 }
 
 model Community {
-  id          Int               @id @default(autoincrement())
-  name        String            @unique
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
   description String?
   coverImage  String?
-  scope       Scope             @default(PUBLIC)
-  joinCode    String?           @unique
-  createdAt   DateTime          @default(now())
+  scope       Scope    @default(PUBLIC)
+  joinCode    String?  @unique
+  createdAt   DateTime @default(now())
 
   // Relationships
-  members     CommunityMember[]
+  members       CommunityMember[]
   calendarTasks CommunityCalendar[]
 }
 
-model CommunityMember {
-  id           Int        @id @default(autoincrement())
-  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId       Int
-  community    Community  @relation(fields: [communityId], references: [id], onDelete: Cascade)
-  communityId  Int
-  role         Role       @default(MEMBER) 
+model Project {
+  id           Int      @id @default(autoincrement())
+  name         String
+  description  String?
+  projectImage String?
+  createdAt    DateTime @default(now())
+}
 
-  joinedAt     DateTime   @default(now())
+model CommunityMember {
+  id          Int       @id @default(autoincrement())
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      Int
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  communityId Int
+  role        Role      @default(MEMBER)
+
+  joinedAt DateTime @default(now())
 
   @@unique([userId, communityId])
 }
 
 model CommunityCalendar {
-  id           Int        @id @default(autoincrement())
-  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId       Int
-  community    Community  @relation(fields: [communityId], references: [id], onDelete: Cascade)
-  communityId  Int
-  title        String
-  color        String     
-  description  String
-  startTime    DateTime
-  endTime      DateTime
-
+  id          Int       @id @default(autoincrement())
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      Int
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  communityId Int
+  title       String
+  color       String
+  description String
+  startTime   DateTime
+  endTime     DateTime
 }
 
 enum Role {
-  OWNER  // The user who created the community
-  ADMIN  // Admins with elevated permissions
+  OWNER // The user who created the community
+  ADMIN // Admins with elevated permissions
   MEMBER // Regular members
   QUEUE
   BANNED
@@ -84,6 +91,3 @@ enum Scope {
   PRIVATE
   PUBLIC
 }
-
-
-

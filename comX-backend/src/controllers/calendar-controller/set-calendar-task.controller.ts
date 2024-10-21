@@ -1,6 +1,5 @@
 import { Request, response, Response } from "express";
 import { responseCodes } from "../../utils/response-codes";
-import { isUserMember } from "../../utils/isUserMember";
 import { prisma } from "../../config/dbConnect";
 
 export const set_calendar_task = async(req:Request, res: Response) => {
@@ -11,11 +10,6 @@ export const set_calendar_task = async(req:Request, res: Response) => {
         }
         if(!startTime || !endTime || !title || !description || !color){
             return responseCodes.clientError.badRequest(res, "all fields are required");
-        }
-
-        const member = await isUserMember(userId, communityId);
-        if(!member){
-            return responseCodes.clientError.badRequest(res, "You are not a member of the community");
         }
 
         const start = new Date(startTime);

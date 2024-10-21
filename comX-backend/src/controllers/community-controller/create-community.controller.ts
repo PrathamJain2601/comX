@@ -27,6 +27,13 @@ export const create_community = async (req: Request, res: Response) => {
   try {
     const { name, description, scope, userId, coverImage } = req.body;
 
+    if(!name || !description || !scope){
+      return responseCodes.clientError.badRequest(res, "all fields are required");
+    }
+    if(!(scope == 'PRIVATE' || scope == 'PUBLIC')){
+      return responseCodes.clientError.badRequest(res, "invalid scope");
+    }
+
     // Check if the user is authenticated
     if (!userId) {
       return responseCodes.clientError.unauthorized(res, 'Unauthorized');

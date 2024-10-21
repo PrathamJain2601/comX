@@ -5,17 +5,7 @@ import { prisma } from "../../config/dbConnect";
 
 export const ban_member = async (req: Request, res: Response) => {
     try{
-        const {userId, communityId, baning_id} = req.body;
-            
-        const user = await isUserMember(userId, communityId);
-        
-        if(!user){
-            return responseCodes.clientError.forbidden(res, 'You are not a member of this community');
-        }
-        
-        if (user.role !== 'OWNER' && user.role !== 'ADMIN') {
-            return responseCodes.clientError.forbidden(res, 'Only owners and admins can ban members');
-        }
+        const {communityId, baning_id} = req.body;
         
         const member = await isUserMember(baning_id, communityId);
         

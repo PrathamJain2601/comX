@@ -1,20 +1,11 @@
-import { Request, response, Response } from "express";
+import { Request, Response } from "express";
 import { responseCodes } from "../../utils/response-codes";
-import { isUserMember } from "../../utils/isUserMember";
 import { prisma } from "../../config/dbConnect";
 
 export const get_calendar_task = async(req:Request, res: Response) => {
     try{
         const {userId} = req.body;
         const communityId = Number(req.params.id);
-        if(!communityId){
-            return responseCodes.clientError.notFound(res, "communityId not found");
-        }
-
-        const member = await isUserMember(userId, communityId);
-        if(!member){
-            return responseCodes.clientError.badRequest(res, "You are not a member of the community");
-        }
 
         const tasks = await prisma.communityCalendar.findMany({
             where:{
