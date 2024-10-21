@@ -4,7 +4,6 @@ import { prisma } from "../../config/dbConnect";
 
 export const get_calendar_task = async(req:Request, res: Response) => {
     try{
-        const {userId} = req.body;
         const communityId = Number(req.params.id);
 
         const tasks = await prisma.communityCalendar.findMany({

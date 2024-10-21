@@ -8,12 +8,10 @@ import bcryptjs from "bcryptjs";
 import fs from "fs";
 import { registerRequestSchema, registerRequest } from "@prathamjain522/comx-common";
 import { uploadOnCloudinary } from "../../utils/cloudinary";
+import { bodyParser } from "../../utils/body-parser";
 
 export const register = async (req: Request, res: Response) => {
-    const parseResult = registerRequestSchema.safeParse(req.body);
-    if(!parseResult.success){
-        return responseCodes.clientError.badRequest(res, parseResult.error.errors, "message");
-    }
+    if(!bodyParser(registerRequestSchema, req, res)) return;
     const { name, username, email, password, designation}: registerRequest = req.body;
 
     if(!name || !username || !email || !password || !designation){
@@ -21,9 +19,7 @@ export const register = async (req: Request, res: Response) => {
     }
 
     const hashedPassword = await bcryptjs.hash(password, 16);
-    // const hashedPassword = password;
 
-    // add a function to check strength of password
     try {
 
         let avatarUrl;
@@ -70,7 +66,6 @@ export const register = async (req: Request, res: Response) => {
                 }
             }
         }
-        // console.log(error);
         return responseCodes.serverError.internalServerError(res, "Internal server error");
     }
 }

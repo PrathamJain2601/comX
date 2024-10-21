@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { prisma } from '../../config/dbConnect';
 import { responseCodes } from '../../utils/response-codes';
-import { isUserMember } from '../../utils/isUserMember';
+import { isUserMember } from '../../utils/is-user-member';
 
 // Remove a member from a community
 export const remove_member = async (req: Request, res: Response) => {

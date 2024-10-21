@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { isUserMember } from "../../utils/isUserMember";
+import { isUserMember } from "../../utils/is-user-member";
 import { responseCodes } from "../../utils/response-codes";
 import { prisma } from "../../config/dbConnect";
 

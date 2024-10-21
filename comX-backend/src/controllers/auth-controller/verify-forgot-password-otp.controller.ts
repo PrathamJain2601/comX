@@ -1,8 +1,11 @@
 import { Request, Response } from "express";
 import { prisma } from "../../config/dbConnect";
 import { responseCodes } from "../../utils/response-codes";
+import { changePasswordRequest, changePasswordSchema, verifyForgotPasswordRequest, verifyForgotPasswordSchema } from "@prathamjain522/comx-common";
+import { bodyParser } from "../../utils/body-parser";
 export const verify_forgot_password_otp = async(req: Request, res: Response) => {
-    const {email, otp} = req.body;
+    if(!bodyParser(verifyForgotPasswordSchema, req, res)) return;
+    const {email, otp}:verifyForgotPasswordRequest = req.body;
     const user = await prisma.user.findUnique({
         where:{
             email: email,
@@ -34,7 +37,8 @@ export const verify_forgot_password_otp = async(req: Request, res: Response) => 
 
 export const change_password = async(req: Request, res: Response) => {
     try{
-        const {email, password} = req.body;
+        if(!bodyParser(changePasswordSchema, req, res)) return;
+        const {email, password}:changePasswordRequest = req.body;
         const user = await prisma.user.update({
             where:{
                 email: email,

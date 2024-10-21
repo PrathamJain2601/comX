@@ -4,12 +4,10 @@ import { responseCodes } from "../../utils/response-codes";
 import { prisma } from "../../config/dbConnect";
 import bcryptjs from "bcryptjs";
 import { loginRequest, loginRequestSchema } from "@prathamjain522/comx-common";
+import { bodyParser } from "../../utils/body-parser";
 
 export const login = async (req: Request, res: Response) => {
-    const parseResult = loginRequestSchema.safeParse(req.body);
-    if(!parseResult.success){
-        return responseCodes.clientError.badRequest(res, parseResult.error.errors, "message");
-    }
+    if(!bodyParser(loginRequestSchema, req, res)) return;
     const { emailOrUsername, password }:loginRequest = req.body;
     if (!password || !emailOrUsername) {
         return responseCodes.clientError.notFound(res, "All fields are required");

@@ -1,12 +1,13 @@
 import { Request, Response } from "express";
 import { responseCodes } from "../../utils/response-codes";
 import { prisma } from "../../config/dbConnect";
+import { verifyEmailOtpRequest, verifyEmailOtpSchema } from "@prathamjain522/comx-common";
+import { bodyParser } from "../../utils/body-parser";
 
 export const verify_email_otp = async(req: Request, res: Response) => {
-    const {email, otp} = req.body;
-    if(!email || !otp){
-      return responseCodes.clientError.badRequest(res, "need otp and email");
-    }
+    if(!bodyParser(verifyEmailOtpSchema, req, res)) return;
+    const {email, otp}:verifyEmailOtpRequest = req.body;
+    
     const user = await prisma.user.findUnique({
         where:{
             email: email
