@@ -8,13 +8,14 @@ import { get_community_details } from "../controllers/community-controller/get-c
 import { get_user_communities } from "../controllers/community-controller/get-user-communities.controller";
 import { upload } from "../middlewares/multer.middleware";
 import { isUserMember } from "../middlewares/isUserMember.middleware";
+import { isUserAdmin } from "../middlewares/isUserAdmin.middleware";
 
 const router = Router();
 
 router.post("/create-community",isAuthenticated, create_community);
 router.get("/get-all-communities",isAuthenticated, get_all_communities);
 router.delete("/delete-community",isAuthenticated, delete_community);
-router.put("/update-community",upload.single("file"), isAuthenticated, update_community);
+router.put("/update-community",upload.single("file"), isAuthenticated, isUserAdmin, update_community);
 router.get("/get-community-details/:id", isAuthenticated, isUserMember, get_community_details);
 router.get("/get-user-communities", isAuthenticated, get_user_communities);
 

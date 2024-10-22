@@ -4,9 +4,8 @@ import { responseCodes } from "../../utils/response-codes";
 
 export const get_community_details = async (req: Request, res: Response) =>{
     try{
-    const { userId } = req.body;
     const communityId = Number(req.params.id);
-    
+
     const community = await prisma.community.findUnique({
         where:{
             id: communityId

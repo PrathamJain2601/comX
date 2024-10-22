@@ -3,21 +3,15 @@ import { prisma } from '../../config/dbConnect';
 import { responseCodes } from '../../utils/response-codes'; // Importing response codes
 import fs from "fs";
 import { uploadOnCloudinary } from '../../utils/cloudinary';
+import { updateCommunityRequest, updateCommunitySchema } from '@prathamjain522/comx-common';
+import { bodyParser } from '../../utils/body-parser';
 
 export const update_community = async (req: Request, res: Response) => {
   try {
-    const { userId, name, description, scope } = req.body;
+    if(!bodyParser(updateCommunitySchema, req, res)) return;
+    const { userId, name, description, scope }:updateCommunityRequest = req.body;
 
     const communityId = Number(req.body.communityId);
-    if(!communityId){
-      return responseCodes.clientError.notFound(res, "community id is required");
-    }
-
-    // Check if the user is authenticated
-    console.log("userid ", userId);
-    if (!userId) {
-      return responseCodes.clientError.unauthorized(res, 'Unauthorized');
-    }
 
     // Find the community with its members
     const community = await prisma.community.findUnique({
@@ -52,11 +46,6 @@ export const update_community = async (req: Request, res: Response) => {
     if (description) dataToUpdate.description = description;
     if (scope) dataToUpdate.scope = scope;
 
-    // If no fields are provided, return an error
-    if (Object.keys(dataToUpdate).length === 0) {
-      return responseCodes.clientError.badRequest(res, 'No valid fields provided for update');
-    }
-
     let coverImageUrl = null;
         if(req.file){
             const localFilePath = req.file.path;
@@ -73,6 +62,12 @@ export const update_community = async (req: Request, res: Response) => {
     if(coverImageUrl){
       dataToUpdate.coverImage = coverImageUrl;
     }
+
+    // If no fields are provided, return an error
+    if (Object.keys(dataToUpdate).length === 0) {
+      return responseCodes.clientError.badRequest(res, 'No valid fields provided for update');
+    }
+
     // Update the community
     const updatedCommunity = await prisma.community.update({
       where: { id: communityId },
