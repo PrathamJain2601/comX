@@ -1,19 +1,14 @@
 import { Request, Response } from 'express';
 import { prisma } from '../../config/dbConnect';
 import { responseCodes } from '../../utils/response-codes';
+import { deleteCommunityRequest, deleteCommunitySchema } from '@prathamjain522/comx-common';
+import { bodyParser } from '../../utils/body-parser';
 
 // Delete a community (only the owner can delete)
 export const delete_community = async (req: Request, res: Response) => {
   try {
-    const { communityId, userId } = req.body;
-
-    // Check if the user is authenticated
-    if (!userId) {
-      return responseCodes.clientError.unauthorized(res, 'Unauthorized');
-    }
-    if(!communityId){
-      return responseCodes.clientError.badRequest(res, 'Community Id not found');
-    }
+    if(!bodyParser(deleteCommunitySchema, req, res)) return;
+    const { communityId, userId }:deleteCommunityRequest = req.body;
 
     // Fetch the community and its owner
     const community = await prisma.community.findUnique({

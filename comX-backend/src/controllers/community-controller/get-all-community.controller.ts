@@ -32,9 +32,6 @@ export const get_all_communities = async (req: Request, res: Response) => {
       communities.map(async (community) => {
         const memberCount = community.members.length;
 
-        // Exclude id and communityId from members
-        // const membersWithoutIds = community.members.map(({ id, communityId, ...rest }) => rest);
-
         // Find the owner
         const ownerId = community.members.find((member) => member.role === 'OWNER');
         console.log('ownerId ' + ownerId?.userId);

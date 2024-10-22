@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import { prisma } from '../../config/dbConnect';
 import { responseCodes } from '../../utils/response-codes'; // Importing response codes
 import { v4 as uuidv4 } from 'uuid'; // To generate unique codes
+import { createCommunityRequest, createCommunitySchema } from '@prathamjain522/comx-common';
+import { bodyParser } from '../../utils/body-parser';
 
 // Function to generate a unique join code
 const generateUniqueJoinCode = async (): Promise<string> => {
@@ -25,19 +27,8 @@ const generateUniqueJoinCode = async (): Promise<string> => {
 // Create a new community
 export const create_community = async (req: Request, res: Response) => {
   try {
-    const { name, description, scope, userId, coverImage } = req.body;
-
-    if(!name || !description || !scope){
-      return responseCodes.clientError.badRequest(res, "all fields are required");
-    }
-    if(!(scope == 'PRIVATE' || scope == 'PUBLIC')){
-      return responseCodes.clientError.badRequest(res, "invalid scope");
-    }
-
-    // Check if the user is authenticated
-    if (!userId) {
-      return responseCodes.clientError.unauthorized(res, 'Unauthorized');
-    }
+    if(!bodyParser(createCommunitySchema, req, res)) return;
+    const { name, description, scope, userId }: createCommunityRequest = req.body;
 
     const existingCommunity = await prisma.community.findUnique({
       where: { name },
@@ -57,7 +48,6 @@ export const create_community = async (req: Request, res: Response) => {
         description,
         scope: scope || 'PUBLIC', // Default to PUBLIC if not provided
         joinCode,
-        coverImage,
         members: {
           create: {
             userId,
