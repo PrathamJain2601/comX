@@ -36,20 +36,20 @@ export default function ProjectList({
 
   const [projects, setProjects] = useState([
     {
-      id: 17,
+      id: 26,
       name: "One",
       link: <FolderGit2 />,
     },
     {
-        id: 18,
-        name: "One",
-        link: <FolderOpenDot />,
-      },
-      {
-        id: 19,
-        name: "One",
-        link: <FolderDot />,
-      },
+      id: 27,
+      name: "Two",
+      link: <FolderOpenDot />,
+    },
+    {
+      id: 28,
+      name: "Three",
+      link: <FolderDot />,
+    },
   ]);
 
   const {

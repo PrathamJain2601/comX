@@ -96,7 +96,9 @@ export default function MemberManagement({ ID }: { ID: number }) {
       },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: [`Member-List/${ID}`] });
-        queryClient.invalidateQueries({ queryKey: ["communityList"] });
+        queryClient.invalidateQueries({
+          queryKey: [`communityList${user.user?.id}`],
+        });
       },
     }),
     remove: useMutation({

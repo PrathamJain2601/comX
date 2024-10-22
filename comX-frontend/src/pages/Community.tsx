@@ -8,6 +8,8 @@ import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDebugger } from "@/hooks/useDebugger";
+import ChatApp from "./chatApp/ChatApp";
+import ProjectDashboard from "./community/project/ProjectDashboard";
 
 function Community() {
   const [activeChannel, setActiveChannel] = useState(17);
@@ -59,9 +61,8 @@ function Community() {
           {activeChannel > 4 && activeChannel <= 16 && (
             <MainCalendar currentDate={currentDate} />
           )}
-          {
-            activeChannel
-          }
+          {activeChannel >=17 && activeChannel<26 && <ChatApp />}
+          {activeChannel >=26 && activeChannel<29 && <ProjectDashboard />}  
         </div>
       </div>
     </>
