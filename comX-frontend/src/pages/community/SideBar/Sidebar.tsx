@@ -7,6 +7,7 @@ import GroupList from "./GroupList";
 import { dummyGroups, dummySettings, Months } from "@/lib/DummyData";
 import SettingsList from "./SettingList";
 import CalendarList from "./CalendarList";
+import ProjectList from "./ProjectList";
 
 const Sidebar = React.memo(function Sidebar({
   activeChannel,
@@ -70,6 +71,12 @@ const Sidebar = React.memo(function Sidebar({
       {activeServer === 4 && (
         <GroupList
           groups={dummyGroups}
+          activeChannel={activeChannel}
+          setActiveChannel={setActiveChannel}
+        />
+      )}
+      {activeServer === 5 && (
+        <ProjectList
           activeChannel={activeChannel}
           setActiveChannel={setActiveChannel}
         />

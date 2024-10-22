@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import { useMutation } from "@tanstack/react-query";
@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { LabelInputContainer, BottomGradient } from "./SignUpExtraComponenets";
 import ItemPicker from "@/components/Item-Picker";
 import { designation } from "@/lib/destignation";
+import { Button } from "@/components/ui/button";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -30,18 +32,26 @@ export default function SignUpFormPage1({
   });
 
   const [post, setPost] = useState("");
+  const profilePic = useRef<HTMLInputElement>(null);
 
   const { mutateAsync: submitForm, isPending } = useMutation({
-    mutationFn: (userData: UserData) => {
-      userData.designation = post;
-      return axios.post(`${backend_url}/auth/register`, userData);
+    mutationFn: async (userData: UserData) => {
+      if (profilePic.current?.files?.[0]) {
+        userData.file = profilePic.current.files[0];
+      }
+
+      return await axios.post(`${backend_url}/auth/register`, userData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
     },
-    onSuccess() {
+    onSuccess: () => {
       setCurrentPage(2);
     },
-    onError(error) {
-      console.log(error);
-      toast.error("pending");
+    onError: (error) => {
+      console.error(error);
+      toast.error("An error occurred while submitting the form.");
     },
   });
 
@@ -49,10 +59,10 @@ export default function SignUpFormPage1({
     try {
       toast.success("Form Submitted");
       email.current.value = data.email;
-      submitForm(data);
+      await submitForm(data);
     } catch (e) {
-      console.log(e);
-      toast.error("issue");
+      console.error(e);
+      toast.error("An issue occurred during form submission.");
     }
   };
 
@@ -110,6 +120,15 @@ export default function SignUpFormPage1({
           )}
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
+          <Label htmlFor="coverImage">Email Address</Label>
+          <Input
+            id="coverImage"
+            placeholder="iit2023249@iiita.ac.in"
+            type="file"
+            ref={profilePic}
+          />
+        </LabelInputContainer>
+        <LabelInputContainer className="mb-4">
           <Label htmlFor="password">Password</Label>
           <Input
             id="password"
@@ -142,16 +161,23 @@ export default function SignUpFormPage1({
           <ItemPicker itemList={designation} value={post} setValue={setPost} />
         </LabelInputContainer>
 
-        <button
-          className={`bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] ${
-            isPending &&
-            "cursor-not-allowed from-zinc-700 dark:from-zinc-700 dark:to-zinc-700 to-neutral-400"
-          }`}
-          type="submit"
-        >
-          Next &rarr;
-          <BottomGradient />
-        </button>
+        {isPending ? (
+          <Button
+            disabled
+            className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] flex justify-center items-center"
+          >
+            <ReloadIcon className="mr-2 animate-spin w-4 h-4 flex justify-center items-center" />
+            Please wait
+          </Button>
+        ) : (
+          <button
+            className={`bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]`}
+            type="submit"
+          >
+            Next &rarr;
+            <BottomGradient />
+          </button>
+        )}
       </form>
       <Toaster />
     </div>

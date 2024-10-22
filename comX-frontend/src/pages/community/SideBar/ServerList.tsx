@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Braces, Calendar, CheckCheck, Settings } from "lucide-react";
+import { Braces, Calendar, CheckCheck, FolderKanban, MessageCircleMore, Settings } from "lucide-react";
 
 export default function ServerList({
   activeServer,
@@ -27,15 +27,20 @@ export default function ServerList({
     {
       id: 4,
       name: "General",
-      link: <CheckCheck />,
+      link: <MessageCircleMore />,
     },
     {
       id: 5,
-      name: "Pratham",
-      link: "P",
+      name: "Projects",
+      link: <FolderKanban />,
     },
     {
       id: 6,
+      name: "Tasks",
+      link: <CheckCheck />,
+    },
+    {
+      id: 7,
       name: "Vardaan",
       link: "V",
     },

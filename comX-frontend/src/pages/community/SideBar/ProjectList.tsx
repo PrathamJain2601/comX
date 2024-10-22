@@ -1,34 +1,56 @@
-import { cn } from "@/lib/utils";
-import { Group } from "@/types/Groups";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { ChevronDown, Headphones, Mic, Settings, Users } from "lucide-react";
-import React, { useState } from "react";
+import {
+  FolderDot,
+  FolderGit,
+  FolderGit2,
+  FolderOpenDot,
+  FolderRoot,
+  Headphones,
+  Mic,
+  Settings,
+  Users,
+} from "lucide-react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
-const GroupList = React.memo(function GroupList({
-  groups,
+export default function ProjectList({
   activeChannel,
   setActiveChannel,
 }: {
-  groups: Group[];
   activeChannel: number;
   setActiveChannel: React.Dispatch<React.SetStateAction<number>>;
 }) {
-  const [expandedCategories, setExpandedCategories] = useState(
-    Array.from({ length: groups.length }, (_, i) => i + 1)
-  );
-
-  const toggleCategory = (id: number) => {
-    setExpandedCategories((prev: number[]) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
-  };
-
   const { ID } = useParams();
+
+  const list = [
+    <FolderGit2 />,
+    <FolderOpenDot />,
+    <FolderDot />,
+    <FolderGit />,
+    <FolderRoot />,
+  ];
+
+  const [projects, setProjects] = useState([
+    {
+      id: 17,
+      name: "One",
+      link: <FolderGit2 />,
+    },
+    {
+        id: 18,
+        name: "One",
+        link: <FolderOpenDot />,
+      },
+      {
+        id: 19,
+        name: "One",
+        link: <FolderDot />,
+      },
+  ]);
 
   const {
     data: community = {
@@ -72,49 +94,19 @@ const GroupList = React.memo(function GroupList({
           <p>( {community.joinCode} )</p>
         </div>
         <ScrollArea className="flex-grow">
-          {groups.map((category) => (
-            <div key={category.id} className="mt-4">
+          {projects.map((category: any) => (
+            <div key={category.id} className="m-2 mx-4">
               <button
-                className="flex items-center px-1 mb-1 group"
-                onClick={() => toggleCategory(category.id)}
+                className={`flex items-center w-full px-2 py-2 mb-2 text-sm font-medium text-left rounded-lg transition-all duration-300 ease-in-out transform gap-2 ${
+                  activeChannel === category.id
+                    ? "bg-gradient-to-r from-blue-500 to-blue-700 text-white scale-105"
+                    : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800 hover:shadow-md"
+                }`}
+                onClick={() => setActiveChannel(category.id)}
               >
-                <ChevronDown
-                  className={cn(
-                    "w-3 h-3 mr-1 transition-transform duration-200 text-gray-500",
-                    expandedCategories.includes(category.id)
-                      ? "rotate-0"
-                      : "-rotate-90"
-                  )}
-                />
-                <span className="uppercase text-xs font-semibold text-gray-500 group-hover:text-gray-700">
-                  {category.name}
-                </span>
+                {category.link}
+                <span className="truncate">{category.name}</span>
               </button>
-              {expandedCategories.includes(category.id) && (
-                <div className="space-y-1 mx-2">
-                  {category.channels.map((channel) => (
-                    <button
-                      key={channel.id}
-                      className={cn(
-                        "flex items-center px-2 py-1 w-full rounded group hover:bg-gray-100",
-                        activeChannel === channel.id &&
-                          "bg-primary hover:bg-primary"
-                      )}
-                      onClick={() => setActiveChannel(channel.id)}
-                    >
-                      {category.link}
-                      <span
-                        className={`text-sm text-gray-600 group-hover:text-gray-800 ${
-                          activeChannel === channel.id &&
-                          "text-white group-hover:text-white"
-                        }`}
-                      >
-                        {channel.name}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              )}
             </div>
           ))}
         </ScrollArea>
@@ -139,6 +131,4 @@ const GroupList = React.memo(function GroupList({
       </div>
     </>
   );
-});
-
-export default GroupList;
+}

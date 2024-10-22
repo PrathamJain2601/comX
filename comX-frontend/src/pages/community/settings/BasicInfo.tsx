@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,7 +9,8 @@ import { motion } from "framer-motion";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -47,18 +48,23 @@ export default function BasicInformation() {
     staleTime: Infinity,
   });
 
-  const { mutateAsync: updateCommunity } = useMutation({
+  const { mutateAsync: updateCommunity, isPending } = useMutation({
     mutationFn: async (details: {
       name: string | null;
       description: string | null;
-      coverImage: string | null;
       scope: string;
       communityId: number;
+      file: File | undefined;
     }) => {
       const response = await axios.put(
         `${backend_url}/community/update-community`,
         details,
-        { withCredentials: true }
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
       return response.data;
     },
@@ -77,7 +83,7 @@ export default function BasicInformation() {
   });
 
   // State variables
-  const [coverImage, setCoverImage] = useState<string | null>(null);
+  const coverImage = useRef<HTMLInputElement>(null);
   const [description, setDescription] = useState("");
   const [name, setName] = useState("");
 
@@ -86,21 +92,8 @@ export default function BasicInformation() {
     if (community) {
       setName(community.name);
       setDescription(community.description);
-      setCoverImage(community.coverImage); // Ensure cover image is set
     }
   }, [community]);
-
-  // Handle image upload
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setCoverImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   // Update community function
   const handleUpdateCommunity = async () => {
@@ -108,9 +101,9 @@ export default function BasicInformation() {
       await updateCommunity({
         name,
         description,
-        coverImage,
         scope: "PUBLIC",
         communityId: parseInt(ID!, 10),
+        file: coverImage.current?.files?.[0],
       });
     } catch (error) {
       console.error("Update operation error:", error);
@@ -193,7 +186,7 @@ export default function BasicInformation() {
                   id="coverImage"
                   type="file"
                   accept="image/*"
-                  onChange={handleImageUpload}
+                  ref={coverImage}
                   className="w-full"
                 />
               </div>
@@ -248,14 +241,25 @@ export default function BasicInformation() {
               />
             </div>
 
-            <Button
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-colors duration-300"
-              onClick={handleUpdateCommunity}
-            >
-              Save Changes
-            </Button>
+            {isPending ? (
+              <Button
+                disabled
+                className="w-full bg-blue-800 hover:bg-blue-900 text-white transition-colors duration-300"
+              >
+                <ReloadIcon className="mr-2 animate-spin w-4 h-4 flex justify-center items-center" />
+                Please wait
+              </Button>
+            ) : (
+              <Button
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-colors duration-300"
+                onClick={handleUpdateCommunity}
+              >
+                Save Changes
+              </Button>
+            )}
           </CardContent>
         </Card>
+        <Toaster/>
       </div>
     </>
   );

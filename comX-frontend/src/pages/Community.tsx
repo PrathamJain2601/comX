@@ -7,6 +7,7 @@ import MainCalendar from "./community/Calendar/MainCalendar";
 import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useDebugger } from "@/hooks/useDebugger";
 
 function Community() {
   const [activeChannel, setActiveChannel] = useState(17);
@@ -39,6 +40,8 @@ function Community() {
     }
   }, [year, activeChannel, currentDate]);
 
+  useDebugger(activeChannel);
+
   return (
     <>
       <div className="flex">
@@ -56,6 +59,9 @@ function Community() {
           {activeChannel > 4 && activeChannel <= 16 && (
             <MainCalendar currentDate={currentDate} />
           )}
+          {
+            activeChannel
+          }
         </div>
       </div>
     </>
