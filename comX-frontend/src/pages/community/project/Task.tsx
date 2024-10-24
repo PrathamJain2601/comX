@@ -10,9 +10,10 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Filter } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 
 export function Tasks() {
-
   const [active, setActive] = useState<(typeof cards)[number] | boolean | null>(
     null
   );
@@ -100,33 +101,38 @@ export function Tasks() {
                     />
                   </motion.div>
 
-                  <div>
-                    <div className="flex justify-between items-start p-4">
-                      <div className="">
+                  <div className="justify-between items-start p-4 flex flex-col gap-2 h-fit">
+                    <div className="flex justify-between items-center mb-4 w-full">
+                      <div className="mt-2">
                         <motion.h3
                           layoutId={`title-${active.title}-${id}`}
                           className="font-bold text-neutral-700 dark:text-neutral-200"
                         >
                           {active.title}
                         </motion.h3>
-                        <motion.p
-                          layoutId={`description-${active.description}-${id}`}
-                          className="text-neutral-600 dark:text-neutral-400"
+                        <motion.h6
+                          layoutId={`assignee-${active.title}-${id}`}
+                          className="font-semibold text-neutral-700 dark:text-neutral-200 text-xs"
                         >
-                          {active.description}
-                        </motion.p>
+                          {active.assignee} - {active.dueDate}
+                        </motion.h6>
                       </div>
-
                       <motion.a
                         layoutId={`button-${active.title}-${id}`}
                         href={active.ctaLink}
                         target="_blank"
-                        className="px-4 py-3 text-sm rounded-full font-bold bg-green-500 text-white"
+                        className="px-4 py-3  text-sm rounded-full font-bold bg-green-500 text-white"
                       >
                         {active.ctaText}
                       </motion.a>
                     </div>
-                    <div className="pt-4 relative px-4">
+                    <div className="flex flex-col gap-4">
+                      <motion.p
+                        layoutId={`description-${active.description}-${id}`}
+                        className="text-neutral-600 dark:text-neutral-400"
+                      >
+                        {active.description}
+                      </motion.p>
                       <motion.div
                         layout
                         initial={{ opacity: 0 }}
@@ -138,6 +144,10 @@ export function Tasks() {
                           ? active.content()
                           : active.content}
                       </motion.div>
+                    </div>
+                    <div className="pb-24 flex justify-between w-full">
+                      <Button variant={"default"} className="bg-blue-500 hover:bg-blue-600">Mark as Done</Button>
+                      <Badge variant={"destructive"} className="px-4">{active.priority}</Badge>
                     </div>
                   </div>
                 </motion.div>
@@ -173,7 +183,7 @@ export function Tasks() {
                       layoutId={`description-${card.description}-${id}`}
                       className="text-neutral-600 dark:text-neutral-400 text-center md:text-left"
                     >
-                      {card.description}
+                      {card.assignee} - {card.dueDate}
                     </motion.p>
                   </div>
                 </div>
@@ -227,157 +237,112 @@ export const CloseIcon = () => {
 
 const cards = [
   {
-    description: "Lana Del Rey",
-    title: "Summertime Sadness",
-    src: "https://assets.aceternity.com/demos/lana-del-rey.jpeg",
-    ctaText: "Play",
+    id: 1,
+    title: "Design Homepage UI",
+    description:
+      "Create mockups for the homepage of the new product website, ensuring a user-friendly design with responsive elements.",
+    src: "https://asset.gecdesigns.com/img/wallpapers/beautiful-magical-misty-mountains-reflection-river-ultra-hd-wallpaper-4k-sr10012420-1706505766369-cover.webp",
+    ctaText: "View Designs",
     ctaLink: "https://ui.aceternity.com/templates",
     content: () => {
       return (
         <p>
-          Lana Del Rey, an iconic American singer-songwriter, is celebrated for
-          her melancholic and cinematic music style. Born Elizabeth Woolridge
-          Grant in New York City, she has captivated audiences worldwide with
-          her haunting voice and introspective lyrics. <br /> <br /> Her songs
-          often explore themes of tragic romance, glamour, and melancholia,
-          drawing inspiration from both contemporary and vintage pop culture.
-          With a career that has seen numerous critically acclaimed albums, Lana
-          Del Rey has established herself as a unique and influential figure in
-          the music industry, earning a dedicated fan base and numerous
-          accolades.
+          Work with Figma to design the homepage for the product website. Ensure
+          that the layout is intuitive, visually appealing, and responsive
+          across all devices.
         </p>
       );
     },
+    status: "in-progress",
+    priority: "high",
+    assignee: "Alice",
+    dueDate: "2024-12-01",
   },
   {
-    description: "Babbu Maan",
-    title: "Mitran Di Chhatri",
-    src: "https://assets.aceternity.com/demos/babbu-maan.jpeg",
-    ctaText: "Play",
-    ctaLink: "https://ui.aceternity.com/templates",
+    id: 2,
+    title: "Implement Authentication System",
+    description:
+      "Develop a secure authentication system using OAuth 2.0 for user sign-up and login with multi-factor authentication.",
+    src: "https://img.freepik.com/premium-photo/dashboard-analytic-4k-uhd_986714-12816.jpg",
+    ctaText: "View Docs",
+    ctaLink: "https://oauth.net/2/",
     content: () => {
       return (
         <p>
-          Babu Maan, a legendary Punjabi singer, is renowned for his soulful
-          voice and profound lyrics that resonate deeply with his audience. Born
-          in the village of Khant Maanpur in Punjab, India, he has become a
-          cultural icon in the Punjabi music industry. <br /> <br /> His songs
-          often reflect the struggles and triumphs of everyday life, capturing
-          the essence of Punjabi culture and traditions. With a career spanning
-          over two decades, Babu Maan has released numerous hit albums and
-          singles that have garnered him a massive fan following both in India
-          and abroad.
+          Set up a secure user authentication system that includes multi-factor
+          authentication. Use OAuth 2.0 for sign-in and sign-up processes.
         </p>
       );
     },
-  },
-
-  {
-    description: "Metallica",
-    title: "For Whom The Bell Tolls",
-    src: "https://assets.aceternity.com/demos/metallica.jpeg",
-    ctaText: "Play",
-    ctaLink: "https://ui.aceternity.com/templates",
-    content: () => {
-      return (
-        <p>
-          Metallica, an iconic American heavy metal band, is renowned for their
-          powerful sound and intense performances that resonate deeply with
-          their audience. Formed in Los Angeles, California, they have become a
-          cultural icon in the heavy metal music industry. <br /> <br /> Their
-          songs often reflect themes of aggression, social issues, and personal
-          struggles, capturing the essence of the heavy metal genre. With a
-          career spanning over four decades, Metallica has released numerous hit
-          albums and singles that have garnered them a massive fan following
-          both in the United States and abroad.
-        </p>
-      );
-    },
+    status: "pending",
+    priority: "high",
+    assignee: "Bob",
+    dueDate: "2024-11-15",
   },
   {
-    description: "Led Zeppelin",
-    title: "Stairway To Heaven",
-    src: "https://assets.aceternity.com/demos/led-zeppelin.jpeg",
-    ctaText: "Play",
-    ctaLink: "https://ui.aceternity.com/templates",
+    id: 3,
+    title: "Set Up Cloud Infrastructure",
+    description:
+      "Deploy the application on AWS using EC2 instances and configure auto-scaling to handle variable loads.",
+    src: "https://c0.wallpaperflare.com/preview/697/898/445/cloud-computing-illustration-technology.jpg",
+    ctaText: "View Setup",
+    ctaLink: "https://aws.amazon.com/ec2/",
     content: () => {
       return (
         <p>
-          Led Zeppelin, a legendary British rock band, is renowned for their
-          innovative sound and profound impact on the music industry. Formed in
-          London in 1968, they have become a cultural icon in the rock music
-          world. <br /> <br /> Their songs often reflect a blend of blues, hard
-          rock, and folk music, capturing the essence of the 1970s rock era.
-          With a career spanning over a decade, Led Zeppelin has released
-          numerous hit albums and singles that have garnered them a massive fan
-          following both in the United Kingdom and abroad.
+          Use Amazon Web Services (AWS) to deploy the application. Set up EC2
+          instances and ensure proper configuration for auto-scaling to support
+          dynamic workloads.
         </p>
       );
     },
+    status: "in-progress",
+    priority: "medium",
+    assignee: "Charlie",
+    dueDate: "2024-10-30",
   },
   {
-    description: "Mustafa Zahid",
-    title: "Toh Phir Aao",
-    src: "https://assets.aceternity.com/demos/toh-phir-aao.jpeg",
-    ctaText: "Play",
-    ctaLink: "https://ui.aceternity.com/templates",
+    id: 4,
+    title: "Optimize Database Queries",
+    description:
+      "Analyze and optimize SQL queries in the database to improve the performance of the backend services.",
+    src: "https://wallpapers.com/images/hd/green-binary-code-4k-a9ci0ll6au1fkpps.jpg",
+    ctaText: "Optimize Now",
+    ctaLink: "https://ui.aceternity.com/database-tips",
     content: () => {
       return (
         <p>
-          &quot;Aawarapan&quot;, a Bollywood movie starring Emraan Hashmi, is
-          renowned for its intense storyline and powerful performances. Directed
-          by Mohit Suri, the film has become a significant work in the Indian
-          film industry. <br /> <br /> The movie explores themes of love,
-          redemption, and sacrifice, capturing the essence of human emotions and
-          relationships. With a gripping narrative and memorable music,
-          &quot;Aawarapan&quot; has garnered a massive fan following both in
-          India and abroad, solidifying Emraan Hashmi&apos;s status as a
-          versatile actor.
+          Review and optimize SQL queries to ensure that the database performs
+          efficiently. This task involves query analysis and indexing
+          improvements.
         </p>
       );
     },
+    status: "pending",
+    priority: "high",
+    assignee: "David",
+    dueDate: "2024-12-15",
+  },
+  {
+    id: 5,
+    title: "Conduct Security Audit",
+    description:
+      "Perform a comprehensive security audit of the application, including penetration testing and vulnerability assessments.",
+    src: "https://e0.pxfuel.com/wallpapers/297/1009/desktop-wallpaper-cyber-security-cyber-world.jpg",
+    ctaText: "Start Audit",
+    ctaLink: "https://security.aceternity.com/audit",
+    content: () => {
+      return (
+        <p>
+          Conduct a full security audit to identify vulnerabilities in the
+          application. The audit should include penetration testing and
+          vulnerability scanning.
+        </p>
+      );
+    },
+    status: "overdue",
+    priority: "critical",
+    assignee: "Eve",
+    dueDate: "2024-10-01",
   },
 ];
-
-// const tasks = [
-//   {
-//     id: 1,
-//     title: "Design mockups",
-//     status: "completed",
-//     priority: "high",
-//     assignee: "Alice",
-//     dueDate: "2024-02-28",
-//   },
-//   {
-//     id: 2,
-//     title: "Frontend development",
-//     status: "in-progress",
-//     priority: "high",
-//     assignee: "Bob",
-//     dueDate: "2024-06-30",
-//   },
-//   {
-//     id: 3,
-//     title: "Backend integration",
-//     status: "pending",
-//     priority: "medium",
-//     assignee: "Charlie",
-//     dueDate: "2024-08-31",
-//   },
-//   {
-//     id: 4,
-//     title: "User testing",
-//     status: "pending",
-//     priority: "low",
-//     assignee: "David",
-//     dueDate: "2024-10-31",
-//   },
-//   {
-//     id: 5,
-//     title: "Content migration",
-//     status: "overdue",
-//     priority: "medium",
-//     assignee: "Eve",
-//     dueDate: "2024-03-31",
-//   },
-// ];
