@@ -27,6 +27,7 @@ model User {
   registeredAt DateTime  @default(now())
 
   // Relationships
+  projects ProjectMembers[]
   memberships   CommunityMember[]
   calendarTasks CommunityCalendar[]
 }
@@ -41,6 +42,8 @@ model Community {
   createdAt   DateTime @default(now())
 
   // Relationships
+  projects      Project[]
+  projectMembers      ProjectMembers[]
   members       CommunityMember[]
   calendarTasks CommunityCalendar[]
 }
@@ -49,8 +52,21 @@ model Project {
   id           Int      @id @default(autoincrement())
   name         String
   description  String?
-  projectImage String?
   createdAt    DateTime @default(now())
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  communityId Int
+
+  projectMembers ProjectMembers[]
+}
+
+model ProjectMembers{
+  id Int @id @default(autoincrement())
+  project        Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId      Int
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  communityId Int
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      Int
 }
 
 model CommunityMember {
