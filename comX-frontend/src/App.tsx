@@ -12,6 +12,7 @@ import Contact from "./pages/Contact";
 import Community from "./pages/Community";
 import Profile from "./pages/Profile";
 import ForgotPassword from "./pages/ForgotPassword";
+import { Testing } from "./pages/Testing";
 
 function App() {
   const router = createBrowserRouter([
@@ -47,6 +48,10 @@ function App() {
     {
       path: "forgot-password",
       element: <ForgotPassword />
+    },
+    {
+      path: "testing",
+      element: <Testing />
     },
   ]);
 

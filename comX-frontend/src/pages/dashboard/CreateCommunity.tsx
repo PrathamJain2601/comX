@@ -20,6 +20,8 @@ export default function CreateCommunity() {
   const [newCommunity, setNewCommunity] = useState("");
   const [communityDescription, setCommunityDescription] = useState("");
 
+  const {user} = useSelector((state:RootState) => state.userDetails);
+
   const queryClient = useQueryClient();
 
   const { mutateAsync: createCommunity, isPending } = useMutation({
@@ -30,15 +32,13 @@ export default function CreateCommunity() {
     },
     onSuccess(data) {
       console.log(data);
-      queryClient.invalidateQueries({ queryKey: ["communityList"] });
+      queryClient.invalidateQueries({ queryKey: [`communityList${user?.id}`] });
     },
     onError(error: AxiosError) {
       console.log(error);
       toast.error("Invalid");
     },
   });
-
-  const { user } = useSelector((state: RootState) => state.userDetails);
 
   const handleCreateCommunity = (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,4 +1,5 @@
 import { Input } from "@/components/ui/input";
+import { RootState } from "@/state/store";
 import { Label } from "@radix-ui/react-label";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
@@ -6,11 +7,13 @@ import { motion } from "framer-motion";
 import { LogIn } from "lucide-react";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import { useSelector } from "react-redux";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 export default function JoinCommunity() {
   const [joinCode, setJoinCode] = useState("");
+  const user = useSelector((state:RootState) => state.userDetails);
 
   const queryClient = useQueryClient();
 
@@ -27,7 +30,7 @@ export default function JoinCommunity() {
     },
     onSuccess: () => {
       toast.success("Joined Successfully");
-      queryClient.invalidateQueries({ queryKey: ["communityList"] });
+      queryClient.invalidateQueries({ queryKey: [`communityList${user.user?.id}`] });
       setJoinCode("");
     },
     onError(error:any) {

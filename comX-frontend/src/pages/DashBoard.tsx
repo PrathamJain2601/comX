@@ -33,7 +33,7 @@ export default function Dashboard() {
   useAuthCheck(user.user);
 
   const { isError, data, error } = useQuery({
-    queryKey: ["communityList"],
+    queryKey: [`communityList${user.user?.id}`],
     queryFn: fetchCommunityList,
     staleTime: Infinity,
   });
