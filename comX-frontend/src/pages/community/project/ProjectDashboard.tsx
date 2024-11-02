@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { Tasks } from "./Task";
 import ProjectOverview from "./ProjectOverview";
 import TeamMembers from "./TeamMembers";
 import RecentActivity from "./RecentActivity";
@@ -16,7 +15,7 @@ export default function ProjectDashboard() {
       >
         <div className="p-6 sm:p-8 md:p-10 space-y-8">
           <ProjectOverview />
-          <Tasks />
+          {/* <Tasks /> */}
           <TeamMembers />
           <RecentActivity />
           <Milestones />

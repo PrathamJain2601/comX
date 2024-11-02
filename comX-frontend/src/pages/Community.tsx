@@ -10,6 +10,7 @@ import { useParams } from "react-router-dom";
 import { useDebugger } from "@/hooks/useDebugger";
 import ChatApp from "./chatApp/ChatApp";
 import ProjectDashboard from "./community/project/ProjectDashboard";
+import TasksPage from "./community/tasks/TasksPage";
 
 function Community() {
   const [activeChannel, setActiveChannel] = useState(17);
@@ -62,7 +63,8 @@ function Community() {
             <MainCalendar currentDate={currentDate} />
           )}
           {activeChannel >=17 && activeChannel<26 && <ChatApp />}
-          {activeChannel >=26 && activeChannel<29 && <ProjectDashboard />}  
+          {activeChannel >=26 && activeChannel<29 && <ProjectDashboard />}
+          {activeChannel === 30 && <TasksPage/>}  
         </div>
       </div>
     </>

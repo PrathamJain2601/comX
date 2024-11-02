@@ -63,7 +63,7 @@ export default function ServerList({
             }
           `}
             data-tooltip={item.name} 
-            onClick={()=>{setActiveServer(item.id)}}
+            onClick={()=>{setActiveServer(item.id);}}
           >
             <span className="text-2xl font-semibold">{item.link}</span>
             <div

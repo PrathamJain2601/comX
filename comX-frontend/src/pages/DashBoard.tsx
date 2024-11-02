@@ -38,16 +38,16 @@ export default function Dashboard() {
     staleTime: Infinity,
   });
 
-  if (isError) {
-    console.error(error);
-    return <ErrorPage />;
-  }
-
   const [communities, setCommunities] = useState(dummyCommunities);
 
   useEffect(() => {
     if (Array.isArray(data)) setCommunities(data);
   }, [data]);
+
+  if (isError) {
+    console.error(error);
+    return <ErrorPage />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">

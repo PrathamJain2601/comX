@@ -43,8 +43,12 @@ const Sidebar = React.memo(function Sidebar({
       setActiveChannel(1);
     } else if (activeServer === 4) {
       setActiveChannel(17);
+    } else if (activeServer === 5) {
+      setActiveChannel(26);
+    } else if (activeServer === 6) {
+      setActiveChannel(30);
     }
-  }, [activeServer]);
+  }, [activeServer, setActiveChannel]);
 
   const SidebarContent = () => (
     <div className="flex h-full">
