@@ -6,7 +6,6 @@ export const createCommunitySchema = z.object({
     description: z.string(), 
     scope: z.nativeEnum(Scope),
     userId: z.number(), 
-    coverImage: z.string() 
 })
   
 export type createCommunityRequest = z.infer<typeof createCommunitySchema>;
