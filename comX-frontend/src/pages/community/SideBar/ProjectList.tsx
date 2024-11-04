@@ -1,3 +1,6 @@
+import ErrorPage from "@/pages/ErrorPage";
+import { setActiveChannel } from "@/state/sidebar/activeChannel";
+import { RootState } from "@/state/store";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -13,56 +16,24 @@ import {
   Users,
 } from "lucide-react";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
-export default function ProjectList({
-  activeChannel,
-  setActiveChannel,
-}: {
-  activeChannel: number;
-  setActiveChannel: React.Dispatch<React.SetStateAction<number>>;
-}) {
+export default function ProjectList() {
   const { ID } = useParams();
 
-  const list = [
-    <FolderGit2 />,
-    <FolderOpenDot />,
-    <FolderDot />,
-    <FolderGit />,
-    <FolderRoot />,
-  ];
+  const activeChannel = useSelector((state: RootState) => state.activeChannel);
 
-  const [projects, setProjects] = useState([
-    {
-      id: 26,
-      name: "One",
-      link: <FolderGit2 />,
-    },
-    {
-      id: 27,
-      name: "Two",
-      link: <FolderOpenDot />,
-    },
-    {
-      id: 28,
-      name: "Three",
-      link: <FolderDot />,
-    },
-  ]);
+  const dispatch = useDispatch();
+
+  const [projects] = useState(initalProject);
 
   const {
-    data: community = {
-      id: 1,
-      name: "",
-      scope: "",
-      description: "",
-      coverImage: "",
-      createdAt: "",
-      joinCode: "",
-    },
+    data: community,
     isLoading,
+    error,
   } = useQuery({
     queryKey: [`communityDetails/${ID}`],
     queryFn: async () => {
@@ -77,6 +48,10 @@ export default function ProjectList({
 
   if (isLoading) {
     return <div>Loading . . .</div>;
+  }
+
+  if (error) {
+    return <ErrorPage />;
   }
 
   return (
@@ -94,7 +69,7 @@ export default function ProjectList({
           <p>( {community.joinCode} )</p>
         </div>
         <ScrollArea className="flex-grow">
-          {projects.map((category: any) => (
+          {projects.map((category) => (
             <div key={category.id} className="m-2 mx-4">
               <button
                 className={`flex items-center w-full px-2 py-2 mb-2 text-sm font-medium text-left rounded-lg transition-all duration-300 ease-in-out transform gap-2 ${
@@ -102,7 +77,7 @@ export default function ProjectList({
                     ? "bg-gradient-to-r from-blue-500 to-blue-700 text-white scale-105"
                     : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800 hover:shadow-md"
                 }`}
-                onClick={() => setActiveChannel(category.id)}
+                onClick={() => dispatch(setActiveChannel(category.id))}
               >
                 {category.link}
                 <span className="truncate">{category.name}</span>
@@ -132,3 +107,29 @@ export default function ProjectList({
     </>
   );
 }
+
+const initalProject = [
+  {
+    id: 26,
+    name: "One",
+    link: <FolderGit2 />,
+  },
+  {
+    id: 27,
+    name: "Two",
+    link: <FolderOpenDot />,
+  },
+  {
+    id: 28,
+    name: "Three",
+    link: <FolderDot />,
+  },
+];
+
+const list = [
+  <FolderGit2 />,
+  <FolderOpenDot />,
+  <FolderDot />,
+  <FolderGit />,
+  <FolderRoot />,
+];

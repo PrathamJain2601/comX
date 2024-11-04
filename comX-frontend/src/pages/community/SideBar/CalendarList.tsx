@@ -6,40 +6,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Months } from "@/lib/DummyData";
+import ErrorPage from "@/pages/ErrorPage";
+import { setYear } from "@/state/calendar/year";
+import { setActiveChannel } from "@/state/sidebar/activeChannel";
+import { RootState } from "@/state/store";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Headphones, Mic, Settings, Users } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
-export default function CalendarList({
-  groups,
-  activeChannel,
-  setActiveChannel,
-  year,
-  setYear,
-}: {
-  groups: any;
-  activeChannel: number;
-  setActiveChannel: React.Dispatch<React.SetStateAction<number>>;
-  year: string;
-  setYear: React.Dispatch<React.SetStateAction<string>>;
-}) {
+export default function CalendarList() {
   const { ID } = useParams();
+  const groups = Months;
+
+  const activeChannel = useSelector((state: RootState) => state.activeChannel);
+  const year = useSelector((state: RootState) => state.year);
+
+  const dispatch = useDispatch();
 
   const {
-    data: community = {
-      id: 1,
-      name: "",
-      scope: "",
-      description: "",
-      coverImage: "",
-      createdAt: "",
-      joinCode: "",
-    },
+    data: community,
     isLoading,
+    error,
   } = useQuery({
     queryKey: [`communityDetails/${ID}`],
     queryFn: async () => {
@@ -60,6 +53,10 @@ export default function CalendarList({
 
   if (isLoading) {
     return <div>Loading . . .</div>;
+  }
+
+  if (error) {
+    return <ErrorPage />;
   }
 
   return (
@@ -95,7 +92,7 @@ export default function CalendarList({
           </Select>
         </div>
         <ScrollArea className="flex-grow">
-          {groups.map((category: any) => (
+          {groups.map((category) => (
             <div key={category.id} className="m-2 mx-4">
               <button
                 className={`flex items-center w-full px-2 py-2 mb-2 text-sm font-medium text-left rounded-lg transition-all duration-300 ease-in-out transform gap-2 ${
@@ -103,7 +100,7 @@ export default function CalendarList({
                     ? "bg-gradient-to-r from-blue-500 to-blue-700 text-white scale-105"
                     : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800 hover:shadow-md"
                 }`}
-                onClick={() => setActiveChannel(category.id)}
+                onClick={() => dispatch(setActiveChannel(category.id))}
               >
                 {category.link}
                 <span className="truncate">{category.name}</span>

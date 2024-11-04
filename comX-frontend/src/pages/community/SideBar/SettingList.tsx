@@ -1,34 +1,24 @@
+import { dummySettings } from "@/lib/DummyData";
+import { setActiveChannel } from "@/state/sidebar/activeChannel";
+import { RootState } from "@/state/store";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Headphones, Mic, Settings, Users } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
-export default function SettingsList({
-  groups,
-  activeChannel,
-  setActiveChannel,
-}: {
-  groups: any;
-  activeChannel: number;
-  setActiveChannel: React.Dispatch<React.SetStateAction<number>>;
-}) {
+export default function SettingsList() {
   const { ID } = useParams();
+  const groups = dummySettings;
 
-  const {
-    data: community = {
-      id: 1,
-      name: "",
-      scope: "",
-      description: "",
-      coverImage: "",
-      createdAt: "",
-      joinCode: "",
-    },
-    isLoading,
-  } = useQuery({
+  const activeChannel = useSelector((state: RootState) => state.activeChannel);
+
+  const dispatch = useDispatch();
+
+  const { data: community, isLoading } = useQuery({
     queryKey: [`communityDetails/${ID}`],
     queryFn: async () => {
       const response = await axios.get(
@@ -53,13 +43,13 @@ export default function SettingsList({
               ? community.name!.charAt(0).toUpperCase() +
                 community.name!.substring(1, community.name.length)
               : community.name!.charAt(0).toUpperCase() +
-                community.name!.substring(1, 7).toLowerCase() + "..."}
-            {" "}
+                community.name!.substring(1, 7).toLowerCase() +
+                "..."}{" "}
           </p>
           <p>( {community.joinCode} )</p>
         </div>
         <ScrollArea className="flex-grow">
-          {groups.map((category: any) => (
+          {groups.map((category) => (
             <div key={category.id} className="m-2 mx-4">
               <button
                 className={`flex items-center w-full px-2 py-2 mb-2 text-sm font-medium text-left rounded-lg transition-all duration-300 ease-in-out transform gap-2 ${
@@ -67,7 +57,7 @@ export default function SettingsList({
                     ? "bg-gradient-to-r from-blue-500 to-blue-700 text-white scale-105"
                     : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800 hover:shadow-md"
                 }`}
-                onClick={() => setActiveChannel(category.id)}
+                onClick={() => dispatch(setActiveChannel(category.id))}
               >
                 {category.link}
                 <span className="truncate">{category.name}</span>
