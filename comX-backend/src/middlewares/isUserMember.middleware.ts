@@ -8,7 +8,7 @@ export const isUserMember = async (req: Request, res: Response, next: NextFuncti
 
         let communityId:number = req.body.communityId;
         if(!communityId){
-            communityId = Number(req?.params?.id);
+            communityId = Number(req?.params?.communityId);
         }
         if(!communityId){
             return responseCodes.clientError.badRequest(res, "communityId not found");

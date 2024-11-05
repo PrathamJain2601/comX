@@ -23,22 +23,22 @@ export const prisma = new PrismaClient({
 
 // Listen for query events
 prisma.$on('query', (e: Prisma.QueryEvent) => {
-  console.log('Query: ' + e.query);
-  console.log('Params: ' + e.params);
+  // console.log('Query: ' + e.query);
+  // console.log('Params: ' + e.params);
   console.log('Duration: ' + e.duration + 'ms');
 });
 
 // Listen for info events
 prisma.$on('info', (e) => {
-  console.log('Info: ' + e.message);
+  // console.log('Info: ' + e.message);
 });
 
 // Listen for warning events
 prisma.$on('warn', (e) => {
-  console.warn('Warning: ' + e.message);
+  // console.warn('Warning: ' + e.message);
 });
 
 // Listen for error events
 prisma.$on('error', (e) => {
-  console.error('Error: ' + e.message);
+  // console.error('Error: ' + e.message);
 });

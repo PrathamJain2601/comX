@@ -12,7 +12,7 @@ import { isUserMember } from "../middlewares/isUserMember.middleware";
 
 const router = Router();
 
-router.get("/get-community-members/:id", isAuthenticated, isUserMember, get_community_members);
+router.get("/get-community-members/:communityId", isAuthenticated, isUserMember, get_community_members);
 router.post("/join-community", isAuthenticated, join_community);
 router.post("/remove-member", isAuthenticated, isUserAdmin, remove_member);
 router.post("/promote-member", isAuthenticated, isUserAdmin, promote_member);

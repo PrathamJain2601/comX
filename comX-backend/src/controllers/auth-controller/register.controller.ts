@@ -18,7 +18,7 @@ export const register = async (req: Request, res: Response) => {
         responseCodes.clientError.notFound(res, "all fields are required");
     }
 
-    const hashedPassword = await bcryptjs.hash(password, 16);
+    const hashedPassword = await bcryptjs.hash(password, 8);
 
     try {
 

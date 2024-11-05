@@ -6,6 +6,6 @@ import { isUserMember } from "../middlewares/isUserMember.middleware";
 const router = Router();
 
 router.post("/set-calendar-task", isAuthenticated, isUserMember, set_calendar_task);
-router.get("/get-calendar-task/:id", isAuthenticated, isUserMember, get_calendar_task);
+router.get("/get-calendar-task/:communityId", isAuthenticated, isUserMember, get_calendar_task);
 
 module.exports = router;
