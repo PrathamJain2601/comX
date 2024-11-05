@@ -46,10 +46,10 @@ const Sidebar = React.memo(function Sidebar() {
       dispatch(setActiveChannel(26));
       navigate("projects");
     } else if (activeServer === 6) {
-      dispatch(setActiveChannel(30));
+      dispatch(setActiveChannel(26));
       navigate("tasks");
     }
-  }, [activeServer, dispatch]);
+  }, [activeServer, dispatch, navigate]);
 
   const SidebarContent = () => (
     <div className="flex h-full">
@@ -57,7 +57,7 @@ const Sidebar = React.memo(function Sidebar() {
       {activeServer === 1 && <CalendarList />}
       {activeServer === 2 && <SettingsList />}
       {activeServer === 4 && <GroupList />}
-      {activeServer === 5 && <ProjectList />}
+      {(activeServer === 5 || activeServer === 6) && <ProjectList />}
     </div>
   );
 

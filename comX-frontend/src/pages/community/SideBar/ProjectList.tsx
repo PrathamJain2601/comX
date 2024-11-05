@@ -23,6 +23,7 @@ export default function ProjectList() {
   const { ID } = useParams();
 
   const activeChannel = useSelector((state: RootState) => state.activeChannel);
+  const activeServer = useSelector((state: RootState) => state.activeServer);
 
   const dispatch = useDispatch();
 
@@ -84,7 +85,7 @@ export default function ProjectList() {
           ))}
         </ScrollArea>
         <div>
-          <CreateProject />
+          {activeServer === 5 && <CreateProject />}
           <UserControlBox />
         </div>
       </div>
