@@ -11,12 +11,14 @@ import { useDebugger } from "@/hooks/useDebugger";
 import ChatApp from "./chatApp/ChatApp";
 import ProjectDashboard from "./community/project/ProjectDashboard";
 import TasksPage from "./community/tasks/TasksPage";
+import { useSelector } from "react-redux";
+import { RootState } from "@/state/store";
 
 function Community() {
-  const [activeChannel, setActiveChannel] = useState(17);
-  const [year, setYear] = useState(DateTime.now().year.toString());
+  const activeChannel = useSelector((state: RootState) => state.activeChannel);
+  const year = useSelector((state: RootState) => state.year);
 
-  const {ID} = useParams();
+  const { ID } = useParams();
 
   const [currentDate, setCurrentDate] = useState(DateTime.now());
 
@@ -48,23 +50,18 @@ function Community() {
   return (
     <>
       <div className="flex">
-        <Sidebar
-          activeChannel={activeChannel}
-          setActiveChannel={setActiveChannel}
-          year={year}
-          setYear={setYear}
-        />
+        <Sidebar />
         <div className="bg-white w-screen h-screen flex justify-center items-center">
           {activeChannel === 1 && <BasicInformation />}
-          {activeChannel === 2 && <MemberManagement ID={parseInt(ID!,10)}/>}
+          {activeChannel === 2 && <MemberManagement ID={parseInt(ID!, 10)} />}
           {activeChannel === 3 && <Permissions />}
           {activeChannel === 4 && <NotificationSettings />}
           {activeChannel > 4 && activeChannel <= 16 && (
             <MainCalendar currentDate={currentDate} />
           )}
-          {activeChannel >=17 && activeChannel<26 && <ChatApp />}
-          {activeChannel >=26 && activeChannel<29 && <ProjectDashboard />}
-          {activeChannel === 30 && <TasksPage/>}  
+          {activeChannel >= 17 && activeChannel < 26 && <ChatApp />}
+          {activeChannel >= 26 && activeChannel < 29 && <ProjectDashboard />}
+          {activeChannel === 30 && <TasksPage />}
         </div>
       </div>
     </>

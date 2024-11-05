@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Users } from "lucide-react";
 import CreateCommunity from "./dashboard/CreateCommunity";
@@ -8,7 +7,6 @@ import CommunityCard from "./dashboard/CommunityCard";
 import { useQuery } from "@tanstack/react-query";
 import ErrorPage from "./ErrorPage";
 import axios from "axios";
-import { dummyCommunities } from "@/lib/DummyData";
 import { Community } from "@/types/Community";
 import useAuthCheck from "@/hooks/useAuthCheck";
 import { useSelector } from "react-redux";
@@ -32,21 +30,18 @@ export default function Dashboard() {
 
   useAuthCheck(user.user);
 
-  const { isError, data, error } = useQuery({
+  const { isError, data:communities , isPending } = useQuery({
     queryKey: [`communityList${user.user?.id}`],
     queryFn: fetchCommunityList,
     staleTime: Infinity,
   });
 
-  const [communities, setCommunities] = useState(dummyCommunities);
+  if(isPending){
+    return <div>Loading ...</div>
+  }
 
-  useEffect(() => {
-    if (Array.isArray(data)) setCommunities(data);
-  }, [data]);
-
-  if (isError) {
-    console.error(error);
-    return <ErrorPage />;
+  if(isError){
+    return <ErrorPage />
   }
 
   return (

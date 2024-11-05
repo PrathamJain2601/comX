@@ -4,24 +4,20 @@ import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import ServerList from "./ServerList";
 import GroupList from "./GroupList";
-import { dummyGroups, dummySettings, Months } from "@/lib/DummyData";
 import SettingsList from "./SettingList";
 import CalendarList from "./CalendarList";
 import ProjectList from "./ProjectList";
+import { useDispatch, useSelector } from "react-redux";
+import { setActiveChannel } from "@/state/sidebar/activeChannel";
+import { RootState } from "@/state/store";
 
-const Sidebar = React.memo(function Sidebar({
-  activeChannel,
-  setActiveChannel,
-  year,
-  setYear,
-}: {
-  activeChannel: number;
-  setActiveChannel: React.Dispatch<React.SetStateAction<number>>;
-  year: string;
-  setYear: React.Dispatch<React.SetStateAction<string>>;
-}) {
+const Sidebar = React.memo(function Sidebar() {
   const [isMobile, setIsMobile] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+
+  const activeServer = useSelector((state: RootState) => state.activeServer);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -34,57 +30,27 @@ const Sidebar = React.memo(function Sidebar({
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
-  const [activeServer, setActiveServer] = useState(4);
-
   useEffect(() => {
     if (activeServer === 1) {
-      setActiveChannel(new Date().getMonth() + 5);
+      dispatch(setActiveChannel(new Date().getMonth() + 5));
     } else if (activeServer === 2) {
-      setActiveChannel(1);
+      dispatch(setActiveChannel(1));
     } else if (activeServer === 4) {
-      setActiveChannel(17);
+      dispatch(setActiveChannel(17));
     } else if (activeServer === 5) {
-      setActiveChannel(26);
+      dispatch(setActiveChannel(26));
     } else if (activeServer === 6) {
-      setActiveChannel(30);
+      dispatch(setActiveChannel(30));
     }
-  }, [activeServer, setActiveChannel]);
+  }, [activeServer, dispatch]);
 
   const SidebarContent = () => (
     <div className="flex h-full">
-      <ServerList
-        activeServer={activeServer}
-        setActiveServer={setActiveServer}
-      />
-      {activeServer === 1 && (
-        <CalendarList
-          groups={Months}
-          activeChannel={activeChannel}
-          setActiveChannel={setActiveChannel}
-          year={year}
-          setYear={setYear}
-        />
-      )}
-      {activeServer === 2 && (
-        <SettingsList
-          groups={dummySettings}
-          activeChannel={activeChannel}
-          setActiveChannel={setActiveChannel}
-        />
-      )}
-      {activeServer === 4 && (
-        <GroupList
-          groups={dummyGroups}
-          activeChannel={activeChannel}
-          setActiveChannel={setActiveChannel}
-        />
-      )}
-      {activeServer === 5 && (
-        <ProjectList
-          activeChannel={activeChannel}
-          setActiveChannel={setActiveChannel}
-        />
-      )}
+      <ServerList />
+      {activeServer === 1 && <CalendarList />}
+      {activeServer === 2 && <SettingsList />}
+      {activeServer === 4 && <GroupList />}
+      {activeServer === 5 && <ProjectList />}
     </div>
   );
 

@@ -14,26 +14,13 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
-const itemAnimation = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 80 } },
-};
-
 export default function BasicInformation() {
   const { ID } = useParams();
 
   const queryClient = useQueryClient();
 
   const {
-    data: community = {
-      id: 1,
-      name: "",
-      scope: "",
-      description: "",
-      coverImage: "",
-      createdAt: "",
-      joinCode: "",
-    },
+    data: community,
     isLoading,
     error,
   } = useQuery({
@@ -259,8 +246,13 @@ export default function BasicInformation() {
             )}
           </CardContent>
         </Card>
-        <Toaster/>
+        <Toaster />
       </div>
     </>
   );
 }
+
+const itemAnimation = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 80 } },
+};

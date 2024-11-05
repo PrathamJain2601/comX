@@ -1,23 +1,24 @@
+import { dummyGroups } from "@/lib/DummyData";
 import { cn } from "@/lib/utils";
-import { Group } from "@/types/Groups";
+import { setActiveChannel } from "@/state/sidebar/activeChannel";
+import { RootState } from "@/state/store";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { ChevronDown, Headphones, Mic, Settings, Users } from "lucide-react";
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
-const GroupList = React.memo(function GroupList({
-  groups,
-  activeChannel,
-  setActiveChannel,
-}: {
-  groups: Group[];
-  activeChannel: number;
-  setActiveChannel: React.Dispatch<React.SetStateAction<number>>;
-}) {
+const GroupList = React.memo(function GroupList() {
+  const groups = dummyGroups;
+
+  const activeChannel = useSelector((state: RootState) => state.activeChannel);
+
+  const dispatch = useDispatch();
+
   const [expandedCategories, setExpandedCategories] = useState(
     Array.from({ length: groups.length }, (_, i) => i + 1)
   );
@@ -100,7 +101,7 @@ const GroupList = React.memo(function GroupList({
                         activeChannel === channel.id &&
                           "bg-primary hover:bg-primary"
                       )}
-                      onClick={() => setActiveChannel(channel.id)}
+                      onClick={() => dispatch(setActiveChannel(channel.id))}
                     >
                       {category.link}
                       <span

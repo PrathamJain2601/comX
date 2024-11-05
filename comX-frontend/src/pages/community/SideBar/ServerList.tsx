@@ -1,50 +1,20 @@
 import { cn } from "@/lib/utils";
-import { Braces, Calendar, CheckCheck, FolderKanban, MessageCircleMore, Settings } from "lucide-react";
+import { setActiveServer } from "@/state/sidebar/activeServer";
+import { RootState } from "@/state/store";
+import {
+  Braces,
+  Calendar,
+  CheckCheck,
+  FolderKanban,
+  MessageCircleMore,
+  Settings,
+} from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
 
-export default function ServerList({
-  activeServer,
-  setActiveServer,
-}: {
-  activeServer: number;
-  setActiveServer: React.Dispatch<React.SetStateAction<number>>;
-}) {
-  const list = [
-    {
-      id: 1,
-      name: "Calender",
-      link: <Calendar />,
-    },
-    {
-      id: 2,
-      name: "Settings",
-      link: <Settings />,
-    },
-    {
-      id: 3,
-      name: "Code",
-      link: <Braces />,
-    },
-    {
-      id: 4,
-      name: "General",
-      link: <MessageCircleMore />,
-    },
-    {
-      id: 5,
-      name: "Projects",
-      link: <FolderKanban />,
-    },
-    {
-      id: 6,
-      name: "Tasks",
-      link: <CheckCheck />,
-    },
-    {
-      id: 7,
-      name: "Vardaan",
-      link: "V",
-    },
-  ];
+export default function ServerList() {
+  const activeServer = useSelector((state: RootState) => state.activeServer);
+
+  const dispatch = useDispatch();
 
   return (
     <>
@@ -62,8 +32,10 @@ export default function ServerList({
                 : "hover:bg-blue-500 hover:text-white"
             }
           `}
-            data-tooltip={item.name} 
-            onClick={()=>{setActiveServer(item.id);}}
+            data-tooltip={item.name}
+            onClick={() => {
+              dispatch(setActiveServer(item.id));
+            }}
           >
             <span className="text-2xl font-semibold">{item.link}</span>
             <div
@@ -78,3 +50,41 @@ export default function ServerList({
     </>
   );
 }
+
+const list = [
+  {
+    id: 1,
+    name: "Calender",
+    link: <Calendar />,
+  },
+  {
+    id: 2,
+    name: "Settings",
+    link: <Settings />,
+  },
+  {
+    id: 3,
+    name: "Code",
+    link: <Braces />,
+  },
+  {
+    id: 4,
+    name: "General",
+    link: <MessageCircleMore />,
+  },
+  {
+    id: 5,
+    name: "Projects",
+    link: <FolderKanban />,
+  },
+  {
+    id: 6,
+    name: "Tasks",
+    link: <CheckCheck />,
+  },
+  {
+    id: 7,
+    name: "Vardaan",
+    link: "V",
+  },
+];
