@@ -24,7 +24,7 @@ export const login = async (req: Request, res: Response) => {
         if(!user){
             return responseCodes.clientError.notFound(res, "User not found");
         }
-
+    
         const match = await bcryptjs.compare(password, user.password);
         if(!match){
             return responseCodes.clientError.forbidden(res, "wrong email or password");

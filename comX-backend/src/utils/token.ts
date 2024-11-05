@@ -2,16 +2,7 @@ const jwt = require("jsonwebtoken");
 import { Request, Response } from "express";
 import { User } from "../types/user";
 require("dotenv").config();
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient({
-    log: [
-      {
-        emit: "event",
-        level: "query",
-      },
-    ],
-  });
+import { prisma } from "../config/dbConnect";
 
 const create_token = async (res: Response, user: User) => {
     const token = await jwt.sign({userId: user.id}, process.env.JWT_SECRET, {expiresIn: "30d"});
@@ -48,10 +39,5 @@ const verify_token = async (req: Request) => {
         return false; 
     }
 };
-
-
-prisma.$on("query", async (e) => {
-    console.log(`${e.query} ${e.params}`);
-});
 
 export {create_token, verify_token};
