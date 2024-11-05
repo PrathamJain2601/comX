@@ -5,12 +5,18 @@ import {
 } from "@/components/ui/alert-dialog";
 import { SquarePlus } from "lucide-react";
 import CreateProjectComponent from "./CreateProjectContent";
+import {
+  AlertDialogDescription,
+  AlertDialogTitle,
+} from "@radix-ui/react-alert-dialog";
 
 export default function CreateProject() {
   return (
     <AlertDialog>
       <TriggerButton />
       <AlertDialogContent className="min-w-[1024px]">
+        <AlertDialogTitle />
+        <AlertDialogDescription />
         <CreateProjectComponent />
       </AlertDialogContent>
     </AlertDialog>
@@ -35,8 +41,3 @@ function TriggerButton() {
     </AlertDialogTrigger>
   );
 }
-
-
-
-
-
