@@ -7,7 +7,8 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useDebugger } from "@/hooks/useDebugger";
+import { useSelector } from "react-redux";
+import { RootState } from "@/state/store";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 interface CalendarEvent {
@@ -30,11 +31,9 @@ const colorPalette = [
 
 const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-export default function MainCalendar({
-  currentDate,
-}: {
-  currentDate: DateTime;
-}) {
+export default function MainCalendar() {
+  const { ID } = useParams();
+  
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
@@ -42,7 +41,8 @@ export default function MainCalendar({
   );
   const [color,setColor] = useState("bg-green-400");
 
-  const { ID } = useParams();
+  const activeChannel = useSelector((state:RootState)=>state.activeChannel);
+  const year = useSelector((state:RootState)=>state.year);
 
   const { mutateAsync: getCalendarTasks } = useMutation({
     mutationFn: async (communityId: number) => {
@@ -62,7 +62,30 @@ export default function MainCalendar({
     },
   });
 
-  useDebugger(events);
+  const [currentDate, setCurrentDate] = useState(DateTime.now());
+
+  useEffect(() => {
+    const handleSetMonth = (month: number) => {
+      if (currentDate.month !== month) {
+        setCurrentDate((prevDate) => prevDate.set({ month }));
+      }
+    };
+
+    const handleSetYear = (newYear: number) => {
+      if (currentDate.year !== newYear) {
+        setCurrentDate((prevDate) => prevDate.set({ year: newYear }));
+      }
+    };
+
+    if (activeChannel > 4 && activeChannel <= 16) {
+      handleSetMonth(activeChannel - 4);
+    }
+
+    const parsedYear = parseInt(year, 10);
+    if (!isNaN(parsedYear)) {
+      handleSetYear(parsedYear);
+    }
+  }, [year, activeChannel, currentDate]);
 
   const { mutateAsync: setCalendarTask } = useMutation({
     mutationFn: async (details: {
@@ -91,7 +114,7 @@ export default function MainCalendar({
 
   useEffect(() => {
     getCalendarTasks(parseInt(ID!, 10));
-  }, []);
+  }, [ID]);
 
   const handleEventSave = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -199,8 +222,7 @@ export default function MainCalendar({
         >
           {renderCalendar()}
         </motion.div>
-      </main>
-      ]
+      </main>      
       <motion.button
         className="fixed bottom-8 right-8 bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
         whileHover={{ scale: 1.1, rotate: 90 }}

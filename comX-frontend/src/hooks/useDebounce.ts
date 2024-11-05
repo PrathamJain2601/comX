@@ -9,7 +9,7 @@ export const useDebounce = <T>(value: T, delay = 1000) => {
     }, delay);
 
     return () => clearTimeout(timeout);
-  }, [value]);
+  }, [value,delay]);
 
   return debounceValue;
 };

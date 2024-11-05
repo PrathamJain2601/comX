@@ -10,6 +10,7 @@ import ProjectList from "./ProjectList";
 import { useDispatch, useSelector } from "react-redux";
 import { setActiveChannel } from "@/state/sidebar/activeChannel";
 import { RootState } from "@/state/store";
+import { useNavigate } from "react-router-dom";
 
 const Sidebar = React.memo(function Sidebar() {
   const [isMobile, setIsMobile] = useState(false);
@@ -18,6 +19,7 @@ const Sidebar = React.memo(function Sidebar() {
   const activeServer = useSelector((state: RootState) => state.activeServer);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -33,14 +35,19 @@ const Sidebar = React.memo(function Sidebar() {
   useEffect(() => {
     if (activeServer === 1) {
       dispatch(setActiveChannel(new Date().getMonth() + 5));
+      navigate("calendar");
     } else if (activeServer === 2) {
       dispatch(setActiveChannel(1));
+      navigate("settings/basic-info");
     } else if (activeServer === 4) {
       dispatch(setActiveChannel(17));
+      navigate("chat");
     } else if (activeServer === 5) {
       dispatch(setActiveChannel(26));
+      navigate("projects");
     } else if (activeServer === 6) {
       dispatch(setActiveChannel(30));
+      navigate("tasks");
     }
   }, [activeServer, dispatch]);
 

@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Headphones, Mic, Settings, Users } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -17,6 +17,7 @@ export default function SettingsList() {
   const activeChannel = useSelector((state: RootState) => state.activeChannel);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { data: community, isLoading } = useQuery({
     queryKey: [`communityDetails/${ID}`],
@@ -57,9 +58,12 @@ export default function SettingsList() {
                     ? "bg-gradient-to-r from-blue-500 to-blue-700 text-white scale-105"
                     : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800 hover:shadow-md"
                 }`}
-                onClick={() => dispatch(setActiveChannel(category.id))}
+                onClick={() => {
+                  dispatch(setActiveChannel(category.id));
+                  navigate(category.link);
+                }}
               >
-                {category.link}
+                {category.icon}
                 <span className="truncate">{category.name}</span>
               </button>
             </div>

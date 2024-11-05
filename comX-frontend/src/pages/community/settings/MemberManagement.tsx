@@ -19,6 +19,7 @@ import Members_MemberManagement from "./MemberManagement/Member-MemberManagement
 import Admin_MemberManagement from "./MemberManagement/Admin-MemberManagement";
 import Invite_MemberManagement from "./MemberManagement/Invite-MemberManagement";
 import Ban_MemberManagement from "./MemberManagement/Ban-MemberManagement";
+import { useParams } from "react-router-dom";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -27,7 +28,9 @@ const itemAnimation = {
   show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 80 } },
 };
 
-export default function MemberManagement({ ID }: { ID: number }) {
+export default function MemberManagement() {
+  const { ID } = useParams();
+
   const {
     data: members = [],
     error,

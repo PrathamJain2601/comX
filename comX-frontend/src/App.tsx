@@ -9,10 +9,18 @@ import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Dashboard from "./pages/DashBoard";
 import Contact from "./pages/Contact";
-import Community from "./pages/Community";
+import CommunityLayout from "./pages/Community";
 import Profile from "./pages/Profile";
 import ForgotPassword from "./pages/ForgotPassword";
 import { Testing } from "./pages/Testing";
+import MainCalendar from "./pages/community/Calendar/MainCalendar";
+import BasicInformation from "./pages/community/settings/BasicInfo";
+import MemberManagement from "./pages/community/settings/MemberManagement";
+import Permissions from "./pages/community/settings/Permissions";
+import NotificationSettings from "./pages/community/settings/NotificationSettings";
+import ChatApp from "./pages/chatApp/ChatApp";
+import ProjectDashboard from "./pages/community/project/ProjectDashboard";
+import TaskPage from "./pages/community/tasks/TasksPage";
 
 function App() {
   const router = createBrowserRouter([
@@ -38,20 +46,58 @@ function App() {
       element: <Contact />,
     },
     {
-      path: "community/:ID",
-      element: <Community />,
-    },
-    {
       path: "profile/:username",
       element: <Profile />,
     },
     {
       path: "forgot-password",
-      element: <ForgotPassword />
+      element: <ForgotPassword />,
     },
     {
       path: "testing",
-      element: <Testing />
+      element: <Testing />,
+    },
+    {
+      path: "community/:ID",
+      element: <CommunityLayout />,
+      children: [
+        {
+          path: "calendar",
+          element: <MainCalendar />,
+        },
+        {
+          path: "code",
+          element: <></>,
+        },
+        {
+          path: "settings/basic-info",
+          element: <BasicInformation />,
+        },
+        {
+          path: "settings/member-management",
+          element: <MemberManagement />,
+        },
+        {
+          path: "settings/privacy-permissions",
+          element: <Permissions />,
+        },
+        {
+          path: "settings/notification",
+          element: <NotificationSettings />,
+        },
+        {
+          path: "chat",
+          element: <ChatApp />,
+        },
+        {
+          path: "projects",
+          element: <ProjectDashboard />,
+        },
+        {
+          path: "tasks",
+          element: <TaskPage />,
+        },
+      ],
     },
   ]);
 

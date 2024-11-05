@@ -6,18 +6,16 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import {
   FolderDot,
-  FolderGit,
+  // FolderGit,
   FolderGit2,
   FolderOpenDot,
-  FolderRoot,
-  Headphones,
-  Mic,
-  Settings,
-  Users,
+  // FolderRoot,
 } from "lucide-react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import CreateProject from "../project/create-project/CreateProject";
+import UserControlBox from "./UserControlBox";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -85,23 +83,9 @@ export default function ProjectList() {
             </div>
           ))}
         </ScrollArea>
-        <div className="h-14 bg-gray-100 flex items-center px-2 space-x-2 border-t">
-          <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
-            <Users className="w-5 h-5 text-gray-600" />
-          </div>
-          <div className="flex-grow">
-            <div className="text-sm font-semibold">Username</div>
-            <div className="text-xs text-gray-500">#1234</div>
-          </div>
-          <button className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300">
-            <Mic className="w-5 h-5 text-gray-600" />
-          </button>
-          <button className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300">
-            <Headphones className="w-5 h-5 text-gray-600" />
-          </button>
-          <button className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300">
-            <Settings className="w-5 h-5 text-gray-600" />
-          </button>
+        <div>
+          <CreateProject />
+          <UserControlBox />
         </div>
       </div>
     </>
@@ -126,10 +110,10 @@ const initalProject = [
   },
 ];
 
-const list = [
-  <FolderGit2 />,
-  <FolderOpenDot />,
-  <FolderDot />,
-  <FolderGit />,
-  <FolderRoot />,
-];
+// const list = [
+//   <FolderGit2 />,
+//   <FolderOpenDot />,
+//   <FolderDot />,
+//   <FolderGit />,
+//   <FolderRoot />,
+// ];
