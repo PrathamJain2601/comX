@@ -11,6 +11,7 @@ import { get_all_projects } from "../controllers/project-controller/get-all-proj
 import { remove_members } from "../controllers/project-controller/remove-members.controller";
 import { add_milestone } from "../controllers/project-controller/add-milestone.controller";
 import { remove_milestone } from "../controllers/project-controller/remove-milestone.controller";
+import { edit_milestone } from "../controllers/project-controller/edit-milestone.controller";
 
 const router = Router();
 
@@ -22,7 +23,7 @@ router.delete('/remove-member', isAuthenticated, isUserAdmin, isUserInProject, r
 router.patch('/edit-basic-info', isAuthenticated, isUserAdmin, isUserInProject);
 router.patch('/add-milestone', isAuthenticated, isUserAdmin, isUserInProject, add_milestone);
 router.patch('/remove-milestone', isAuthenticated, isUserAdmin, isUserInProject, remove_milestone);
-// router.patch('/edit-milestone', isAuthenticated, isUserAdmin, isUserInProject);
+router.patch('/edit-milestone', isAuthenticated, isUserAdmin, isUserInProject, edit_milestone);
 router.delete('/delete-project',isAuthenticated, isUserAdmin, isUserInProject, delete_project);
 
 module.exports = router;
