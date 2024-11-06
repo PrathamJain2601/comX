@@ -1,5 +1,5 @@
-import Sidebar from "./community/SideBar/Sidebar";
 import { Outlet } from "react-router-dom";
+import Sidebar from "./sidebar/Sidebar";
 
 function CommunityLayout() {
   return (

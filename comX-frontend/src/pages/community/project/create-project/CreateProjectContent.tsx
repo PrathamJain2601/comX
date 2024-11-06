@@ -12,7 +12,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { Member } from "@/types/UserProfile";
-import ErrorPage from "@/pages/ErrorPage";
+import ErrorPage from "@/pages/genral/ErrorPage";
 import toast from "react-hot-toast";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertDialogCancel } from "@radix-ui/react-alert-dialog";

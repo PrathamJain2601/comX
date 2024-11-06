@@ -5,7 +5,7 @@ import PROPS from "@/types/MemberMangementProps";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Calendar, Mail, Trash2, UserMinus } from "lucide-react";
 import { useSelector } from "react-redux";
-import MemberManagementAPI from "../MemberManagementAPI";
+import MemberManagementAPI from "./MemberManagementAPI";
 import { useParams } from "react-router-dom";
 
 export default function Admin_MemberManagement(props: PROPS) {

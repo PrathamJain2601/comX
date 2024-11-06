@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Calendar, Mail, Trash2, UserPlus, UserX } from "lucide-react";
 import { useParams } from "react-router-dom";
-import MemberManagementAPI from "../MemberManagementAPI";
+import MemberManagementAPI from "./MemberManagementAPI";
 import PROPS from "@/types/MemberMangementProps";
 
 export default function Members_MemberManagement(props: PROPS) {

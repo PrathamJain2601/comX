@@ -1,8 +1,8 @@
 import { Background } from "@/components/Background";
 import { useEffect, useRef } from "react";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
-import SignUpFormPage1 from "./auth/SignUpPage1";
-import SignUpFormPage2 from "./auth/SignUpPage2";
+import SignUpFormPage1 from "./components/SignUpPage1";
+import SignUpFormPage2 from "./components/SignUpPage2";
 
 export default function SignUp() {
   const {

@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
-import ProjectOverview from "./ProjectOverview";
-import TeamMembers from "./TeamMembers";
-import RecentActivity from "./RecentActivity";
-import Milestones from "./Milestones";
+import ProjectOverview from "./components/ProjectOverview";
+import TeamMembers from "./components/TeamMembers";
+import RecentActivity from "./components/RecentActivity";
+import Milestones from "./components/Milestones";
 
 export default function ProjectDashboard() {
   return (

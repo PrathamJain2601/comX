@@ -7,7 +7,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Months } from "@/lib/DummyData";
-import ErrorPage from "@/pages/ErrorPage";
+import ErrorPage from "@/pages/genral/ErrorPage";
 import { setYear } from "@/state/calendar/year";
 import { setActiveChannel } from "@/state/sidebar/activeChannel";
 import { RootState } from "@/state/store";

@@ -10,15 +10,12 @@ export default function CommunityCard({
   memberCount,
   name,
   owner,
-  id,
-  joinCode,
+  id
 }: Community) {
 
   const tags = ["Maps", "Tech", "New"];
   
   function timeDifferenceFromNow(dateString: string): string {
-    id;
-    joinCode;
     const now = new Date();
     const targetDate = new Date(dateString);
 

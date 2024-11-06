@@ -1,9 +1,5 @@
 import { Background } from "@/components/Background";
 import { IconBrandGithub, IconBrandGoogle } from "@tabler/icons-react";
-import {
-  BottomGradient,
-  LabelInputContainer,
-} from "./auth/SignUpExtraComponenets";
 import toast, { Toaster } from "react-hot-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
@@ -17,6 +13,7 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { BottomGradient, LabelInputContainer } from "./SignUpExtraComponenets";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 

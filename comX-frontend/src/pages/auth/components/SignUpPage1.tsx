@@ -7,11 +7,11 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@radix-ui/react-label";
 import { Input } from "@/components/ui/input";
-import { LabelInputContainer, BottomGradient } from "./SignUpExtraComponenets";
 import ItemPicker from "@/components/Item-Picker";
 import { designation } from "@/lib/destignation";
 import { Button } from "@/components/ui/button";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { BottomGradient, LabelInputContainer } from "./SignUpExtraComponenets";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
