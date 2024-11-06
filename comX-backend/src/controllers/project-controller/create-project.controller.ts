@@ -3,12 +3,16 @@ import { responseCodes } from "../../utils/response-codes"
 import { prisma } from "../../config/dbConnect";
 export const create_project = async (req: Request, res: Response) =>{
     try{
-        const {communityId, name, description, userId} = req.body;
+        const {communityId, name, description, userId, deadline, milestones} = req.body;
+        
         const project = await prisma.project.create({
             data:{
                 name: name,
                 description: description,
                 communityId: communityId,
+                ownerId: userId,
+                deadline: deadline,
+                milestones: milestones
             }
         })
 
