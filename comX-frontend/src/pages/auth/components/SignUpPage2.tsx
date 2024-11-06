@@ -1,5 +1,4 @@
 import toast, { Toaster } from "react-hot-toast";
-import { LabelInputContainer, BottomGradient } from "./SignUpExtraComponenets";
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
@@ -11,6 +10,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { Label } from "@radix-ui/react-label";
+import { BottomGradient, LabelInputContainer } from "./SignUpExtraComponenets";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 

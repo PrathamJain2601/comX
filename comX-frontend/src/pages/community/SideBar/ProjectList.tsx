@@ -1,4 +1,4 @@
-import ErrorPage from "@/pages/ErrorPage";
+import ErrorPage from "@/pages/genral/ErrorPage";
 import { setActiveChannel } from "@/state/sidebar/activeChannel";
 import { RootState } from "@/state/store";
 import { ScrollArea } from "@radix-ui/react-scroll-area";

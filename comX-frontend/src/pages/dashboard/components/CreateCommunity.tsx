@@ -20,12 +20,18 @@ export default function CreateCommunity() {
   const [newCommunity, setNewCommunity] = useState("");
   const [communityDescription, setCommunityDescription] = useState("");
 
-  const {user} = useSelector((state:RootState) => state.userDetails);
+  const { user } = useSelector((state: RootState) => state.userDetails);
 
   const queryClient = useQueryClient();
 
   const { mutateAsync: createCommunity, isPending } = useMutation({
-    mutationFn: (data: any) => {
+    mutationFn: (data: {
+      name: string;
+      description: string;
+      scope: string;
+      userId: number;
+      coverImage: string;
+    }) => {
       return axios.post(`${backend_url}/community/create-community`, data, {
         withCredentials: true,
       });
@@ -46,7 +52,7 @@ export default function CreateCommunity() {
       name: newCommunity,
       description: communityDescription,
       scope: selectedOption,
-      userId: user?.id,
+      userId: user!.id,
       coverImage: "coverImage",
     };
     createCommunity(data);

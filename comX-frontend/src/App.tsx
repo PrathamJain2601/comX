@@ -1,19 +1,16 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { useSelector } from "react-redux";
-import HomePage from "./pages/Home";
-import SignUp from "./pages/Signup";
-import LoginPage from "./pages/Login";
-import NotFoundPage from "./pages/404Page";
+import HomePage from "./pages/genral/Home";
+import SignUp from "./pages/auth/Signup";
+import LoginPage from "./pages/auth/Login";
+import NotFoundPage from "./pages/genral/404Page";
 import { RootState } from "./state/store";
 import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Dashboard from "./pages/DashBoard";
-import Contact from "./pages/Contact";
-import CommunityLayout from "./pages/Community";
-import Profile from "./pages/Profile";
-import ForgotPassword from "./pages/ForgotPassword";
+import Contact from "./pages/genral/Contact";
+import Profile from "./pages/profile/Profile";
 import { Testing } from "./pages/Testing";
-import MainCalendar from "./pages/community/Calendar/MainCalendar";
+import MainCalendar from "./pages/community/calendar/MainCalendar";
 import BasicInformation from "./pages/community/settings/BasicInfo";
 import MemberManagement from "./pages/community/settings/MemberManagement";
 import Permissions from "./pages/community/settings/Permissions";
@@ -21,6 +18,9 @@ import NotificationSettings from "./pages/community/settings/NotificationSetting
 import ChatApp from "./pages/chatApp/ChatApp";
 import ProjectDashboard from "./pages/community/project/ProjectDashboard";
 import TaskPage from "./pages/community/tasks/TasksPage";
+import Dashboard from "./pages/dashboard/DashBoard";
+import ForgotPassword from "./pages/auth/components/ForgotPassword";
+import CommunityLayout from "./pages/community/Community";
 
 function App() {
   const router = createBrowserRouter([

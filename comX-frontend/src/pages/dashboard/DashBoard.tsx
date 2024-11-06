@@ -1,17 +1,17 @@
 import { motion } from "framer-motion";
 import { Users } from "lucide-react";
-import CreateCommunity from "./dashboard/CreateCommunity";
-import JoinCommunity from "./dashboard/JoinCommunity";
-import LastTask from "./dashboard/Last-Task";
-import CommunityCard from "./dashboard/CommunityCard";
 import { useQuery } from "@tanstack/react-query";
-import ErrorPage from "./ErrorPage";
 import axios from "axios";
 import { Community } from "@/types/Community";
 import useAuthCheck from "@/hooks/useAuthCheck";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
 import { Toaster } from "react-hot-toast";
+import ErrorPage from "../genral/ErrorPage";
+import CommunityCard from "./components/CommunityCard";
+import CreateCommunity from "./components/CreateCommunity";
+import JoinCommunity from "./components/JoinCommunity";
+import LastTask from "./components/Last-Task";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 

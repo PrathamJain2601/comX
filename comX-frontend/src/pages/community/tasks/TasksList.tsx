@@ -51,9 +51,8 @@ export default function TasksList({
     <Card className="w-full border-none shadow-none">
       <CardContent>
         <div className="grid grid-cols-6 gap-4 mb-4 px-4 font-semibold text-muted-foreground">
-          <h3 className="col-span-2 text-xl">Task</h3>
+          <h3 className="col-span-3 text-xl">Task</h3>
           <p>Assignee</p>
-          <p>Assigned By</p>
           <p className="text-center -translate-x-4">Status</p>
           <p className="text-center -translate-x-2">Due Date</p>
         </div>
@@ -106,7 +105,7 @@ function TaskItem({
           >
             <motion.div
               layoutId={`image-${card.title}-${card.id}`}
-              className="col-span-2 flex items-center space-x-4"
+              className="col-span-3 flex items-center space-x-4"
             >
               <img
                 src={card.src}
@@ -124,10 +123,19 @@ function TaskItem({
                   {card.description}
                 </p>
               </div>
+              {card.status === "completed" && (
+                <div className="flex gap-2 justify-center items-center h-full mt-3">
+                  <motion.button className="px-4 py-2 rounded-lg bg-green-500 text-white font-semibold">
+                    Accept
+                  </motion.button>
+                  <motion.button className="px-4 py-2 rounded-lg bg-red-500 text-white font-semibold">
+                    Decline
+                  </motion.button>
+                </div>
+              )}
             </motion.div>
 
             <PersonInfo person={card.assignee} />
-            <PersonInfo person={card.assignedBy} />
 
             <div className="flex justify-center">
               <Badge

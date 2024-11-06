@@ -4,7 +4,7 @@ import PROPS from "@/types/MemberMangementProps";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Calendar, Mail, UserCheck } from "lucide-react";
 import { useParams } from "react-router-dom";
-import MemberManagementAPI from "../MemberManagementAPI";
+import MemberManagementAPI from "./MemberManagementAPI";
 
 export default function Ban_MemberManagement(props:PROPS) {
   const { ID } = useParams();

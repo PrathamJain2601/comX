@@ -24,7 +24,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { Member } from "@/types/UserProfile";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import ErrorPage from "@/pages/ErrorPage";
+import ErrorPage from "@/pages/genral/ErrorPage";
 import { useQuery } from "@tanstack/react-query";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 
