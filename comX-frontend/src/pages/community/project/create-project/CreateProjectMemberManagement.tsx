@@ -72,7 +72,9 @@ export default function CreateProjectMemberManagement({
         )
         .filter(
           (item) =>
-            !projectMembers.some((projMember) => projMember.userId === item.userId)
+            !projectMembers.some(
+              (projMember) => projMember.userId === item.userId
+            )
         )
     );
   }, [debounceSearch, setAvailableMembers, members, projectMembers]);
@@ -176,7 +178,10 @@ export default function CreateProjectMemberManagement({
                 </div>
                 <div className="space-y-2 max-h-[200px] overflow-y-scroll no-scrollbar">
                   {availableMembers.map((member) => (
-                    <div className="flex relative items-center">
+                    <div
+                      className="flex relative items-center"
+                      key={member.userId}
+                    >
                       <SortableMember key={member.userId} member={member} />
                       <button
                         type="button"

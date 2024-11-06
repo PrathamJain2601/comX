@@ -1,14 +1,9 @@
 import { Label } from "@radix-ui/react-label";
 import { AnimatePresence } from "framer-motion";
-import { CalendarIcon, Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
-import { Popover, PopoverTrigger } from "@radix-ui/react-popover";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { PopoverContent } from "@/components/ui/popover";
-import { format } from "date-fns";
-import { Calendar } from "@/components/ui/calendar";
 import { Milestone } from "@/types/Project";
 
 export default function CreateProjectMilestone({
@@ -21,7 +16,7 @@ export default function CreateProjectMilestone({
   const addMilestone = () => {
     setMilestones([
       ...milestones,
-      { id: Date.now().toString(), name: "", targetDate: new Date() },
+      { id: Date.now().toString(), name: "" },
     ]);
   };
 
@@ -31,10 +26,10 @@ export default function CreateProjectMilestone({
     );
   };
 
-  const updateMilestone = (id: string, name: string, targetDate: Date) => {
+  const updateMilestone = (id: string, name: string) => {
     setMilestones((prevMilestones) =>
       prevMilestones.map((milestone) =>
-        milestone.id === id ? { ...milestone, name, targetDate } : milestone
+        milestone.id === id ? { ...milestone, name } : milestone
       )
     );
   };
@@ -59,39 +54,10 @@ export default function CreateProjectMilestone({
                 updateMilestone(
                   milestone.id,
                   e.target.value,
-                  milestone.targetDate
                 )
               }
               className="flex-grow"
             />
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-[280px] justify-start text-left font-normal h-10 bg-gray-50",
-                    !milestone.targetDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {milestone.targetDate ? (
-                    format(milestone.targetDate, "PPP")
-                  ) : (
-                    <span>Pick a date</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={milestone.targetDate}
-                  onSelect={(date) =>
-                    updateMilestone(milestone.id, milestone.name, date!)
-                  }
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
 
             <Button
               type="button"

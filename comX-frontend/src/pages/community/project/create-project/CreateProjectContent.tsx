@@ -51,7 +51,7 @@ const CreateProjectComponent: React.FC = () => {
       name: formData.get("projectName") as string,
       description: formData.get("projectDescription") as string,
       projectMembers: projectMembers.map((item) => item.userId),
-      milestones: milestones,
+      milestones: milestones.map((item)=>item.name),
     });
   };
 
@@ -61,7 +61,7 @@ const CreateProjectComponent: React.FC = () => {
       name: string;
       description: string;
       projectMembers: number[];
-      milestones: Milestone[];
+      milestones: string[];
     }) => {
       console.log(data);
       const response = await axios.post(
