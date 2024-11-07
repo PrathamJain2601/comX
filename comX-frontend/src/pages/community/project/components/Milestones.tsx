@@ -13,6 +13,7 @@ import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import ErrorPage from "@/pages/genral/ErrorPage";
+import MilestonesSettings from "./project-settings/MilestoneSettings";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -47,6 +48,7 @@ export default function Milestones() {
 
   return (
     <Card>
+      <MilestonesSettings project={project}/>
       <CardHeader>
         <CardTitle>Milestones</CardTitle>
         <CardDescription>Key project phases and goals</CardDescription>
