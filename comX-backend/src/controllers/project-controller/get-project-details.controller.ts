@@ -34,6 +34,7 @@ export const get_project_details = async (req: Request, res: Response) => {
                 avatar: true,
                 email: true,
                 designation: true,
+                id: true
               },
             },
           },
