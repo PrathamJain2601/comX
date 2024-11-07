@@ -45,8 +45,6 @@ export default function Milestones() {
     return <ErrorPage />;
   }
 
-  console.log(project);
-
   return (
     <Card>
       <CardHeader>

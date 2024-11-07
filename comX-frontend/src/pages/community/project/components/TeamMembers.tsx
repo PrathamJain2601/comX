@@ -43,8 +43,6 @@ export default function TeamMembers() {
     return <ErrorPage />;
   }
 
-  console.log(project);
-
   return (
     <div>
       <Card className="flex flex-col justify-between items-center rounded-lg bg-white shadow-lg p-6 w-full">

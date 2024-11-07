@@ -12,6 +12,7 @@ import { remove_members } from "../controllers/project-controller/remove-members
 import { add_milestone } from "../controllers/project-controller/add-milestone.controller";
 import { remove_milestone } from "../controllers/project-controller/remove-milestone.controller";
 import { edit_milestone } from "../controllers/project-controller/edit-milestone.controller";
+import { edit_project_info } from "../controllers/project-controller/edit-project-info.controller";
 
 const router = Router();
 
@@ -20,7 +21,7 @@ router.get('/get-project-details/:communityId/:projectId', isAuthenticated, isUs
 router.post('/create-project', isAuthenticated, isUserAdmin, create_project);
 router.post('/add-member',isAuthenticated, isUserAdmin, isUserInProject, add_members);
 router.delete('/remove-member', isAuthenticated, isUserAdmin, isUserInProject, remove_members);
-router.patch('/edit-basic-info', isAuthenticated, isUserAdmin, isUserInProject);
+router.patch('/edit-basic-info', isAuthenticated, isUserAdmin, isUserInProject,edit_project_info);
 router.patch('/add-milestone', isAuthenticated, isUserAdmin, isUserInProject, add_milestone);
 router.patch('/remove-milestone', isAuthenticated, isUserAdmin, isUserInProject, remove_milestone);
 router.patch('/edit-milestone', isAuthenticated, isUserAdmin, isUserInProject, edit_milestone);

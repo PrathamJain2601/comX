@@ -2,6 +2,7 @@ import { RootState } from "@/state/store";
 import PROPS from "@/types/MemberMangementProps";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
@@ -19,9 +20,14 @@ export default function MemberManagementAPI({
   const queryClient = useQueryClient();
 
   // Check if the current user is an admin
-  const isAdmin = filteredMembers.some(
-    (m) =>
-      (m.role === "ADMIN" || m.role === "OWNER") && m.userId === user.user?.id
+  const isAdmin = useMemo(
+    () =>
+      filteredMembers.some(
+        (m) =>
+          (m.role === "ADMIN" || m.role === "OWNER") &&
+          m.userId === user.user?.id
+      ),
+    [filteredMembers, user]
   );
 
   const handleAction = (action: () => void, message: string) => {
@@ -109,5 +115,5 @@ export default function MemberManagementAPI({
     }),
   };
 
-  return { mutations,isAdmin,handleAction };
+  return { mutations, isAdmin, handleAction };
 }
