@@ -8,11 +8,17 @@ import SettingsList from "./SettingList";
 import CalendarList from "./CalendarList";
 import ProjectList from "./ProjectList";
 import { useDispatch, useSelector } from "react-redux";
-import { setActiveChannel } from "@/state/sidebar/activeChannel";
 import { RootState } from "@/state/store";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import ErrorPage from "@/pages/genral/ErrorPage";
+
+const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 const Sidebar = React.memo(function Sidebar() {
+  const { ID } = useParams();
+
   const [isMobile, setIsMobile] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -32,24 +38,45 @@ const Sidebar = React.memo(function Sidebar() {
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
+  const {
+    data: projects,
+    isLoading: projectsLoading,
+    error: projectError,
+  } = useQuery({
+    queryKey: [`project-list/${ID}`],
+    queryFn: async () => {
+      const response = await axios.get(
+        `${backend_url}/project/get-all-projects/${ID}`,
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data.data;
+    },
+    staleTime: Infinity,
+  });
+
   useEffect(() => {
     if (activeServer === 1) {
-      dispatch(setActiveChannel(new Date().getMonth() + 5));
       navigate("calendar");
     } else if (activeServer === 2) {
-      dispatch(setActiveChannel(1));
       navigate("settings/basic-info");
     } else if (activeServer === 4) {
-      dispatch(setActiveChannel(17));
       navigate("chat");
     } else if (activeServer === 5) {
-      dispatch(setActiveChannel(26));
-      navigate("projects");
+      navigate(`project/${projects[0].id}`);
     } else if (activeServer === 6) {
-      dispatch(setActiveChannel(26));
       navigate("tasks");
     }
-  }, [activeServer, dispatch, navigate]);
+  }, [activeServer, dispatch, navigate, projects]);
+
+  if (projectsLoading) {
+    return <div>Loading ...</div>;
+  }
+
+  if (projectError) {
+    return <ErrorPage />;
+  }
 
   const SidebarContent = () => (
     <div className="flex h-full">

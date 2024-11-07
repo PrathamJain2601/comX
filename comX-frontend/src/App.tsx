@@ -94,6 +94,10 @@ function App() {
           element: <ProjectDashboard />,
         },
         {
+          path: "project/:projectId",
+          element: <ProjectDashboard />,
+        },
+        {
           path: "tasks",
           element: <TaskPage />,
         },

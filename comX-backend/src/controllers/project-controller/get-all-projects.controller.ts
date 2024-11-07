@@ -21,7 +21,9 @@ export const get_all_projects = async (req:Request, res:Response) => {
             }
         })
 
-        return responseCodes.success.ok(res, projects, "all projects fetched");
+        const data = projects.map((item)=> item.project);
+
+        return responseCodes.success.ok(res, data, "all projects fetched");
     }
     catch(e){
         console.log(e);

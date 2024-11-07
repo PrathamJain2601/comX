@@ -46,7 +46,7 @@ export const dummyGroups: Group[] = [
   },
 ];
 
-export const dummySettings = [
+export const Setting = [
   {
     id: 1,
     name: "Basic Information",
@@ -75,62 +75,62 @@ export const dummySettings = [
 
 export const Months = [
   {
-    id: 5,
+    id: 1,
     name: "January",
     link: <CloudSnow className="w-6 h-6 text-gray-500" />,
   },
   {
-    id: 6,
+    id: 2,
     name: "February",
     link: <CalendarDays className="w-6 h-6 text-purple-500" />,
   },
   {
-    id: 7,
+    id: 3,
     name: "March",
     link: <Flower2 className="w-6 h-6 text-green-600" />,
   },
   {
-    id: 8,
+    id: 4,
     name: "April",
     link: <CloudDrizzle className="w-6 h-6 text-blue-400" />,
   },
   {
-    id: 9,
+    id: 5,
     name: "May",
     link: <Sun className="w-6 h-6 text-yellow-400" />,
   },
   {
-    id: 10,
+    id: 6,
     name: "June",
     link: <Flame className="w-6 h-6 text-orange-500" />,
   },
   {
-    id: 11,
+    id: 7,
     name: "July",
     link: <Sun className="w-6 h-6 text-orange-400" />,
   },
   {
-    id: 12,
+    id: 8,
     name: "August",
     link: <Leaf className="w-6 h-6 text-green-700" />,
   },
   {
-    id: 13,
+    id: 9,
     name: "September",
     link: <Leaf className="w-6 h-6 text-amber-500" />,
   },
   {
-    id: 14,
+    id: 10,
     name: "October",
     link: <CloudSun className="w-6 h-6 text-orange-600" />,
   },
   {
-    id: 15,
+    id: 11,
     name: "November",
     link: <CloudSun className="w-6 h-6 text-gray-600" />,
   },
   {
-    id: 16,
+    id: 12,
     name: "December",
     link: <CloudSnow className="w-6 h-6 text-blue-500" />,
   },

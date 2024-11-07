@@ -1,22 +1,18 @@
-import { dummySettings } from "@/lib/DummyData";
-import { setActiveChannel } from "@/state/sidebar/activeChannel";
-import { RootState } from "@/state/store";
+import { Setting } from "@/lib/DummyData";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Headphones, Mic, Settings, Users } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 export default function SettingsList() {
   const { ID } = useParams();
-  const groups = dummySettings;
 
-  const activeChannel = useSelector((state: RootState) => state.activeChannel);
+  const location = useLocation();
+  const currentUrl = location.pathname.split("/").filter(Boolean);
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const { data: community, isLoading } = useQuery({
@@ -50,16 +46,15 @@ export default function SettingsList() {
           <p>( {community.joinCode} )</p>
         </div>
         <ScrollArea className="flex-grow">
-          {groups.map((category) => (
+          {Setting.map((category) => (
             <div key={category.id} className="m-2 mx-4">
               <button
                 className={`flex items-center w-full px-2 py-2 mb-2 text-sm font-medium text-left rounded-lg transition-all duration-300 ease-in-out transform gap-2 ${
-                  activeChannel === category.id
+                  currentUrl.at(-1) === category.link.split("/").at(-1)
                     ? "bg-gradient-to-r from-blue-500 to-blue-700 text-white scale-105"
                     : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800 hover:shadow-md"
                 }`}
                 onClick={() => {
-                  dispatch(setActiveChannel(category.id));
                   navigate(category.link);
                 }}
               >

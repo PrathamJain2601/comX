@@ -15,6 +15,7 @@ import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Headphones, Mic, Settings, Users } from "lucide-react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
@@ -28,6 +29,10 @@ export default function CalendarList() {
   const year = useSelector((state: RootState) => state.year);
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(setActiveChannel(new Date().getMonth()));
+  }, [dispatch]);
 
   const {
     data: community,

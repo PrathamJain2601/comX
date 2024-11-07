@@ -27,6 +27,8 @@ import { useParams } from "react-router-dom";
 import ErrorPage from "@/pages/genral/ErrorPage";
 import { useQuery } from "@tanstack/react-query";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { useSelector } from "react-redux";
+import { RootState } from "@/state/store";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -45,6 +47,8 @@ export default function CreateProjectMemberManagement({
 
   const [activeMember, setActiveMember] = useState<Member | null>(null);
   const [search, setSearch] = useState<string>("");
+
+  const user = useSelector((state: RootState) => state.userDetails);
 
   const debounceSearch = useDebounce(search, 500);
 
@@ -177,21 +181,23 @@ export default function CreateProjectMemberManagement({
                   />
                 </div>
                 <div className="space-y-2 max-h-[200px] overflow-y-scroll no-scrollbar">
-                  {availableMembers.map((member) => (
-                    <div
-                      className="flex relative items-center"
-                      key={member.userId}
-                    >
-                      <SortableMember key={member.userId} member={member} />
-                      <button
-                        type="button"
-                        onClick={() => moveToProject(member)}
-                        className="h-8 absolute mt-2 right-6 bg-blue-500 text-white p-2 rounded-md shadow hover:bg-blue-600 flex justify-center items-center"
+                  {availableMembers
+                    .filter((member) => member.userId !== user.user?.id)
+                    .map((member) => (
+                      <div
+                        className="flex relative items-center"
+                        key={member.userId}
                       >
-                        Add to Project
-                      </button>
-                    </div>
-                  ))}
+                        <SortableMember key={member.userId} member={member} />
+                        <button
+                          type="button"
+                          onClick={() => moveToProject(member)}
+                          className="h-8 absolute mt-2 right-6 bg-blue-500 text-white p-2 rounded-md shadow hover:bg-blue-600 flex justify-center items-center"
+                        >
+                          Add to Project
+                        </button>
+                      </div>
+                    ))}
                 </div>
               </div>
             </SortableContext>
@@ -206,7 +212,10 @@ export default function CreateProjectMemberManagement({
             >
               <div className="space-y-2 max-h-[250px] overflow-y-scroll no-scrollbar">
                 {projectMembers.map((member) => (
-                  <div className="flex relative items-center">
+                  <div
+                    className="flex relative items-center"
+                    key={member.userId}
+                  >
                     <SortableMember key={member.userId} member={member} />
                     <button
                       type="button"

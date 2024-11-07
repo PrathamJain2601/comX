@@ -6,41 +6,67 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import ErrorPage from "@/pages/genral/ErrorPage";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { Calendar } from "lucide-react";
+import { useParams } from "react-router-dom";
 
-const projectData = {
-  title: "Website Redesign",
-  description: "Overhaul of company website with modern design and improved UX",
-  deadline: "2024-12-31",
-  progress: 65,
-  startDate: "2024-01-01",
-  endDate: "2024-12-31",
-  ownerName: "Vardaan",
-  ownerAvatar: "../../../public/Vardaan_Profile.jpg",
-};
+const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 export default function ProjectOverview() {
+  const { ID, projectId } = useParams();
+
+  const {
+    data: project,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: [`community${ID}/project/${projectId}`],
+    queryFn: async () => {
+      const response = await axios.get(
+        `${backend_url}/project/get-project-details/${ID}/${projectId}`,
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data.data;
+    },
+    staleTime: Infinity,
+  });
+
+  if (isLoading) {
+    return <div>Loading ...</div>;
+  }
+
+  if (error) {
+    return <ErrorPage />;
+  }
+
   return (
     <Card className="rounded-lg bg-white p-6 space-y-4">
       <CardHeader>
         <div className="flex justify-between items-center">
           <div>
             <CardTitle className="text-2xl font-bold text-gray-900">
-              {projectData.title}
+              {project.name}
             </CardTitle>
             <CardDescription className="text-sm text-gray-600 mt-1">
-              {projectData.description}
+              {project.description}
             </CardDescription>
           </div>
           {/* Project Owner Avatar */}
           <div className="flex items-center space-x-2">
             <Avatar>
-              <AvatarImage className="w-12 h-12 rounded-full" src={projectData.ownerAvatar} />
-              <AvatarFallback>{projectData.ownerName.charAt(0)}</AvatarFallback>
+              <AvatarImage
+                className="w-12 h-12 rounded-full"
+                src={project.owner.avatar}
+              />
+              <AvatarFallback>{project.owner.name.charAt(0)}</AvatarFallback>
             </Avatar>
             <span className="text-lg font-medium text-gray-700">
-              {projectData.ownerName}
+              {project.owner.username}
             </span>
           </div>
         </div>
@@ -54,7 +80,11 @@ export default function ProjectOverview() {
             <span className="font-medium">
               Deadline:{" "}
               <span className="font-semibold">
-                {new Date(projectData.deadline).toLocaleDateString()}
+                {new Date(project.deadline).toLocaleDateString("en-GB", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
               </span>
             </span>
           </div>
@@ -64,11 +94,11 @@ export default function ProjectOverview() {
               Project Progress
             </p>
             <Progress
-              value={projectData.progress}
+              value={65}
               className="w-full h-3 rounded-lg bg-gray-200"
             />
             <p className="text-xs text-gray-500 mt-1 text-right">
-              {projectData.progress}% Complete
+              {65}% Complete
             </p>
           </div>
         </div>
@@ -81,13 +111,21 @@ export default function ProjectOverview() {
           <span>
             <strong>Start: </strong>
             <span className="font-semibold">
-              {new Date(projectData.startDate).toLocaleDateString()}
+              {new Date(project.createdAt).toLocaleDateString("en-GB", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}
             </span>
           </span>
           <span>
             <strong>End: </strong>
             <span className="font-semibold">
-              {new Date(projectData.endDate).toLocaleDateString()}
+              {new Date(project.deadline).toLocaleDateString("en-GB", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}
             </span>
           </span>
         </div>

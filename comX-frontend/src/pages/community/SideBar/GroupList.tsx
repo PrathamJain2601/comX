@@ -6,7 +6,7 @@ import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { ChevronDown, Headphones, Mic, Settings, Users } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
@@ -53,6 +53,10 @@ const GroupList = React.memo(function GroupList() {
     },
     staleTime: Infinity,
   });
+
+  useEffect(() => {
+    dispatch(setActiveChannel(1));
+  }, [dispatch]);
 
   if (isLoading) {
     return <div>Loading . . .</div>;
