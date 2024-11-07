@@ -43,7 +43,7 @@ export type LoginDetails = {
 };
 
 export type Member = {
-  userId: number;
+  id: number;
   name: string;
   username: string;
   designation: string;

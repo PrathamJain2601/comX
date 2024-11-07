@@ -21,7 +21,6 @@ import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { useDebounce } from "@/hooks/useDebounce";
-import { Member } from "@/types/UserProfile";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import ErrorPage from "@/pages/genral/ErrorPage";
@@ -29,6 +28,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
+import { Member } from "@/types/UserProfile";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -43,7 +43,7 @@ export default function CreateProjectMemberManagement({
   availableMembers: Member[];
   setAvailableMembers: React.Dispatch<React.SetStateAction<Member[]>>;
 }) {
-  const { ID } = useParams();
+  const { projectId, ID } = useParams();
 
   const [activeMember, setActiveMember] = useState<Member | null>(null);
   const [search, setSearch] = useState<string>("");
@@ -57,7 +57,7 @@ export default function CreateProjectMemberManagement({
     error,
     isLoading,
   } = useQuery<Member[], Error>({
-    queryKey: [`Member-List/${ID}`],
+    queryKey: [`Member-List/${projectId}`],
     queryFn: async () => {
       const response = await axios.get(
         `${backend_url}/member/get-community-members/${ID}`,
@@ -71,14 +71,12 @@ export default function CreateProjectMemberManagement({
   useEffect(() => {
     setAvailableMembers(
       members
-        .filter((item: Member) =>
+        .filter((item) =>
           item.name.toLowerCase().includes(debounceSearch.toLowerCase())
         )
         .filter(
           (item) =>
-            !projectMembers.some(
-              (projMember) => projMember.userId === item.userId
-            )
+            !projectMembers.some((projMember) => projMember.id === item.id)
         )
     );
   }, [debounceSearch, setAvailableMembers, members, projectMembers]);
@@ -91,8 +89,8 @@ export default function CreateProjectMemberManagement({
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
     const draggedMember =
-      availableMembers.find((m) => m.userId === active.id) ||
-      projectMembers.find((m) => m.userId === active.id);
+      availableMembers.find((m) => m.id === active.id) ||
+      projectMembers.find((m) => m.id === active.id);
     setActiveMember(draggedMember || null);
   };
 
@@ -103,10 +101,10 @@ export default function CreateProjectMemberManagement({
     if (!over) return;
 
     const activeIndexInAvailable = availableMembers.findIndex(
-      (m) => m.userId === active.id
+      (m) => m.id === active.id
     );
     const activeIndexInProject = projectMembers.findIndex(
-      (m) => m.userId === active.id
+      (m) => m.id === active.id
     );
 
     if (activeIndexInAvailable !== -1 && over.id !== active.id) {
@@ -128,17 +126,13 @@ export default function CreateProjectMemberManagement({
   // Function to move a member from available to project
   const moveToProject = (member: Member) => {
     setProjectMembers((current) => [...current, member]);
-    setAvailableMembers((current) =>
-      current.filter((m) => m.userId !== member.userId)
-    );
+    setAvailableMembers((current) => current.filter((m) => m.id !== member.id));
   };
 
   // Function to move a member from project to available
   const moveToAvailable = (member: Member) => {
     setAvailableMembers((current) => [...current, member]);
-    setProjectMembers((current) =>
-      current.filter((m) => m.userId !== member.userId)
-    );
+    setProjectMembers((current) => current.filter((m) => m.id !== member.id));
   };
 
   if (isLoading) {
@@ -164,7 +158,7 @@ export default function CreateProjectMemberManagement({
               Available Members
             </h3>
             <SortableContext
-              items={availableMembers.map((m) => m.userId)}
+              items={availableMembers.map((m) => m.id)}
               strategy={verticalListSortingStrategy}
             >
               <div className="space-y-2">
@@ -182,22 +176,25 @@ export default function CreateProjectMemberManagement({
                 </div>
                 <div className="space-y-2 max-h-[200px] overflow-y-scroll no-scrollbar">
                   {availableMembers
-                    .filter((member) => member.userId !== user.user?.id)
-                    .map((member) => (
-                      <div
-                        className="flex relative items-center"
-                        key={member.userId}
-                      >
-                        <SortableMember key={member.userId} member={member} />
-                        <button
-                          type="button"
-                          onClick={() => moveToProject(member)}
-                          className="h-8 absolute mt-2 right-6 bg-blue-500 text-white p-2 rounded-md shadow hover:bg-blue-600 flex justify-center items-center"
+                    .filter((member) => member.id !== user.user?.id)
+                    .map((member) => {
+                      console.log(member);
+                      return (
+                        <div
+                          className="flex relative items-center"
+                          key={`${member.id}-1`}
                         >
-                          Add to Project
-                        </button>
-                      </div>
-                    ))}
+                          <SortableMember key={member.id} member={member} />
+                          <button
+                            type="button"
+                            onClick={() => moveToProject(member)}
+                            className="h-8 absolute mt-2 right-6 bg-blue-500 text-white p-2 rounded-md shadow hover:bg-blue-600 flex justify-center items-center"
+                          >
+                            Add to Project
+                          </button>
+                        </div>
+                      );
+                    })}
                 </div>
               </div>
             </SortableContext>
@@ -207,16 +204,16 @@ export default function CreateProjectMemberManagement({
               Project Members
             </h3>
             <SortableContext
-              items={projectMembers.map((m) => m.userId)}
+              items={projectMembers.map((m) => m.id)}
               strategy={verticalListSortingStrategy}
             >
               <div className="space-y-2 max-h-[250px] overflow-y-scroll no-scrollbar">
                 {projectMembers.map((member) => (
                   <div
                     className="flex relative items-center"
-                    key={member.userId}
+                    key={`${member.id}-2`}
                   >
-                    <SortableMember key={member.userId} member={member} />
+                    <SortableMember key={member.id} member={member} />
                     <button
                       type="button"
                       onClick={() => moveToAvailable(member)}
@@ -250,12 +247,12 @@ export default function CreateProjectMemberManagement({
 
 const SortableMember: React.FC<{ member: Member }> = ({ member }) => {
   const { attributes, listeners, setNodeRef } = useSortable({
-    id: member.userId,
+    id: member.id,
   });
 
   return (
     <div
-      key={member.userId}
+      key={`${member.id}-3`}
       className=" w-full flex items-center gap-3 p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
       ref={setNodeRef}
       {...attributes}

@@ -43,6 +43,7 @@ export default function BasicInformation() {
       communityId: number;
       file: File | undefined;
     }) => {
+      console.log(typeof details.communityId);
       const response = await axios.put(
         `${backend_url}/community/update-community`,
         details,
@@ -83,18 +84,14 @@ export default function BasicInformation() {
   }, [community]);
 
   // Update community function
-  const handleUpdateCommunity = async () => {
-    try {
-      await updateCommunity({
-        name,
-        description,
-        scope: "PUBLIC",
-        communityId: parseInt(ID!, 10),
-        file: coverImage.current?.files?.[0],
-      });
-    } catch (error) {
-      console.error("Update operation error:", error);
-    }
+  const handleUpdateCommunity = () => {
+    updateCommunity({
+      name,
+      description,
+      scope: "PUBLIC",
+      communityId: parseInt(ID!, 10),
+      file: coverImage.current?.files?.[0],
+    });
   };
 
   // Show loading state
