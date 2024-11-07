@@ -3,15 +3,20 @@ import { responseCodes } from "../../utils/response-codes"
 import { prisma } from "../../config/dbConnect";
 export const add_members = async(req: Request, res: Response) =>{
     try{
-        const {memberId, projectId, communityId} = req.body;
-        const added = await prisma.projectMembers.create({
-            data:{
-                userId: memberId,
+        const {members, projectId, communityId} = req.body;
+        const memberData = [
+            ...members.map((memberId: number) => ({
+                communityId: communityId,
                 projectId: projectId,
-                communityId: communityId
-            }
+                userId: memberId,
+            })),
+        ]
+
+        await prisma.projectMembers.createMany({
+            data: memberData,
+            skipDuplicates: true
         })
-        return responseCodes.success.ok(res, added, "user added to the project");
+        return responseCodes.success.ok(res, "user added to the project");
     }
     catch(e){
         console.log(e);

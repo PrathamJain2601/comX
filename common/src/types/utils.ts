@@ -9,4 +9,17 @@ export enum Role {
 export enum Scope {
     PUBLIC = 'PUBLIC',
     PRIVATE = 'PRIVATE',
-  }
+}
+
+export enum Status {
+    INPROGRESS = 'INPROGRESS',
+    PENDING = 'PENDING',
+    COMPLETED = 'COMPLETED'
+}
+
+export enum Priority {
+    CRITICAL = 'CRITICAL',
+    HIGH = 'HIGH',
+    LOW = 'LOW',
+    MEDIUM = 'MEDIUM'
+}
