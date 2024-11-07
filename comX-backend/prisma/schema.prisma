@@ -91,6 +91,8 @@ model ProjectMembers {
   communityId Int
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
+
+  @@unique([communityId, projectId, userId], name: "unique_user_in_project")
 }
 
 model CommunityMember {

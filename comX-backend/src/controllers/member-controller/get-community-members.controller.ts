@@ -36,7 +36,7 @@ export const get_community_members = async (req: Request, res: Response) => {
 
     // Extracting member data and excluding unnecessary fields
     const members = community.members.map(member => ({
-      userId: member.user.id,
+      id: member.user.id,
       name: member.user.name,
       username: member.user.username,
       designation: member.user.designation,

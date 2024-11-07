@@ -5,6 +5,11 @@ export const create_project = async (req: Request, res: Response) =>{
     try{
         const {communityId, name, description, userId, deadline, milestones, members} = req.body;
         
+        const d = new Date(Date.now());
+        if(deadline < d){
+            return responseCodes.clientError.badRequest(res, "not a valid deadline");
+        }
+
         const project = await prisma.project.create({
             data:{
                 name: name,
@@ -30,7 +35,7 @@ export const create_project = async (req: Request, res: Response) =>{
             skipDuplicates: true
         })
 
-        return responseCodes.success.created(res, project);
+        return responseCodes.success.created(res, project, "created project successfully");
     }
     catch(e){
         console.log(e);
