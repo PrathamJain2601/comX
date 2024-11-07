@@ -30,6 +30,8 @@ const calendar = require("./routes/calendar.route");
 app.use("/calendar", calendar);
 const project = require("./routes/project.route");
 app.use("/project", project);
+const task = require("./routes/tasks.route");
+app.use("/task", task);
 
 app.listen(5000, ()=>{
     console.log("server running on port 5000");
