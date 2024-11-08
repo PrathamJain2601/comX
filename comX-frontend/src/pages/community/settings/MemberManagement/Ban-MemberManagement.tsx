@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import PROPS from "@/types/MemberMangementProps";
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Calendar, Mail, UserCheck } from "lucide-react";
 import { useParams } from "react-router-dom";
 import MemberManagementAPI from "./MemberManagementAPI";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function Ban_MemberManagement(props:PROPS) {
   const { ID } = useParams();
@@ -24,7 +24,7 @@ export default function Ban_MemberManagement(props:PROPS) {
             .filter((m) => m.role === "BANNED")
             .map((banned) => (
               <li
-                key={banned.userId}
+                key={banned.id}
                 className="flex flex-col md:flex-row md:items-center justify-between py-4 transition-all duration-300 hover:bg-red-50"
               >
                 <div className="flex items-center mb-2 md:mb-0 ml-4">
@@ -57,7 +57,7 @@ export default function Ban_MemberManagement(props:PROPS) {
                           () =>
                             mutations.remove.mutateAsync({
                               communityId: parseInt(ID!, 10),
-                              removingId: banned.userId,
+                              removingId: banned.id,
                             }),
                           `Reinstate ${banned.name} as a member?`
                         )

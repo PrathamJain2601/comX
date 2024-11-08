@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Calendar, Mail, Trash2, UserPlus, UserX } from "lucide-react";
 import { useParams } from "react-router-dom";
 import MemberManagementAPI from "./MemberManagementAPI";
@@ -24,7 +24,7 @@ export default function Members_MemberManagement(props: PROPS) {
             .filter((m) => m.role === "MEMBER")
             .map((member) => (
               <li
-                key={member.userId}
+                key={member.id}
                 className="flex flex-col md:flex-row md:items-center justify-between py-4 transition-all duration-300 hover:bg-blue-50"
               >
                 <div className="flex items-center mb-2 md:mb-0 ml-4">
@@ -57,7 +57,7 @@ export default function Members_MemberManagement(props: PROPS) {
                           () =>
                             mutations.promote.mutateAsync({
                               communityId: parseInt(ID!, 10),
-                              promoting_id: member.userId,
+                              promoting_id: member.id,
                             }),
                           `Promote ${member.name} to admin?`
                         )
@@ -75,7 +75,7 @@ export default function Members_MemberManagement(props: PROPS) {
                           () =>
                             mutations.ban.mutateAsync({
                               communityId: parseInt(ID!, 10),
-                              baning_id: member.userId,
+                              baning_id: member.id,
                             }),
                           `Ban ${member.name}?`
                         )
@@ -93,7 +93,7 @@ export default function Members_MemberManagement(props: PROPS) {
                           () =>
                             mutations.remove.mutateAsync({
                               communityId: parseInt(ID!, 10),
-                              removingId: member.userId,
+                              removingId: member.id,
                             }),
                           `Remove ${member.name}?`
                         )

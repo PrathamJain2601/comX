@@ -178,7 +178,6 @@ export default function CreateProjectMemberManagement({
                   {availableMembers
                     .filter((member) => member.id !== user.user?.id)
                     .map((member) => {
-                      console.log(member);
                       return (
                         <div
                           className="flex relative items-center"
