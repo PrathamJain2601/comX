@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { Milestone } from "@/types/Project";
@@ -38,7 +38,6 @@ export default function MilestonesSettings({
     );
   }, [project]);
 
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const handleSubmit = (e: React.MouseEvent) => {
@@ -50,7 +49,7 @@ export default function MilestonesSettings({
     mutationFn: async () => {
       const data = {
         communityId: parseInt(ID!, 10),
-        milestones: milestones,
+        milestones: milestones.map((item) => item.name),
         projectId: parseInt(projectId!, 10),
       };
       console.log(data);
@@ -64,8 +63,10 @@ export default function MilestonesSettings({
     onSuccess(data) {
       console.log(data);
       toast.success("Project Edited Successfully!");
-      queryClient.invalidateQueries({ queryKey: [`project-list/${ID}`] });
-      navigate(``);
+      queryClient.invalidateQueries({
+        queryKey: [`community${ID}/project/${projectId}`],
+      });
+      toast.success("Milestones Edited Successfully");
     },
     onError(error: unknown) {
       if (axios.isAxiosError(error)) {
