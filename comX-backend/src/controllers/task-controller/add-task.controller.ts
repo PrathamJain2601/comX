@@ -29,7 +29,7 @@ export const add_task = async (req: Request, res: Response) => {
                 content,
                 createdAt: createdAt || null,
                 projectId,
-                UserId: assignId,
+                assignId: assignId,
             },
         });
 

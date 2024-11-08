@@ -11,6 +11,9 @@ export const get_all_tasks_in_milestone = async (req: Request, res: Response) =>
                 projectId: Number(projectId),
                 milestone: milestone
             },
+            include:{
+                user: true
+            }
         });
 
         if (tasks.length === 0) {
