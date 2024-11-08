@@ -34,11 +34,7 @@ export const get_project_details = async (req: Request, res: Response) => {
                 avatar: true,
                 email: true,
                 designation: true,
-<<<<<<< HEAD
                 id:true,
-=======
-                id: true
->>>>>>> 939d78532ac1a14d2f7de9bd70915a4bf612b6c3
               },
             },
           },

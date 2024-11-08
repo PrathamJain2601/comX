@@ -7,6 +7,8 @@ export const add_task = async (req: Request, res: Response) => {
     try {
         const { title, description, referenceLinks, milestone, priority, deadline, projectId, assignId } = req.body;
 
+        //check if assignId is in project
+
         if (!title || !deadline || !projectId || !assignId) {
             return responseCodes.clientError.badRequest(res, "Title, deadline, projectId, and userId are required fields.");
         }

@@ -76,7 +76,6 @@ model Task {
   status         Status    @default(INPROGRESS)
   deadline       DateTime
   completedDate  DateTime?
-  accepted       Boolean   @default(false)
   projectId      Int
   UserId         Int
   project        Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)

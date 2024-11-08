@@ -21,11 +21,7 @@ router.get('/get-project-details/:communityId/:projectId', isAuthenticated, isUs
 router.post('/create-project', isAuthenticated, isUserAdmin, create_project);
 router.post('/add-member',isAuthenticated, isUserAdmin, isUserInProject, add_members);
 router.delete('/remove-member', isAuthenticated, isUserAdmin, isUserInProject, remove_members);
-<<<<<<< HEAD
 router.patch('/edit-basic-info', isAuthenticated, isUserAdmin, isUserInProject,edit_project_info);
-=======
-router.patch('/edit-basic-info', isAuthenticated, isUserAdmin, isUserInProject, edit_project_info);
->>>>>>> 939d78532ac1a14d2f7de9bd70915a4bf612b6c3
 router.patch('/add-milestone', isAuthenticated, isUserAdmin, isUserInProject, add_milestone);
 router.patch('/remove-milestone', isAuthenticated, isUserAdmin, isUserInProject, remove_milestone);
 router.patch('/edit-milestone', isAuthenticated, isUserAdmin, isUserInProject, edit_milestone);
