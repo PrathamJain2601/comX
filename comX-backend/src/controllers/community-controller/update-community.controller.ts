@@ -12,7 +12,7 @@ export const update_community = async (req: Request, res: Response) => {
     const { userId, name, description, scope }:updateCommunityRequest = req.body;
 
     const communityId = Number(req.body.communityId);
-
+    
     // Find the community with its members
     const community = await prisma.community.findUnique({
       where: { id: communityId },

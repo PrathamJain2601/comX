@@ -6,7 +6,7 @@ export const isUserAdmin = async (req: Request, res: Response, next: NextFunctio
     try {
         const { userId } = req.body;
 
-        let communityId:number = req.body.communityId;
+        let communityId:number = Number(req.body.communityId);
         if(!communityId){
             communityId = Number(req?.params?.communityId);
         }
