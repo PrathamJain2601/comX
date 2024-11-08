@@ -92,8 +92,8 @@ export default function Milestones() {
                   className="mt-2"
                 />
               </div>
-              {isAdmin && <CreateTask />}
-              <div className="flex-shrink-0 flex justify-center item-center">
+              {isAdmin && <CreateTask milestone={milestone}/>}
+              <div className="w-6 flex justify-center item-center">
                 <Badge variant={Math.random() > 0.5 ? "default" : "secondary"}>
                   {Math.round(Math.random() * 100)}%
                 </Badge>

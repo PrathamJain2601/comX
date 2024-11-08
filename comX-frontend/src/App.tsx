@@ -90,7 +90,7 @@ function App() {
           element: <ChatApp />,
         },
         {
-          path: "projects",
+          path: "project",
           element: <ProjectDashboard />,
         },
         {
@@ -98,7 +98,11 @@ function App() {
           element: <ProjectDashboard />,
         },
         {
-          path: "tasks",
+          path: "task",
+          element: <TaskPage />,
+        },
+        {
+          path: "task/:projectId",
           element: <TaskPage />,
         },
       ],

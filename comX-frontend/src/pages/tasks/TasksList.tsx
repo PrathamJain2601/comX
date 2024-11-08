@@ -107,11 +107,6 @@ function TaskItem({
               layoutId={`image-${card.title}-${card.id}`}
               className="col-span-3 flex items-center space-x-4"
             >
-              <img
-                src={card.src}
-                alt={card.title}
-                className="rounded-lg object-cover shadow-sm h-12 w-12"
-              />
               <div>
                 <motion.h3
                   layoutId={`title-${card.title}-${card.id}`}
@@ -125,17 +120,27 @@ function TaskItem({
               </div>
               {card.status === "completed" && (
                 <div className="flex gap-2 justify-center items-center h-full mt-3">
-                  <motion.button className="px-4 py-2 rounded-lg bg-green-500 text-white font-semibold">
+                  <motion.button
+                    className="px-4 py-2 rounded-lg bg-green-500 text-white font-semibold"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
                     Accept
                   </motion.button>
-                  <motion.button className="px-4 py-2 rounded-lg bg-red-500 text-white font-semibold">
+                  <motion.button
+                    className="px-4 py-2 rounded-lg bg-red-500 text-white font-semibold"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
                     Decline
                   </motion.button>
                 </div>
               )}
             </motion.div>
 
-            <PersonInfo person={card.assignee} />
+            <PersonInfo assignId={card.assignId} />
 
             <div className="flex justify-center">
               <Badge
@@ -149,7 +154,7 @@ function TaskItem({
 
             <div className="flex justify-center items-center space-x-2 text-muted-foreground">
               <CalendarIcon className="w-4 h-4" />
-              <span>{card.dueDate}</span>
+              <span>{card.deadline.toDateString()}</span>
             </div>
           </motion.div>
         </TooltipTrigger>
@@ -161,23 +166,24 @@ function TaskItem({
   );
 }
 
-function PersonInfo({
-  person,
-}: {
-  person: { name: string; avatar: string; designation: string };
-}) {
+function PersonInfo({ assignId }: { assignId: number }) {
   return (
     <div className="flex items-center space-x-2">
       <Avatar className="h-8 w-8">
-        <AvatarImage src={person.avatar} alt={person.name} />
-        <AvatarFallback>{person.name.charAt(0)}</AvatarFallback>
+        <AvatarImage src={`Vardaan_profile.jpg`} alt={"Vardaan"} />
+        <AvatarFallback>
+          {"V"}
+          {/* { person.name.charAt(0)} */}
+        </AvatarFallback>
       </Avatar>
       <div className="text-sm">
         <p className="font-medium text-foreground line-clamp-1">
-          {person.name}
+          {/* {person.name} */}
+          Vardaan
         </p>
         <p className="text-xs text-muted-foreground line-clamp-1">
-          {person.designation}
+          {/* {person.designation} */}
+          Student
         </p>
       </div>
     </div>

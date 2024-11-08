@@ -13,6 +13,7 @@ import CalendarList from "./CalendarList";
 import SettingsList from "./SettingList";
 import GroupList from "./GroupList";
 import ProjectList from "./ProjectList";
+import ProjectListForTasks from "./Task-ProjectList";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -64,9 +65,12 @@ const Sidebar = React.memo(function Sidebar() {
     } else if (activeServer === 4) {
       navigate("chat");
     } else if (activeServer === 5) {
-      navigate(`project/${projects[0].id}`);
+      if (projects.length === 0) navigate(`project`);
+      else navigate(`project/${projects[0].id}`);
     } else if (activeServer === 6) {
-      navigate("tasks");
+      // if (tasks.length === 0) navigate(`task`);
+      // else navigate(`task/${tasks[0].id}`);
+      navigate(`task`);
     }
   }, [activeServer, dispatch, navigate, projects]);
 
@@ -84,7 +88,8 @@ const Sidebar = React.memo(function Sidebar() {
       {activeServer === 1 && <CalendarList />}
       {activeServer === 2 && <SettingsList />}
       {activeServer === 4 && <GroupList />}
-      {(activeServer === 5 || activeServer === 6) && <ProjectList />}
+      {activeServer === 5 && <ProjectList />}
+      {activeServer === 6 && <ProjectListForTasks />}
     </div>
   );
 

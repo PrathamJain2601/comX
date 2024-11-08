@@ -57,7 +57,7 @@ const CreateProjectComponent: React.FC = () => {
       communityId: parseInt(ID!, 10),
       name: formData.get("projectName") as string,
       description: formData.get("projectDescription") as string,
-      members: projectMembers.map((item) => item.userId),
+      members: projectMembers.map((item) => item.id),
       milestones: milestones.map((item) => item.name),
       deadline: deadline,
     });
@@ -72,7 +72,6 @@ const CreateProjectComponent: React.FC = () => {
       milestones: string[];
       deadline: Date;
     }) => {
-      console.log(data);
       const response = await axios.post(
         `${backend_url}/project/create-project`,
         data,

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
+import { Check, ChevronsUpDown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -19,13 +19,15 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-interface InputProps {
-  itemList:any,
+export function ItemPicker({
+  itemList,
+  value,
+  setValue,
+}: {
+  itemList: { id: number; value: string }[];
   value: string;
   setValue: React.Dispatch<React.SetStateAction<string>>;
-}
-
-const ItemPicker: React.FC<InputProps> = ({itemList, value, setValue }) => {
+}) {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -35,38 +37,39 @@ const ItemPicker: React.FC<InputProps> = ({itemList, value, setValue }) => {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="justify-between dark:bg-[#262629] h-12 w-full mb-4"
+          className="justify-between"
         >
           {value
-            ? itemList.find((item: any) => item.value === value)?.label
+            ? itemList.find((item) => item.id.toString() === value)
+                ?.value
             : "Select item..."}
-          <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="p-0">
-        <Command className="dark:bg-[#262629]">
-          <CommandInput placeholder="Search..." className="h-9 dark:bg-[#262629]" />
-          <CommandList className="no-scrollbar h-60 dark:bg-[#262629]">
-            <CommandEmpty className="dark:bg-[#262629] flex justify-center items-center">
-              No Item found.
-            </CommandEmpty>
+        <Command>
+          <CommandInput placeholder="Search framework..." />
+          <CommandList>
+            <CommandEmpty>No item found.</CommandEmpty>
             <CommandGroup>
-              {itemList.map((item: any) => (
+              {itemList.map((item) => (
                 <CommandItem
-                  key={item.value}
-                  value={item.value}
+                  key={item.id}
+                  value={item.id.toString()}
                   onSelect={(currentValue) => {
                     setValue(currentValue === value ? "" : currentValue);
                     setOpen(false);
                   }}
                 >
-                  {item.label}
-                  <CheckIcon
+                  <Check
                     className={cn(
-                      "ml-auto h-4 w-4",
-                      value === item.value ? "opacity-100" : "opacity-0"
+                      "mr-2 h-4 w-4",
+                      value === item.id.toString()
+                        ? "opacity-100"
+                        : "opacity-0"
                     )}
                   />
+                  {item.value}
                 </CommandItem>
               ))}
             </CommandGroup>
@@ -75,6 +78,4 @@ const ItemPicker: React.FC<InputProps> = ({itemList, value, setValue }) => {
       </PopoverContent>
     </Popover>
   );
-};
-
-export default ItemPicker;
+}

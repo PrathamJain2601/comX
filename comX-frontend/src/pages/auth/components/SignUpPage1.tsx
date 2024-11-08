@@ -7,7 +7,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@radix-ui/react-label";
 import { Input } from "@/components/ui/input";
-import ItemPicker from "@/components/Item-Picker";
+import { ItemPicker } from "@/components/Item-Picker";
 import { designation } from "@/lib/destignation";
 import { Button } from "@/components/ui/button";
 import { ReloadIcon } from "@radix-ui/react-icons";
@@ -158,7 +158,9 @@ export default function SignUpFormPage1({
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="password">Designation</Label>
-          <ItemPicker itemList={designation} value={post} setValue={setPost} />
+          <ItemPicker itemList={designation} 
+          value={post} setValue={setPost}
+           />
         </LabelInputContainer>
 
         {isPending ? (

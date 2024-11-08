@@ -69,19 +69,17 @@ export default function TeamMembersSettings({
           .map((item) => item.id),
         projectId: parseInt(projectId!, 10),
       };
-      console.log(data);
       const response = await axios.patch(
-        `${backend_url}/project/edit-members`,
+        `${backend_url}/project/edit-member`,
         data,
         { withCredentials: true }
       );
       return response.data;
     },
-    onSuccess(data) {
-      console.log(data);
-      toast.success("Project Edited Successfully!");
+    onSuccess() {
+      toast.success("Members Edited Successfully!");
       queryClient.invalidateQueries({
-        queryKey: [`project-list/${ID},community${ID}/project/${projectId}`],
+        queryKey: [`community${ID}/project/${projectId}`],
       });
       navigate(``);
     },
