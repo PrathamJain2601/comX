@@ -1,4 +1,5 @@
 import ErrorPage from "@/pages/genral/ErrorPage";
+import CreateProject from "@/pages/project/create-project/CreateProject";
 import { RootState } from "@/state/store";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { useQuery } from "@tanstack/react-query";
@@ -6,7 +7,6 @@ import axios from "axios";
 import { FolderGit2 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import CreateProject from "../project/create-project/CreateProject";
 import UserControlBox from "./UserControlBox";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;

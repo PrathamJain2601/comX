@@ -18,12 +18,7 @@ const router = Router();
 router.get('/get-all-projects/:communityId', isAuthenticated, isUserMember, get_all_projects);
 router.get('/get-project-details/:communityId/:projectId', isAuthenticated, isUserInProject, get_project_details)
 router.post('/create-project', isAuthenticated, isUserAdmin, create_project);
-<<<<<<< HEAD
-router.post('/add-member',isAuthenticated, isUserAdmin, isUserInProject, add_members);
-router.delete('/remove-member', isAuthenticated, isUserAdmin, isUserInProject, remove_members);
-=======
 router.post('/edit-member',isAuthenticated, isUserAdmin, isUserInProject, edit_members);
->>>>>>> ad6b5c961d990738212149f4d82d24302f76da3b
 router.patch('/edit-basic-info', isAuthenticated, isUserAdmin, isUserInProject,edit_project_info);
 router.patch('/add-milestone', isAuthenticated, isUserAdmin, isUserInProject, add_milestone);
 router.patch('/remove-milestone', isAuthenticated, isUserAdmin, isUserInProject, remove_milestone);

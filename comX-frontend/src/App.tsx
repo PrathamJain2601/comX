@@ -10,17 +10,17 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Contact from "./pages/genral/Contact";
 import Profile from "./pages/profile/Profile";
 import { Testing } from "./pages/Testing";
-import MainCalendar from "./pages/community/calendar/MainCalendar";
-import BasicInformation from "./pages/community/settings/BasicInfo";
-import MemberManagement from "./pages/community/settings/MemberManagement";
-import Permissions from "./pages/community/settings/Permissions";
-import NotificationSettings from "./pages/community/settings/NotificationSettings";
 import ChatApp from "./pages/chatApp/ChatApp";
-import ProjectDashboard from "./pages/community/project/ProjectDashboard";
-import TaskPage from "./pages/community/tasks/TasksPage";
 import Dashboard from "./pages/dashboard/DashBoard";
 import ForgotPassword from "./pages/auth/components/ForgotPassword";
 import CommunityLayout from "./pages/community/Community";
+import MainCalendar from "./pages/Calendar/MainCalendar";
+import BasicInformation from "./pages/community-settings/BasicInfo";
+import MemberManagement from "./pages/community-settings/MemberManagement";
+import NotificationSettings from "./pages/community-settings/NotificationSettings";
+import Permissions from "./pages/community-settings/Permissions";
+import ProjectDashboard from "./pages/project/ProjectDashboard";
+import TaskPage from "./pages/tasks/TasksPage";
 
 function App() {
   const router = createBrowserRouter([
