@@ -3,7 +3,7 @@ import { responseCodes } from "../../utils/response-codes";
 import { prisma } from "../../config/dbConnect";
 import { Status } from "@prisma/client";
 
-export const complete_task = async (req: Request, res: Response) => {
+export const task_verdict = async (req: Request, res: Response) => {
     try {
         const {taskId, verdict, completedDate} = req.body;
         let status:Status = 'PENDING';
