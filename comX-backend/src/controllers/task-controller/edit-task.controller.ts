@@ -36,7 +36,7 @@ export const edit_task = async (req: Request, res: Response) => {
                 priority: priority || existingTask.priority,
                 deadline: deadline || existingTask.deadline,
                 projectId: projectId || existingTask.projectId,
-                UserId: assignId || existingTask.UserId,
+                assignId: assignId || existingTask.assignId,
             },
         });
 
