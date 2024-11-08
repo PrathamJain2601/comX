@@ -7,8 +7,11 @@ import TasksList from "./TasksList";
 import { cards } from "@/lib/DummyData";
 import { Task } from "@/types/tasks";
 import SingleTask from "./SingelTask";
+import { useParams } from "react-router-dom";
 
 export default function TaskPage() {
+  const { projectId } = useParams();
+
   const [active, setActive] = useState<Task | boolean | null>(null);
 
   useEffect(() => {
@@ -27,6 +30,8 @@ export default function TaskPage() {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [active]);
+
+  if (projectId === undefined) return <div>Hello World</div>;
 
   return (
     <>
@@ -47,7 +52,10 @@ export default function TaskPage() {
             <TasksList cards={cards} setActive={setActive} />
           </ul>
         </CardContent>
-        <Button variant="outline" className="absolute right-12 bg-gray-50 h-12 bottom-6 w-36">
+        <Button
+          variant="outline"
+          className="absolute right-12 bg-gray-50 h-12 bottom-6 w-36"
+        >
           <Filter className="h-4 w-4 mr-2" />
           Filter
         </Button>

@@ -3,8 +3,13 @@ import ProjectOverview from "./components/ProjectOverview";
 import TeamMembers from "./components/TeamMembers";
 import RecentActivity from "./components/RecentActivity";
 import Milestones from "./components/Milestones";
+import { useParams } from "react-router-dom";
 
 export default function ProjectDashboard() {
+  const { projectId } = useParams();
+
+  if (projectId === undefined) return <div>Hello World</div>;
+
   return (
     <div className="max-h-screen overflow-scroll w-full no-scrollbar">
       <motion.div

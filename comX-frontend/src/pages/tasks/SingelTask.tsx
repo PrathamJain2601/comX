@@ -49,12 +49,6 @@ export default function SingleTask({
           className="w-full max-w-2xl bg-white dark:bg-neutral-800 rounded-2xl overflow-hidden shadow-xl"
         >
           <div className="relative">
-            <motion.img
-              layoutId={`image-${active.title}-${active.id}`}
-              src={active.src}
-              alt={active.title}
-              className="w-full h-64 object-cover object-center"
-            />
             <motion.button
               className="absolute top-4 right-4 p-2 bg-white dark:bg-neutral-800 rounded-full text-neutral-600 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
               onClick={() => setActive(null)}
@@ -73,7 +67,7 @@ export default function SingleTask({
               </motion.h3>
               <Badge
                 variant={isDone ? "success" : "secondary"}
-                className="text-sm"
+                className="text-sm mr-12"
               >
                 {isDone ? "Completed" : active.priority}
               </Badge>
@@ -84,13 +78,17 @@ export default function SingleTask({
               className="flex items-center space-x-2 text-sm text-neutral-600 dark:text-neutral-300"
             >
               <img
-                src={active.assignee.avatar}
-                alt={active.assignee.name}
+                // src={active.assignee.avatar}
+                // alt={active.assignee.name}
+                alt="Vardaan"
                 className="w-6 h-6 rounded-full"
               />
-              <span>{active.assignee.name}</span>
+              <span>
+                {/* {active.assignee.name} */}
+                Vardaan
+              </span>
               <span>•</span>
-              <span>{active.dueDate}</span>
+              <span>{active.deadline.toDateString()}</span>
             </motion.div>
 
             <motion.p
@@ -116,7 +114,7 @@ export default function SingleTask({
               className="text-neutral-600 dark:text-neutral-300 text-sm max-h-40 overflow-y-auto"
             >
               {typeof active.content === "function"
-                ? active.content()
+                ? active.content
                 : active.content}
             </motion.div>
 
@@ -144,11 +142,12 @@ export default function SingleTask({
               </Button>
               <motion.a
                 layoutId={`button-${active.title}-${active.id}`}
-                href={active.ctaLink}
+                href={active.referenceLinks[0]}
                 target="_blank"
                 className="px-4 py-2 text-sm rounded-full font-medium bg-green-500 text-white hover:bg-green-600 transition-colors"
               >
-                {active.ctaText}
+                {/* {active.ctaText} */}
+                View Docs
               </motion.a>
             </div>
           </div>
