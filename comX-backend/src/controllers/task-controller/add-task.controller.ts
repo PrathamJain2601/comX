@@ -5,7 +5,7 @@ import { Priority } from "@prisma/client";
 
 export const add_task = async (req: Request, res: Response) => {
     try {
-        const { title, description, referenceLinks, milestone, priority, deadline, projectId, assignId } = req.body;
+        const { title, description, referenceLinks, milestone, priority, deadline, createdAt, content, projectId, assignId } = req.body;
 
         //check if assignId is in project
 
@@ -26,6 +26,8 @@ export const add_task = async (req: Request, res: Response) => {
                 milestone: milestone || "",
                 priority,
                 deadline,
+                content,
+                createdAt: createdAt || null,
                 projectId,
                 UserId: assignId,
             },
