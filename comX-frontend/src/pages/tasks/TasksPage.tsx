@@ -8,9 +8,14 @@ import { cards } from "@/lib/DummyData";
 import { Task } from "@/types/tasks";
 import SingleTask from "./SingelTask";
 import { useParams } from "react-router-dom";
+import ErrorPage from "../genral/ErrorPage";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+
+const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 export default function TaskPage() {
-  const { projectId } = useParams();
+  const { ID,projectId } = useParams();
 
   const [active, setActive] = useState<Task | boolean | null>(null);
 
@@ -31,7 +36,35 @@ export default function TaskPage() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [active]);
 
+  const {
+    data: taskList,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: [`community${ID}/project/${projectId}/task`],
+    queryFn: async () => {
+      const response = await axios.get(
+        `${backend_url}/task/get-all-tasks-in-project/${ID}/${projectId}`,
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data.data;
+    },
+    staleTime: Infinity,
+  });
+
   if (projectId === undefined) return <div>Hello World</div>;
+
+  if (isLoading) {
+    return <div>Loading ...</div>;
+  }
+
+  if (error) {
+    return <ErrorPage />;
+  }
+
+  console.log(taskList);
 
   return (
     <>
