@@ -14,11 +14,16 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import ErrorPage from "@/pages/genral/ErrorPage";
 import MilestonesSettings from "./project-settings/MilestoneSettings";
+import { useSelector } from "react-redux";
+import { RootState } from "@/state/store";
+import CreateTask from "./create-task/CreateTask";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 export default function Milestones() {
   const { ID, projectId } = useParams();
+
+  const user = useSelector((state: RootState) => state.userDetails);
 
   const {
     data: project,
@@ -46,9 +51,11 @@ export default function Milestones() {
     return <ErrorPage />;
   }
 
+  const isAdmin = user.user?.id === project.ownerId;
+
   return (
     <Card>
-      <MilestonesSettings project={project}/>
+      {isAdmin && <MilestonesSettings project={project} />}
       <CardHeader>
         <CardTitle>Milestones</CardTitle>
         <CardDescription>Key project phases and goals</CardDescription>
@@ -85,7 +92,8 @@ export default function Milestones() {
                   className="mt-2"
                 />
               </div>
-              <div className="flex-shrink-0">
+              {isAdmin && <CreateTask />}
+              <div className="flex-shrink-0 flex justify-center item-center">
                 <Badge variant={Math.random() > 0.5 ? "default" : "secondary"}>
                   {Math.round(Math.random() * 100)}%
                 </Badge>

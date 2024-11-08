@@ -4,33 +4,28 @@ import { prisma } from "../../config/dbConnect";
 
 export const edit_milestone = async (req: Request, res: Response) => {
     try {
-        const { projectId, oldMilestone, newMilestone } = req.body;
+        const { projectId, milestones } = req.body;
+
+        console.log(milestones);
 
         // Retrieve the current milestones for the project
         const project = await prisma.project.findUnique({
             where: { id: projectId },
-            select: { milestones: true },
         });
 
         if (!project) {
             return responseCodes.clientError.notFound(res, "Project not found");
         }
 
-        // Check if the old milestone exists in the array
-        const milestoneIndex = (project.milestones || []).indexOf(oldMilestone);
-        if (milestoneIndex === -1) {
-            return responseCodes.clientError.badRequest(res, "Milestone not found");
-        }
-
-        // Create a copy of the milestones and update the specified milestone
-        const updatedMilestones = [...project.milestones];
-        updatedMilestones[milestoneIndex] = newMilestone;
+        console.log(project);
 
         // Update the project with the new milestones array
         const updatedProject = await prisma.project.update({
             where: { id: projectId },
-            data: { milestones: updatedMilestones },
+            data: { milestones: milestones },
         });
+
+        console.log(updatedProject);
 
         return responseCodes.success.ok(res, updatedProject);
     } catch (e) {
