@@ -8,6 +8,9 @@ export const get_all_tasks_in_project = async (req: Request, res: Response) => {
         
         const tasks = await prisma.task.findMany({
             where: { projectId: Number(projectId) },
+            include:{
+                user: true
+            }
         });
 
         if (tasks.length === 0) {
