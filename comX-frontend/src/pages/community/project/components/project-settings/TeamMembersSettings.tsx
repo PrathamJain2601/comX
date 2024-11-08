@@ -19,6 +19,8 @@ import CreateProjectMemberManagement from "../../create-project/CreateProjectMem
 import { useEffect, useState } from "react";
 import { useDebugger } from "@/hooks/useDebugger";
 import { Member } from "@/types/UserProfile";
+import { useSelector } from "react-redux";
+import { RootState } from "@/state/store";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -29,16 +31,18 @@ export default function TeamMembersSettings({
 }) {
   const { ID, projectId } = useParams();
 
+  const user = useSelector((state: RootState) => state.userDetails);
+
   const [availableMembers, setAvailableMembers] = useState<Member[]>([]);
   const [projectMembers, setProjectMembers] = useState<Member[]>(
     project.projectMembers
   );
 
   useEffect(() => {
-    setProjectMembers(project.projectMembers);
-  }, [project]);
-
-  useDebugger(project);
+    setProjectMembers(
+      project.projectMembers.filter((item) => item.id !== user.user?.id)
+    );
+  }, [project, user]);
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -55,16 +59,14 @@ export default function TeamMembersSettings({
         add: projectMembers
           .filter(
             (item) =>
-              !project.projectMembers.some(
-                (member) => member.id === item.id
-              )
+              !project.projectMembers.some((member) => member.id === item.id)
           )
           .map((item) => item.id),
         remove: project.projectMembers
           .filter(
-            (item) =>
-              !projectMembers.some((member) => member.id === item.id)
+            (item) => !projectMembers.some((member) => member.id === item.id)
           )
+          .filter((item) => item.id !== user.user?.id)
           .map((item) => item.id),
         projectId: parseInt(projectId!, 10),
       };

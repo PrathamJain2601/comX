@@ -25,7 +25,7 @@ export default function MemberManagementAPI({
       filteredMembers.some(
         (m) =>
           (m.role === "ADMIN" || m.role === "OWNER") &&
-          m.userId === user.user?.id
+          m.id === user.user?.id
       ),
     [filteredMembers, user]
   );

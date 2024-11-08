@@ -2,11 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RootState } from "@/state/store";
 import PROPS from "@/types/MemberMangementProps";
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Calendar, Mail, Trash2, UserMinus } from "lucide-react";
 import { useSelector } from "react-redux";
 import MemberManagementAPI from "./MemberManagementAPI";
 import { useParams } from "react-router-dom";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function Admin_MemberManagement(props: PROPS) {
   const { ID } = useParams();
@@ -28,7 +28,7 @@ export default function Admin_MemberManagement(props: PROPS) {
             .filter((m) => m.role === "ADMIN" || m.role === "OWNER")
             .map((admin) => (
               <li
-                key={admin.userId}
+                key={admin.id}
                 className="flex flex-col md:flex-row md:items-center justify-between py-4 transition-all duration-300 hover:bg-green-50"
               >
                 <div className="flex items-center mb-2 md:mb-0 ml-4">
@@ -51,7 +51,7 @@ export default function Admin_MemberManagement(props: PROPS) {
                   </div>
                 </div>
                 {admin.role === "ADMIN" &&
-                  admin.userId !== user.user?.id &&
+                  admin.id !== user.user?.id &&
                   isAdmin && (
                     <div className="flex space-x-2 mt-2 md:mt-0 mr-4">
                       <Button
@@ -63,7 +63,7 @@ export default function Admin_MemberManagement(props: PROPS) {
                             () =>
                               mutations.demote.mutateAsync({
                                 communityId: parseInt(ID!, 10),
-                                demoting_id: admin.userId,
+                                demoting_id: admin.id,
                               }),
                             `Demote ${admin.name} to member?`
                           )
@@ -81,7 +81,7 @@ export default function Admin_MemberManagement(props: PROPS) {
                             () =>
                               mutations.remove.mutateAsync({
                                 communityId: parseInt(ID!, 10),
-                                removingId: admin.userId,
+                                removingId: admin.id,
                               }),
                             `Remove ${admin.name}?`
                           )

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import PROPS from "@/types/MemberMangementProps";
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Calendar, Mail, UserCheck } from "lucide-react";
 import { useParams } from "react-router-dom";
 import MemberManagementAPI from "./MemberManagementAPI";
@@ -24,7 +24,7 @@ export default function Invite_MemberManagement(props: PROPS) {
             .filter((m) => m.role === "QUEUE")
             .map((invite) => (
               <li
-                key={invite.userId}
+                key={invite.id}
                 className="flex flex-col md:flex-row md:items-center justify-between py-4 transition-all duration-300 hover:bg-yellow-50"
               >
                 <div className="flex items-center mb-2 md:mb-0 ml-4">
@@ -57,7 +57,7 @@ export default function Invite_MemberManagement(props: PROPS) {
                           () =>
                             mutations.accept.mutateAsync({
                               communityId: parseInt(ID!, 10),
-                              member_id: invite.userId,
+                              member_id: invite.id,
                             }),
                           `Accept ${invite.name} as a member?`
                         )
