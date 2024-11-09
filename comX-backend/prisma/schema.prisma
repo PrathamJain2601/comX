@@ -32,6 +32,7 @@ model User {
   projects      ProjectMembers[]
   memberships   CommunityMember[]
   calendarTasks CommunityCalendar[]
+  messages      Message[]
 }
 
 model Community {
@@ -64,6 +65,7 @@ model Project {
 
   projectMembers ProjectMembers[]
   tasks          Task[]
+  messages       Message[]
 }
 
 model Task {
@@ -79,7 +81,7 @@ model Task {
   createdAt      DateTime  @default(now())
   content        String?
   projectId      Int
-  assignId         Int
+  assignId       Int
   project        Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
   user           User      @relation(fields: [assignId], references: [id], onDelete: Cascade)
 }
@@ -120,6 +122,17 @@ model CommunityCalendar {
   description String
   startTime   DateTime
   endTime     DateTime
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+
+  sender    User    @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  senderId  Int
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId Int
 }
 
 enum Status {
