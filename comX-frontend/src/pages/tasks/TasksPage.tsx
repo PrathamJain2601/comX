@@ -10,6 +10,7 @@ import { useParams } from "react-router-dom";
 import ErrorPage from "../genral/ErrorPage";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { Toaster } from "react-hot-toast";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -53,6 +54,11 @@ export default function TaskPage() {
     staleTime: Infinity,
   });
 
+  useEffect(() => {
+    if (active === null) return;
+    setActive(taskList.find((item: { id: number }) => item.id === active.id));
+  }, [taskList]);
+
   if (projectId === undefined) return <div>Hello World</div>;
 
   if (isLoading) {
@@ -62,8 +68,6 @@ export default function TaskPage() {
   if (error) {
     return <ErrorPage />;
   }
-
-  console.log(taskList);
 
   return (
     <>
@@ -91,6 +95,7 @@ export default function TaskPage() {
           <Filter className="h-4 w-4 mr-2" />
           Filter
         </Button>
+        <Toaster />
       </Card>
     </>
   );

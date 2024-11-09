@@ -23,6 +23,7 @@ export default function SingleTask({
   active: TaskGet | null;
   setActive: React.Dispatch<React.SetStateAction<TaskGet | null>>;
 }) {
+
   const { ID, projectId } = useParams();
 
   const user = useSelector((state: RootState) => state.userDetails);
@@ -55,8 +56,7 @@ export default function SingleTask({
       return response.data;
     },
     onSuccess(data) {
-      console.log(data);
-      toast.success("Task Completed!");
+      toast.success(`${data.data}`);
       queryClient.invalidateQueries({
         queryKey: [`community${ID}/project/${projectId}/task`],
       });
@@ -87,8 +87,9 @@ export default function SingleTask({
     return `${day} ${month} ${adjustedYear}`;
   }
 
-  const isDone = active.completedDate !== null;
-  const progress = active.completedDate === null ? 0 : 100;
+  const isDone = active.status === "COMPLETED" || active.status === "PENDING";
+  const progress =
+    (active.status === "COMPLETED" || active.status === "PENDING") ? 100 : 0;
 
   return (
     <AnimatePresence>

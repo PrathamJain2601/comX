@@ -54,7 +54,7 @@ export default function TasksList({
   return (
     <Card className="w-full border-none shadow-none">
       <CardContent>
-        <div className="grid grid-cols-6 gap-4 mb-4 px-4 font-semibold text-muted-foreground">
+        <div className="grid grid-cols-6 gap-4 mb-2 px-4 font-semibold text-muted-foreground">
           <h3 className="col-span-3 text-xl">Task</h3>
           <p>Assignee</p>
           <p className="text-center -translate-x-4">Status</p>
@@ -62,7 +62,7 @@ export default function TasksList({
         </div>
         <ScrollArea className="h-[calc(100vh-200px)] pr-4">
           <AnimatePresence>
-            <div className="flex flex-col gap-4 mt-8">
+            <div className="flex flex-col gap-4 mt-2">
             {cards.map((card) => (
               <TaskItem
                 key={`card-${card.title}-${card.id}`}
