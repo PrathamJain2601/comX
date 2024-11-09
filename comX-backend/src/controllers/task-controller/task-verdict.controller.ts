@@ -5,7 +5,7 @@ import { Status } from "@prisma/client";
 
 export const task_verdict = async (req: Request, res: Response) => {
     try {
-        const {taskId, verdict, completedDate} = req.body;
+        const {taskId, verdict} = req.body;
         let status:Status = 'PENDING';
         if(verdict == 'Accepted'){
             status = 'COMPLETED';
@@ -19,7 +19,7 @@ export const task_verdict = async (req: Request, res: Response) => {
         await prisma.task.update({
             data:{
                 status: status,
-                completedDate: completedDate
+                completedDate: new Date()
             },
             where:{
                 id: taskId
