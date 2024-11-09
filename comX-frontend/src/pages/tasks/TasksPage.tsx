@@ -4,8 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Filter } from "lucide-react";
 import TasksList from "./TasksList";
-import { cards } from "@/lib/DummyData";
-import { Task } from "@/types/tasks";
+import { TaskGet } from "@/types/tasks";
 import SingleTask from "./SingelTask";
 import { useParams } from "react-router-dom";
 import ErrorPage from "../genral/ErrorPage";
@@ -17,12 +16,12 @@ const backend_url = import.meta.env.VITE_BACKEND_URL;
 export default function TaskPage() {
   const { ID,projectId } = useParams();
 
-  const [active, setActive] = useState<Task | boolean | null>(null);
+  const [active, setActive] = useState<TaskGet | null>(null);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
-        setActive(false);
+        setActive(null);
       }
     }
 
@@ -82,7 +81,7 @@ export default function TaskPage() {
           </AnimatePresence>
           <SingleTask active={active} setActive={setActive} />
           <ul className="mx-auto w-full gap-4">
-            <TasksList cards={cards} setActive={setActive} />
+            <TasksList cards={taskList} setActive={setActive} />
           </ul>
         </CardContent>
         <Button

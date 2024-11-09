@@ -25,5 +25,32 @@ export type Task = {
   content: string;
   projectId: number;
   assignId: number;
-  id?:number,
-}
+};
+
+export type TaskGet = {
+  id: number;
+  title: string;
+  content: string;
+  description: string;
+  milestone: string;
+  priority: "HIGH" | "MEDIUM" | "LOW";
+  status: "INPROGRESS" | "COMPLETED" | "PENDING"; 
+  createdAt: string;
+  completedDate: string | null;
+  deadline: string;
+  projectId: number;
+  referenceLinks: string[];
+  user: {
+    id: number;
+    name: string;
+    username: string;
+    email: string;
+    avatar: string;
+    designation: string;
+    isVerified: boolean;
+    isOtpValid: boolean | null;
+    otp: string | null;
+    password: string;
+    registeredAt: string;
+  };
+};

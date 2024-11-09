@@ -43,13 +43,52 @@ export default function Milestones() {
     staleTime: Infinity,
   });
 
-  if (isLoading) {
+  const {
+    data: taskList,
+    isLoading: taskLoading,
+    error: taskError,
+  } = useQuery({
+    queryKey: [`community${ID}/project/${projectId}/task`],
+    queryFn: async () => {
+      const response = await axios.get(
+        `${backend_url}/task/get-all-tasks-in-project/${ID}/${projectId}`,
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data.data;
+    },
+    staleTime: Infinity,
+  });
+
+  if (isLoading || taskLoading) {
     return <div>Loading ...</div>;
   }
 
-  if (error) {
+  if (error || taskError) {
     return <ErrorPage />;
   }
+
+  const latestTask = taskList.reduce(
+    (latest: { deadline: Date }, item: { deadline: Date }) => {
+      return new Date(item.deadline) > new Date(latest.deadline)
+        ? item
+        : latest;
+    },
+    taskList[0]
+  );
+
+  const dueDate = latestTask ? latestTask.deadline : null;
+
+  const taskCompleted = taskList.filter(
+    (item: { completedDate: Date }) => item.completedDate !== null
+  ).length;
+
+  const totalTask = taskList.length;
+
+  const completionPercentage = Math.round((taskCompleted / totalTask) * 100);
+
+  console.log(taskList);
 
   const isAdmin = user.user?.id === project.ownerId;
 
@@ -80,22 +119,25 @@ export default function Milestones() {
               <div className="flex-grow">
                 <h4 className="font-medium">{milestone}</h4>
                 <p className="text-sm text-muted-foreground">
-                  Due:{" "}
-                  {new Date().toLocaleDateString("en-GB", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
+                  {dueDate
+                    ? "Due: " +
+                      new Date(dueDate).toLocaleDateString("en-GB", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })
+                    : "No Task Assigned"}
                 </p>
-                <Progress
-                  value={Math.round(Math.random() * 100)}
-                  className="mt-2"
-                />
+                <Progress value={completionPercentage} className="mt-2" />
               </div>
-              {isAdmin && <CreateTask milestone={milestone}/>}
+              {isAdmin && <CreateTask milestone={milestone} />}
               <div className="w-6 flex justify-center item-center">
-                <Badge variant={Math.random() > 0.5 ? "default" : "secondary"}>
-                  {Math.round(Math.random() * 100)}%
+                <Badge
+                  variant={
+                    completionPercentage === 100 ? "default" : "secondary"
+                  }
+                >
+                  {completionPercentage}%
                 </Badge>
               </div>
             </motion.li>

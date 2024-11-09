@@ -1,6 +1,6 @@
 "use client";
 
-import { Task } from "@/types/tasks";
+import { TaskGet } from "@/types/tasks";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -25,18 +25,18 @@ export default function TasksList({
   cards,
   setActive,
 }: {
-  cards: Task[];
-  setActive: React.Dispatch<React.SetStateAction<boolean | Task | null>>;
+  cards: TaskGet[];
+  setActive: React.Dispatch<React.SetStateAction<TaskGet | null>>;
 }) {
   const getStatusInfo = (status: string) => {
     switch (status) {
-      case "in-progress":
+      case "INPROGRESS":
         return { color: "bg-blue-500", icon: ClockIcon, label: "In Progress" };
-      case "pending":
+      case "PENDING":
         return { color: "bg-yellow-500", icon: CircleIcon, label: "Pending" };
-      case "overdue":
+      case "OVERDUE":
         return { color: "bg-red-500", icon: AlertCircleIcon, label: "Overdue" };
-      case "completed":
+      case "COMPLETED":
         return {
           color: "bg-green-500",
           icon: CheckCircleIcon,
@@ -78,8 +78,8 @@ function TaskItem({
   setActive,
   getStatusInfo,
 }: {
-  card: Task;
-  setActive: (card: Task) => void;
+  card: TaskGet;
+  setActive: (card: TaskGet) => void;
   getStatusInfo: (status: string) => {
     color: string;
     icon: React.ForwardRefExoticComponent<
@@ -89,6 +89,17 @@ function TaskItem({
   };
 }) {
   const { color, icon: StatusIcon, label } = getStatusInfo(card.status);
+
+  function convertDate(dateStr: string): string {
+    const date = new Date(dateStr);
+
+    const adjustedYear = date.getUTCFullYear() - 1;
+
+    const day = date.getUTCDate();
+    const month = date.toLocaleString("en-US", { month: "long" });
+
+    return `${day} ${month} ${adjustedYear}`;
+  }
 
   return (
     <TooltipProvider>
@@ -105,7 +116,7 @@ function TaskItem({
           >
             <motion.div
               layoutId={`image-${card.title}-${card.id}`}
-              className="col-span-3 flex items-center space-x-4"
+              className="col-span-3 flex items-center space-x-4 justify-between"
             >
               <div>
                 <motion.h3
@@ -118,8 +129,8 @@ function TaskItem({
                   {card.description}
                 </p>
               </div>
-              {card.status === "completed" && (
-                <div className="flex gap-2 justify-center items-center h-full mt-3">
+              {card.status === "PENDING" && (
+                <div className="flex gap-2 justify-center items-center h-full">
                   <motion.button
                     className="px-4 py-2 rounded-lg bg-green-500 text-white font-semibold"
                     onClick={(e) => {
@@ -140,7 +151,13 @@ function TaskItem({
               )}
             </motion.div>
 
-            <PersonInfo assignId={card.assignId} />
+            <PersonInfo
+              person={{
+                name: card.user.name,
+                designation: card.user.designation,
+                avatar: card.user.avatar,
+              }}
+            />
 
             <div className="flex justify-center">
               <Badge
@@ -154,7 +171,7 @@ function TaskItem({
 
             <div className="flex justify-center items-center space-x-2 text-muted-foreground">
               <CalendarIcon className="w-4 h-4" />
-              <span>{card.deadline.toDateString()}</span>
+              <span>{convertDate(card.deadline)}</span>
             </div>
           </motion.div>
         </TooltipTrigger>
@@ -166,24 +183,23 @@ function TaskItem({
   );
 }
 
-function PersonInfo({ assignId }: { assignId: number }) {
+function PersonInfo({
+  person,
+}: {
+  person: { name: string; avatar: string; designation: string };
+}) {
   return (
     <div className="flex items-center space-x-2">
       <Avatar className="h-8 w-8">
-        <AvatarImage src={`Vardaan_profile.jpg`} alt={"Vardaan"} />
-        <AvatarFallback>
-          {"V"}
-          {/* { person.name.charAt(0)} */}
-        </AvatarFallback>
+        <AvatarImage src={person.avatar} alt={"person.name"} />
+        <AvatarFallback>{person.name.charAt(0)}</AvatarFallback>
       </Avatar>
       <div className="text-sm">
         <p className="font-medium text-foreground line-clamp-1">
-          {/* {person.name} */}
-          Vardaan
+          {person.name}
         </p>
         <p className="text-xs text-muted-foreground line-clamp-1">
-          {/* {person.designation} */}
-          Student
+          {person.designation}
         </p>
       </div>
     </div>

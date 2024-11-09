@@ -9,7 +9,6 @@ import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Contact from "./pages/genral/Contact";
 import Profile from "./pages/profile/Profile";
-import { Testing } from "./pages/Testing";
 import ChatApp from "./pages/chatApp/ChatApp";
 import Dashboard from "./pages/dashboard/DashBoard";
 import ForgotPassword from "./pages/auth/components/ForgotPassword";
@@ -21,6 +20,7 @@ import NotificationSettings from "./pages/community-settings/NotificationSetting
 import Permissions from "./pages/community-settings/Permissions";
 import ProjectDashboard from "./pages/project/ProjectDashboard";
 import TaskPage from "./pages/tasks/TasksPage";
+import Testing from "./pages/Testing";
 
 function App() {
   const router = createBrowserRouter([
@@ -104,6 +104,10 @@ function App() {
         {
           path: "task/:projectId",
           element: <TaskPage />,
+        },
+        {
+          path: "testing",
+          element: <Testing />,
         },
       ],
     },

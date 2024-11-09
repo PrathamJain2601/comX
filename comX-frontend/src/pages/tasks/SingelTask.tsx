@@ -1,35 +1,94 @@
-"use client";
-
-import { useState, useRef } from "react";
-import { Task } from "@/types/tasks";
+import { useRef } from "react";
+import { TaskGet } from "@/types/tasks";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle, Circle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useOutsideClick } from "@/hooks/use-outside-click";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useParams } from "react-router-dom";
+import { ReloadIcon } from "@radix-ui/react-icons";
+import { useSelector } from "react-redux";
+import { RootState } from "@/state/store";
+
+const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 export default function SingleTask({
   active,
   setActive,
 }: {
-  active: Task | null | boolean;
-  setActive: React.Dispatch<React.SetStateAction<Task | null | boolean>>;
+  active: TaskGet | null;
+  setActive: React.Dispatch<React.SetStateAction<TaskGet | null>>;
 }) {
-  const [progress, setProgress] = useState(0);
-  const [isDone, setIsDone] = useState(false);
+  const { ID, projectId } = useParams();
+
+  const user = useSelector((state: RootState) => state.userDetails);
+
   const ref = useRef<HTMLDivElement>(null);
+
+  const queryClient = useQueryClient();
 
   useOutsideClick(ref, () => setActive(null));
 
   const handleMarkAsDone = () => {
-    setIsDone(!isDone);
-    setProgress(isDone ? 0 : 100);
+    handleTaskCompleted({
+      communityId: parseInt(ID!, 10),
+      projectId: parseInt(projectId!, 10),
+      taskId: active!.id,
+    });
   };
 
-  if (!(active && typeof active === "object")) {
+  const { mutateAsync: handleTaskCompleted, isPending } = useMutation({
+    mutationFn: async (data: {
+      communityId: number;
+      projectId: number;
+      taskId: number;
+    }) => {
+      const response = await axios.put(
+        `${backend_url}/task/complete-task`,
+        data,
+        { withCredentials: true }
+      );
+      return response.data;
+    },
+    onSuccess(data) {
+      console.log(data);
+      toast.success("Task Completed!");
+      queryClient.invalidateQueries({
+        queryKey: [`community${ID}/project/${projectId}/task`],
+      });
+    },
+    onError(error: unknown) {
+      if (axios.isAxiosError(error)) {
+        const errorMessage =
+          error.response?.data?.message || "Please try again.";
+        toast.error(errorMessage);
+      } else {
+        toast.error("Please try again.");
+      }
+    },
+  });
+
+  if (!active) {
     return null;
   }
+
+  function convertDate(dateStr: string): string {
+    const date = new Date(dateStr);
+
+    const adjustedYear = date.getUTCFullYear() - 1;
+
+    const day = date.getUTCDate();
+    const month = date.toLocaleString("en-US", { month: "long" });
+
+    return `${day} ${month} ${adjustedYear}`;
+  }
+
+  const isDone = active.completedDate !== null;
+  const progress = active.completedDate === null ? 0 : 100;
 
   return (
     <AnimatePresence>
@@ -78,17 +137,13 @@ export default function SingleTask({
               className="flex items-center space-x-2 text-sm text-neutral-600 dark:text-neutral-300"
             >
               <img
-                // src={active.assignee.avatar}
-                // alt={active.assignee.name}
-                alt="Vardaan"
+                src={active.user.avatar}
+                alt={active.user.name}
                 className="w-6 h-6 rounded-full"
               />
-              <span>
-                {/* {active.assignee.name} */}
-                Vardaan
-              </span>
+              <span>{active.user.name}</span>
               <span>•</span>
-              <span>{active.deadline.toDateString()}</span>
+              <span>{convertDate(active.deadline)}</span>
             </motion.div>
 
             <motion.p
@@ -118,38 +173,45 @@ export default function SingleTask({
                 : active.content}
             </motion.div>
 
-            <div className="flex justify-between items-center pt-4">
-              <Button
-                variant={isDone ? "outline" : "default"}
-                className={`${
-                  isDone
-                    ? "bg-green-100 text-green-700"
-                    : "bg-blue-500 hover:bg-blue-600"
-                } transition-colors`}
-                onClick={handleMarkAsDone}
-              >
-                {isDone ? (
-                  <>
-                    <CheckCircle size={18} className="mr-2" />
-                    Completed
-                  </>
+            {user.user!.id === active.user.id && (
+              <div className="flex justify-between items-center pt-4">
+                {isPending ? (
+                  <Button variant="default" disabled={true}>
+                    <ReloadIcon className="mr-2 animate-spin w-4 h-4 flex justify-center items-center" />
+                  </Button>
                 ) : (
-                  <>
-                    <Circle size={18} className="mr-2" />
-                    Mark as Done
-                  </>
+                  <Button
+                    variant={isDone ? "outline" : "default"}
+                    className={`${
+                      isDone
+                        ? "bg-green-100 text-green-700"
+                        : "bg-blue-500 hover:bg-blue-600"
+                    } transition-colors`}
+                    onClick={handleMarkAsDone}
+                  >
+                    {isDone ? (
+                      <>
+                        <CheckCircle size={18} className="mr-2" />
+                        Completed
+                      </>
+                    ) : (
+                      <>
+                        <Circle size={18} className="mr-2" />
+                        Mark as Done
+                      </>
+                    )}
+                  </Button>
                 )}
-              </Button>
-              <motion.a
-                layoutId={`button-${active.title}-${active.id}`}
-                href={active.referenceLinks[0]}
-                target="_blank"
-                className="px-4 py-2 text-sm rounded-full font-medium bg-green-500 text-white hover:bg-green-600 transition-colors"
-              >
-                {/* {active.ctaText} */}
-                View Docs
-              </motion.a>
-            </div>
+                <motion.a
+                  layoutId={`button-${active.title}-${active.id}`}
+                  href={`https://${active.referenceLinks[0]}`}
+                  target="_blank"
+                  className="px-4 py-2 text-sm rounded-full font-medium bg-green-500 text-white hover:bg-green-600 transition-colors"
+                >
+                  View Docs
+                </motion.a>
+              </div>
+            )}
           </div>
         </motion.div>
       </motion.div>

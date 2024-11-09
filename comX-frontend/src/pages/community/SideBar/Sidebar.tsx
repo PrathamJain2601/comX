@@ -57,6 +57,22 @@ const Sidebar = React.memo(function Sidebar() {
     staleTime: Infinity,
   });
 
+  const { data: taskList, error: taskError } = useQuery({
+    queryKey: [`community${ID}/project/${-1}/task`],
+    queryFn: async () => {
+      if (projects.length !== 0) {
+        const response = await axios.get(
+          `${backend_url}/task/get-all-tasks-in-project/${ID}/${projects[0].id}`,
+          {
+            withCredentials: true,
+          }
+        );
+        return response.data.data;
+      } else return [];
+    },
+    staleTime: Infinity,
+  });
+
   useEffect(() => {
     if (activeServer === 1) {
       navigate("calendar");
@@ -68,17 +84,16 @@ const Sidebar = React.memo(function Sidebar() {
       if (projects.length === 0) navigate(`project`);
       else navigate(`project/${projects[0].id}`);
     } else if (activeServer === 6) {
-      // if (tasks.length === 0) navigate(`task`);
-      // else navigate(`task/${tasks[0].id}`);
-      navigate(`task`);
+      if (projects.length === 0) navigate(`project/task`);
+      else navigate(`task/${projects[0].id}`);
     }
-  }, [activeServer, dispatch, navigate, projects]);
+  }, [activeServer, dispatch, navigate, projects, taskList]);
 
   if (projectsLoading) {
     return <div>Loading ...</div>;
   }
 
-  if (projectError) {
+  if (projectError || taskError) {
     return <ErrorPage />;
   }
 
