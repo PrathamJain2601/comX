@@ -1,5 +1,3 @@
-"use client";
-
 import { TaskGet } from "@/types/tasks";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +18,12 @@ import {
   CircleIcon,
   LucideProps,
 } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useParams } from "react-router-dom";
+
+const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 export default function TasksList({
   cards,
@@ -58,6 +62,7 @@ export default function TasksList({
         </div>
         <ScrollArea className="h-[calc(100vh-200px)] pr-4">
           <AnimatePresence>
+            <div className="flex flex-col gap-4 mt-8">
             {cards.map((card) => (
               <TaskItem
                 key={`card-${card.title}-${card.id}`}
@@ -66,6 +71,7 @@ export default function TasksList({
                 getStatusInfo={getStatusInfo}
               />
             ))}
+            </div>
           </AnimatePresence>
         </ScrollArea>
       </CardContent>
@@ -90,6 +96,8 @@ function TaskItem({
 }) {
   const { color, icon: StatusIcon, label } = getStatusInfo(card.status);
 
+  const { projectId, ID } = useParams();
+
   function convertDate(dateStr: string): string {
     const date = new Date(dateStr);
 
@@ -100,6 +108,51 @@ function TaskItem({
 
     return `${day} ${month} ${adjustedYear}`;
   }
+
+  const queryClient = useQueryClient();
+
+  const handleVerdict = (s: string, completedDate: Date, taskId: number) => {
+    handleTaskVerdict({
+      completedDate,
+      taskId,
+      verdict: s,
+      communityId: parseInt(ID!, 10),
+      projectId: parseInt(projectId!, 10),
+    });
+  };
+
+  const { mutateAsync: handleTaskVerdict, isPending: verdictPending } =
+    useMutation({
+      mutationFn: async (data: {
+        verdict: string;
+        taskId: number;
+        completedDate: Date;
+        communityId: number;
+        projectId: number;
+      }) => {
+        const response = await axios.put(
+          `${backend_url}/task/task-verdict`,
+          data,
+          { withCredentials: true }
+        );
+        return response.data;
+      },
+      onSuccess() {
+        toast.success("Task Verdict Given");
+        queryClient.invalidateQueries({
+          queryKey: [`community${ID}/project/${projectId}/task`],
+        });
+      },
+      onError(error: unknown) {
+        if (axios.isAxiosError(error)) {
+          const errorMessage =
+            error.response?.data?.message || "Please try again.";
+          toast.error(errorMessage);
+        } else {
+          toast.error("Please try again.");
+        }
+      },
+    });
 
   return (
     <TooltipProvider>
@@ -112,7 +165,7 @@ function TaskItem({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="grid grid-cols-6 gap-4 items-center p-4 rounded-lg cursor-pointer hover:bg-muted"
+            className="grid grid-cols-6 gap-4 items-center p-4 rounded-lg cursor-pointer hover:bg-muted shadow-even mx-2 justify-center"
           >
             <motion.div
               layoutId={`image-${card.title}-${card.id}`}
@@ -129,12 +182,17 @@ function TaskItem({
                   {card.description}
                 </p>
               </div>
-              {card.status === "PENDING" && (
+              {!verdictPending && card.status === "PENDING" && (
                 <div className="flex gap-2 justify-center items-center h-full">
                   <motion.button
                     className="px-4 py-2 rounded-lg bg-green-500 text-white font-semibold"
                     onClick={(e) => {
                       e.stopPropagation();
+                      handleVerdict(
+                        "Accepted",
+                        new Date(card.completedDate!),
+                        card.id
+                      );
                     }}
                   >
                     Accept
@@ -143,6 +201,11 @@ function TaskItem({
                     className="px-4 py-2 rounded-lg bg-red-500 text-white font-semibold"
                     onClick={(e) => {
                       e.stopPropagation();
+                      handleVerdict(
+                        "Rejected",
+                        new Date(card.completedDate!),
+                        card.id
+                      );
                     }}
                   >
                     Decline

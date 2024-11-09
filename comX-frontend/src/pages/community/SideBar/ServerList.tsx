@@ -63,11 +63,6 @@ const list = [
     link: <Settings />,
   },
   {
-    id: 3,
-    name: "Code",
-    link: <Braces />,
-  },
-  {
     id: 4,
     name: "General",
     link: <MessageCircleMore />,
@@ -83,8 +78,8 @@ const list = [
     link: <CheckCheck />,
   },
   {
-    id: 7,
-    name: "Vardaan",
-    link: "V",
+    id: 3,
+    name: "Code",
+    link: <Braces />,
   },
 ];
