@@ -4,6 +4,7 @@ import TeamMembers from "./components/TeamMembers";
 import RecentActivity from "./components/RecentActivity";
 import Milestones from "./components/Milestones";
 import { useParams } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
 export default function ProjectDashboard() {
   const { projectId } = useParams();
@@ -20,12 +21,12 @@ export default function ProjectDashboard() {
       >
         <div className="p-6 sm:p-8 md:p-10 space-y-8">
           <ProjectOverview />
-          {/* <Tasks /> */}
           <TeamMembers />
           <RecentActivity />
           <Milestones />
         </div>
       </motion.div>
+      <Toaster />
     </div>
   );
 }
