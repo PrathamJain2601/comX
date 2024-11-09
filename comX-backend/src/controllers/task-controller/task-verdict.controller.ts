@@ -18,8 +18,7 @@ export const task_verdict = async (req: Request, res: Response) => {
         }
         await prisma.task.update({
             data:{
-                status: status,
-                completedDate: new Date()
+                status: status
             },
             where:{
                 id: taskId

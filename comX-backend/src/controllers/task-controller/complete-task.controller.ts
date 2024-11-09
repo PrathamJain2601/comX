@@ -18,11 +18,14 @@ export const complete_task = async (req: Request, res: Response) => {
         }
 
         let q: Status;
+        let completedDate: Date | null;
         if(data.status == "INPROGRESS"){
             q = "PENDING";
+            completedDate = new Date();
         }
         else if(data.status == "PENDING"){
-            q = "INPROGRESS"
+            q = "INPROGRESS";
+            completedDate = null;
         }
         else{
             return responseCodes.clientError.badRequest(res, "task already completed");
@@ -30,7 +33,8 @@ export const complete_task = async (req: Request, res: Response) => {
         
         await prisma.task.update({
             data:{
-                status: q
+                status: q,
+                completedDate: completedDate
             },
             where:{
                 id: taskId,
