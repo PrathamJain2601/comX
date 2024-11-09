@@ -88,8 +88,6 @@ export default function Milestones() {
 
   const completionPercentage = Math.round((taskCompleted / totalTask) * 100);
 
-  console.log(taskCompleted,totalTask,completionPercentage);
-
   const isAdmin = user.user?.id === project.ownerId;
 
   return (

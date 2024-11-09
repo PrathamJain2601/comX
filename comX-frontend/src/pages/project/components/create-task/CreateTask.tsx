@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useDebugger } from "@/hooks/useDebugger";
 import { LabelInputContainer } from "@/pages/auth/components/SignUpExtraComponenets";
 import ErrorPage from "@/pages/genral/ErrorPage";
 import { Task } from "@/types/tasks";
@@ -37,8 +36,6 @@ export default function CreateTask({ milestone }: { milestone: string }) {
   const [priority, setPriority] = useState<
     "LOW" | "MEDIUM" | "HIGH" | "CRITICAL"
   >("MEDIUM");
-
-  useDebugger(priority);
 
   const queryClient = useQueryClient();
 

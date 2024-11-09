@@ -1,42 +1,71 @@
-import { useState, useRef, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Send } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Send } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useDispatch, useSelector } from "react-redux";
+import { connectSocket, disconnectSocket } from "@/state/socket/socketIO";
+import { AppDispatch, RootState } from "@/state/store";
 
 type Message = {
-  id: number
-  text: string
-  sender: 'user' | 'other'
-}
+  id: number;
+  text: string;
+  sender: "user" | "other";
+};
 
 export default function ChatApp() {
+  const dispatch = useDispatch<AppDispatch>();
+
+  const isConnected = useSelector((state: RootState) => state.socket.isConnected);
+  
+  // Connect to the socket when the component mounts
+  useEffect(() => {
+    dispatch(connectSocket());
+    
+    // Clean up by disconnecting when the component unmounts
+    return () => {
+      dispatch(disconnectSocket());
+    };
+  }, [dispatch]);
+  
+  console.log(isConnected);
+
   const [messages, setMessages] = useState<Message[]>([
     { id: 1, text: "Hey there! 👋", sender: "other" },
     { id: 2, text: "Hi! How are you?", sender: "user" },
     { id: 3, text: "I'm doing great, thanks for asking!", sender: "other" },
-  ])
-  const [newMessage, setNewMessage] = useState("")
-  const messagesEndRef = useRef<HTMLDivElement>(null)
+  ]);
+  const [newMessage, setNewMessage] = useState("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
-    scrollToBottom()
-  }, [messages])
+    scrollToBottom();
+  }, [messages]);
 
   const handleSendMessage = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (newMessage.trim() !== "") {
-      setMessages([...messages, { id: messages.length + 1, text: newMessage, sender: "user" }])
-      setNewMessage("")
+      setMessages([
+        ...messages,
+        { id: messages.length + 1, text: newMessage, sender: "user" },
+      ]);
+      setNewMessage("");
       setTimeout(() => {
-        setMessages(prev => [...prev, { id: prev.length + 1, text: "Thanks for your message!", sender: "other" }])
-      }, 1000)
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: prev.length + 1,
+            text: "Thanks for your message!",
+            sender: "other",
+          },
+        ]);
+      }, 1000);
     }
-  }
+  };
 
   return (
     <div className="flex flex-col h-screen bg-gradient-to-br w-full">
@@ -54,11 +83,15 @@ export default function ChatApp() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
-              className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'} mb-4`}
+              className={`flex ${
+                message.sender === "user" ? "justify-end" : "justify-start"
+              } mb-4`}
             >
               <div
                 className={`max-w-xs px-4 py-2 rounded-lg ${
-                  message.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'
+                  message.sender === "user"
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-200 text-gray-800"
                 }`}
               >
                 {message.text}
@@ -74,7 +107,10 @@ export default function ChatApp() {
         transition={{ duration: 0.5 }}
         className="p-4 bg-white bg-opacity-20 backdrop-blur-lg"
       >
-        <form onSubmit={handleSendMessage} className="space-x-2 w-full flex justify-center items-center">
+        <form
+          onSubmit={handleSendMessage}
+          className="space-x-2 w-full flex justify-center items-center"
+        >
           <Input
             type="text"
             value={newMessage}
@@ -82,12 +118,16 @@ export default function ChatApp() {
             placeholder="Type a message..."
             className="bg-white w-full"
           />
-          <Button type="submit" size="icon" className="bg-blue-500 hover:bg-blue-600 w-10 h-10">
+          <Button
+            type="submit"
+            size="icon"
+            className="bg-blue-500 hover:bg-blue-600 w-10 h-10"
+          >
             <Send className="h-6 w-6" />
             <span className="sr-only">Send</span>
           </Button>
         </form>
       </motion.div>
     </div>
-  )
+  );
 }
