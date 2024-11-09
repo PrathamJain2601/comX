@@ -42,7 +42,7 @@ export const complete_task = async (req: Request, res: Response) => {
             }
         })
 
-        return responseCodes.success.ok(res, "Task completed.");
+        return responseCodes.success.ok(res, `Task ${q}`);
     } catch (error) {
         console.error(error);
         return responseCodes.serverError.internalServerError(res, "Internal server error");
