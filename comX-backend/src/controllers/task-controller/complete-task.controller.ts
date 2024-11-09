@@ -25,7 +25,7 @@ export const complete_task = async (req: Request, res: Response) => {
             q = "INPROGRESS"
         }
         else{
-            return responseCodes.serverError.internalServerError(res, "server error in completing task");
+            return responseCodes.clientError.badRequest(res, "task already completed");
         }
         
         await prisma.task.update({

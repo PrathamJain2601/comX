@@ -1,9 +1,17 @@
 const express = require('express');
+const http = require('http');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const { WebSocketServer } = require('ws');
 import {Response, Request} from "express";
 
 const app = express();
+
+const webSocket = express();
+const wsServer = http.createServer(webSocket);
+const wss = new WebSocketServer({ server: wsServer });
+
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({extended: true}));
@@ -35,4 +43,9 @@ app.use("/task", task);
 
 app.listen(5000, ()=>{
     console.log("server running on port 5000");
+});
+
+const WS_PORT = 5001;
+wsServer.listen(WS_PORT, () => {
+  console.log(`WebSocket server running on ws://localhost:${WS_PORT}`);
 });
