@@ -4,12 +4,13 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const { server: WebSocketServer } = require('websocket');
 import {Response, Request} from "express";
+import { Message, request } from "websocket";
 
 const app = express();
 
 const webSocket = express();
 const wsServer = http.createServer(webSocket);
-const wss = new WebSocketServer({
+const ws = new WebSocketServer({
     httpServer: wsServer,
     autoAcceptConnections: false,
   });
@@ -42,6 +43,25 @@ const project = require("./routes/project.route");
 app.use("/project", project);
 const task = require("./routes/tasks.route");
 app.use("/task", task);
+
+
+ws.on('request', (request: request) => {
+    const connection = request.accept(null, request.origin);
+    console.log('WebSocket connection established on app2.');
+  
+    // Handle incoming messages
+    connection.on('message', (message: Message) => {
+      if (message.type === 'utf8') {
+        console.log(`App2 received: ${message.utf8Data}`);
+        connection.sendUTF(`App2 echo: ${message.utf8Data}`);
+      }
+    });
+  
+    // Handle connection close
+    connection.on('close', (reasonCode: number, description: string) => {
+      console.log('WebSocket connection closed on app2.');
+    });
+  });
 
 app.listen(5000, ()=>{
     console.log("server running on port 5000");
