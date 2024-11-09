@@ -4,16 +4,22 @@ import { prisma } from "../../config/dbConnect";
 
 export const complete_task = async (req: Request, res: Response) => {
     try {
-        const {taskId} = req.body;
-        await prisma.task.update({
+        const {taskId, userId} = req.body;
+        
+        const data = await prisma.task.update({
             data:{
-                status: 'PENDING'
+                status: 'PENDING',
+                completedDate: new Date()
             },
             where:{
-                id: taskId
+                id: taskId,
+                assignId: userId
             }
         })
-        return responseCodes.success.ok(res, "Task completed.");
+        if(data){
+            return responseCodes.success.ok(res, "Task completed.");
+        }
+        return responseCodes.clientError.badRequest(res, "You are not assigned this task");
     } catch (error) {
         console.error(error);
         return responseCodes.serverError.internalServerError(res, "Internal server error");
