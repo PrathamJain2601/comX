@@ -14,7 +14,7 @@ import axios from "axios";
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 export default function TaskPage() {
-  const { ID,projectId } = useParams();
+  const { ID, projectId } = useParams();
 
   const [active, setActive] = useState<TaskGet | null>(null);
 

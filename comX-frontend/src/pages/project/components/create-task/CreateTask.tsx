@@ -73,7 +73,9 @@ export default function CreateTask({ milestone }: { milestone: string }) {
     onSuccess(data) {
       console.log(data);
       toast.success("Task Created Successfully!");
-      queryClient.invalidateQueries({ queryKey: [`project-list/${ID}`] });
+      queryClient.invalidateQueries({
+        queryKey: [`community${ID}/project/${projectId}/task`],
+      });
     },
     onError(error: unknown) {
       if (axios.isAxiosError(error)) {

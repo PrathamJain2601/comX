@@ -80,15 +80,15 @@ export default function Milestones() {
 
   const dueDate = latestTask ? latestTask.deadline : null;
 
-  const taskCompleted = taskList.filter(
-    (item: { completedDate: Date }) => item.completedDate !== null
-  ).length;
+  const taskCompleted = taskList
+    .filter((item: { completedDate: Date }) => item.completedDate !== null)
+    .filter((item: { status: string }) => item.status === "COMPLETED").length;
 
   const totalTask = taskList.length;
 
   const completionPercentage = Math.round((taskCompleted / totalTask) * 100);
 
-  console.log(taskList);
+  console.log(taskCompleted,totalTask,completionPercentage);
 
   const isAdmin = user.user?.id === project.ownerId;
 
