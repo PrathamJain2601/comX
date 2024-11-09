@@ -2,18 +2,21 @@ const express = require('express');
 const http = require('http');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const { server: WebSocketServer } = require('websocket');
+import { Server as SocketIOServer } from 'socket.io';
 import {Response, Request} from "express";
-import { Message, request } from "websocket";
 
 const app = express();
-
 const webSocket = express();
-const wsServer = http.createServer(webSocket);
-const ws = new WebSocketServer({
-    httpServer: wsServer,
-    autoAcceptConnections: false,
-  });
+const server = http.createServer(webSocket); // HTTP server for Express
+
+// Socket.IO setup
+const io = new SocketIOServer(server, {
+  cors: {
+    origin: 'http://localhost:5173', // Allow requests from this origin
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    credentials: true, // Allow credentials (cookies, etc.)
+  },
+});
 
 app.use(express.json());
 app.use(cookieParser());
@@ -45,21 +48,18 @@ const task = require("./routes/tasks.route");
 app.use("/task", task);
 
 
-ws.on('request', (request: request) => {
-    const connection = request.accept(null, request.origin);
-    console.log('WebSocket connection established on app2.');
-  
-    // Handle incoming messages
-    connection.on('message', (message: Message) => {
-      if (message.type === 'utf8') {
-        console.log(`App2 received: ${message.utf8Data}`);
-        connection.sendUTF(`App2 echo: ${message.utf8Data}`);
-      }
+io.on('connection', (socket) => {
+    console.log('a user connected');
+    
+    // Handle incoming messages from the client
+    socket.on('message', (data) => {
+      console.log(`Received message: ${data}`);
+      socket.emit('message', `Echo: ${data}`);
     });
   
-    // Handle connection close
-    connection.on('close', (reasonCode: number, description: string) => {
-      console.log('WebSocket connection closed on app2.');
+    // Handle disconnect
+    socket.on('disconnect', () => {
+      console.log('user disconnected');
     });
   });
 
@@ -68,6 +68,6 @@ app.listen(5000, ()=>{
 });
 
 const WS_PORT = 5001;
-wsServer.listen(WS_PORT, () => {
+server.listen(WS_PORT, () => {
   console.log(`WebSocket server running on port ${WS_PORT}`);
 });
