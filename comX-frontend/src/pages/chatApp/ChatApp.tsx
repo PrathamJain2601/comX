@@ -3,38 +3,28 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useDispatch, useSelector } from "react-redux";
-import { connectSocket, disconnectSocket } from "@/state/socket/socketIO";
-import { AppDispatch, RootState } from "@/state/store";
-
-type Message = {
-  id: number;
-  text: string;
-  sender: "user" | "other";
-};
+import { useSelector } from "react-redux";
+import { RootState } from "@/state/store";
+import useSocket from "@/hooks/useSocket";
+import { useDebugger } from "@/hooks/useDebugger";
 
 export default function ChatApp() {
-  const dispatch = useDispatch<AppDispatch>();
+  const messages = useSelector((state: RootState) => state.socket.messages);
+  const user = useSelector((state: RootState) => state.userDetails);
 
-  const isConnected = useSelector((state: RootState) => state.socket.isConnected);
-  
-  // Connect to the socket when the component mounts
+  const { sendMessage, fetchMessages, isConnected } = useSocket(
+    user.user!.id,
+    3
+  );
+
   useEffect(() => {
-    dispatch(connectSocket());
-    
-    // Clean up by disconnecting when the component unmounts
-    return () => {
-      dispatch(disconnectSocket());
-    };
-  }, [dispatch]);
-  
-  console.log(isConnected);
+    if (isConnected) {
+      fetchMessages(0); // Fetch initial messages when connected
+    }
+  }, [isConnected, fetchMessages]);
 
-  const [messages, setMessages] = useState<Message[]>([
-    { id: 1, text: "Hey there! 👋", sender: "other" },
-    { id: 2, text: "Hi! How are you?", sender: "user" },
-    { id: 3, text: "I'm doing great, thanks for asking!", sender: "other" },
-  ]);
+  useDebugger(messages);
+
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -48,22 +38,9 @@ export default function ChatApp() {
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (newMessage.trim() !== "") {
-      setMessages([
-        ...messages,
-        { id: messages.length + 1, text: newMessage, sender: "user" },
-      ]);
+    if (newMessage.trim()) {
+      sendMessage(newMessage);
       setNewMessage("");
-      setTimeout(() => {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: prev.length + 1,
-            text: "Thanks for your message!",
-            sender: "other",
-          },
-        ]);
-      }, 1000);
     }
   };
 
@@ -84,17 +61,19 @@ export default function ChatApp() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
               className={`flex ${
-                message.sender === "user" ? "justify-end" : "justify-start"
+                message.senderId === user.user!.id
+                  ? "justify-end"
+                  : "justify-start"
               } mb-4`}
             >
               <div
                 className={`max-w-xs px-4 py-2 rounded-lg ${
-                  message.sender === "user"
+                  message.senderId === user.user!.id
                     ? "bg-blue-500 text-white"
                     : "bg-gray-200 text-gray-800"
                 }`}
               >
-                {message.text}
+                {message.content}
               </div>
             </motion.div>
           ))}

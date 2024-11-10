@@ -25,7 +25,7 @@ async function isUserInProject(userId: number, projectId: number): Promise<boole
     return membership !== null;
 }
 
-io.on('connection', (socket) => {
+io.on('connect', (socket) => {
   console.log('A user connected to WebSocket server');
 
   socket.on('joinRoom', async (room: string, userId: number) => {
@@ -51,7 +51,7 @@ io.on('connection', (socket) => {
           skip: offset,
           take: 40,
         });
-        socket.emit('recieveMessages', messages.reverse());
+        socket.emit('receiveMessages', messages.reverse());
       } catch (error) {
         console.error('Error fetching messages:', error);
         socket.emit('error', { message: 'Could not retrieve messages' });
@@ -71,7 +71,7 @@ io.on('connection', (socket) => {
           data: {
             content,
             senderId: userId,
-            projectId: room,
+            projectId: projectId,
             createdAt: new Date(),
           },
         });

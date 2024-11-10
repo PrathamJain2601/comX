@@ -21,6 +21,7 @@ import Permissions from "./pages/community-settings/Permissions";
 import ProjectDashboard from "./pages/project/ProjectDashboard";
 import TaskPage from "./pages/tasks/TasksPage";
 import Testing from "./pages/Testing";
+import Helper from "./pages/chatApp/Helper";
 
 function App() {
   const router = createBrowserRouter([
@@ -55,7 +56,7 @@ function App() {
     },
     {
       path: "testing",
-      element: <Testing />,
+      element: <Helper />,
     },
     {
       path: "community/:ID",
@@ -104,10 +105,6 @@ function App() {
         {
           path: "task/:projectId",
           element: <TaskPage />,
-        },
-        {
-          path: "testing",
-          element: <Testing />,
         },
       ],
     },
