@@ -48,7 +48,7 @@ io.on('connect', (socket) => {
         const messages = await prisma.message.findMany({
           where: { projectId: projectId },
           orderBy: { createdAt: 'desc' },
-          skip: offset,
+          skip: offset*40,
           take: 40,
         });
         socket.emit('receiveMessages', messages.reverse());
