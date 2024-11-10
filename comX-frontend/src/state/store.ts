@@ -5,6 +5,7 @@ import userSlice from "./userDetails/userDetails";
 import activeChannelSlice from "./sidebar/activeChannel";
 import activeServerSlice from "./sidebar/activeServer";
 import yearSlice from "./calendar/year";
+import socketSlice from "./socket/socketIO"
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     activeChannel: activeChannelSlice,
     activeServer: activeServerSlice,
     year: yearSlice,
+    socket: socketSlice,
   },
 });
 
