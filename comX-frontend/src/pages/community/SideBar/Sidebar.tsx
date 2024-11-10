@@ -79,7 +79,7 @@ const Sidebar = React.memo(function Sidebar() {
     } else if (activeServer === 2) {
       navigate("settings/basic-info");
     } else if (activeServer === 4) {
-      navigate("chat");
+      navigate("chat-skeleton");
     } else if (activeServer === 5) {
       if (projects.length === 0) navigate(`project`);
       else navigate(`project/${projects[0].id}`);

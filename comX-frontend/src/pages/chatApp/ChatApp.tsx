@@ -6,24 +6,43 @@ import { Input } from "@/components/ui/input";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
 import useSocket from "@/hooks/useSocket";
-import { useDebugger } from "@/hooks/useDebugger";
+import { useParams } from "react-router-dom";
 
 export default function ChatApp() {
+  const { projectId } = useParams();
+
   const messages = useSelector((state: RootState) => state.socket.messages);
   const user = useSelector((state: RootState) => state.userDetails);
 
   const { sendMessage, fetchMessages, isConnected } = useSocket(
     user.user!.id,
-    3
+    parseInt(projectId!, 10)
   );
 
-  useEffect(() => {
-    if (isConnected) {
-      fetchMessages(0); // Fetch initial messages when connected
-    }
-  }, [isConnected, fetchMessages]);
+  const [initialFetchDone, setInitialFetchDone] = useState(false);
+  const fetchedProjectIds = useRef(new Set<number>());
 
-  useDebugger(messages);
+  useEffect(() => {
+    // Only fetch if connected, initial fetch not done, and projectId not fetched before
+    const id = parseInt(projectId!, 10);
+    if (
+      isConnected &&
+      !initialFetchDone &&
+      !fetchedProjectIds.current.has(id)
+    ) {
+      console.log("Fetching messages for project:", projectId);
+      fetchMessages(0);
+      fetchedProjectIds.current.add(id); // Mark projectId as fetched
+      setInitialFetchDone(true);
+    }
+  }, [isConnected, fetchMessages, initialFetchDone, projectId]);
+
+  // Reset initialFetchDone when projectId changes, but only if it's not already fetched
+  useEffect(() => {
+    if (!fetchedProjectIds.current.has(parseInt(projectId!, 10))) {
+      setInitialFetchDone(false);
+    }
+  }, [projectId]);
 
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -53,30 +72,32 @@ export default function ChatApp() {
         className="flex-grow overflow-y-auto p-4 bg-white bg-opacity-20 backdrop-blur-lg"
       >
         <AnimatePresence initial={false}>
-          {messages.map((message) => (
-            <motion.div
-              key={message.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-              className={`flex ${
-                message.senderId === user.user!.id
-                  ? "justify-end"
-                  : "justify-start"
-              } mb-4`}
-            >
-              <div
-                className={`max-w-xs px-4 py-2 rounded-lg ${
+          {messages
+            .filter((message) => message.projectId === parseInt(projectId!, 10))
+            .map((message) => (
+              <motion.div
+                key={message.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className={`flex ${
                   message.senderId === user.user!.id
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200 text-gray-800"
-                }`}
+                    ? "justify-end"
+                    : "justify-start"
+                } mb-4`}
               >
-                {message.content}
-              </div>
-            </motion.div>
-          ))}
+                <div
+                  className={`max-w-xs px-4 py-2 rounded-lg ${
+                    message.senderId === user.user!.id
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200 text-gray-800"
+                  }`}
+                >
+                  {message.content}
+                </div>
+              </motion.div>
+            ))}
         </AnimatePresence>
         <div ref={messagesEndRef} />
       </motion.div>

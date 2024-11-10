@@ -20,8 +20,7 @@ import NotificationSettings from "./pages/community-settings/NotificationSetting
 import Permissions from "./pages/community-settings/Permissions";
 import ProjectDashboard from "./pages/project/ProjectDashboard";
 import TaskPage from "./pages/tasks/TasksPage";
-import Testing from "./pages/Testing";
-import Helper from "./pages/chatApp/Helper";
+import ChatSkeleton from "./pages/chatApp/ChatSkeleton";
 
 function App() {
   const router = createBrowserRouter([
@@ -55,10 +54,6 @@ function App() {
       element: <ForgotPassword />,
     },
     {
-      path: "testing",
-      element: <Helper />,
-    },
-    {
       path: "community/:ID",
       element: <CommunityLayout />,
       children: [
@@ -87,15 +82,19 @@ function App() {
           element: <NotificationSettings />,
         },
         {
-          path: "chat",
+          path: "chat-skeleton",
+          element: <ChatSkeleton />,
+        },
+        {
+          path: "chat/:projectId",
           element: <ChatApp />,
         },
         {
-          path: "project",
+          path: "project/:projectId",
           element: <ProjectDashboard />,
         },
         {
-          path: "project/:projectId",
+          path: "project",
           element: <ProjectDashboard />,
         },
         {

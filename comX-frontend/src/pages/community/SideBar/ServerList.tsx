@@ -1,14 +1,7 @@
+import { Server } from "@/lib/DummyData";
 import { cn } from "@/lib/utils";
 import { setActiveServer } from "@/state/sidebar/activeServer";
 import { RootState } from "@/state/store";
-import {
-  Braces,
-  Calendar,
-  CheckCheck,
-  FolderKanban,
-  MessageCircleMore,
-  Settings,
-} from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function ServerList() {
@@ -19,7 +12,7 @@ export default function ServerList() {
   return (
     <>
       <div className="w-[72px] bg-gray-200 flex flex-col items-center py-3 space-y-2">
-        {list.map((item) => (
+        {Server.map((item) => (
           <button
             key={item.id}
             className={`
@@ -50,36 +43,3 @@ export default function ServerList() {
     </>
   );
 }
-
-const list = [
-  {
-    id: 1,
-    name: "Calender",
-    link: <Calendar />,
-  },
-  {
-    id: 2,
-    name: "Settings",
-    link: <Settings />,
-  },
-  {
-    id: 4,
-    name: "General",
-    link: <MessageCircleMore />,
-  },
-  {
-    id: 5,
-    name: "Projects",
-    link: <FolderKanban />,
-  },
-  {
-    id: 6,
-    name: "Tasks",
-    link: <CheckCheck />,
-  },
-  {
-    id: 3,
-    name: "Code",
-    link: <Braces />,
-  },
-];

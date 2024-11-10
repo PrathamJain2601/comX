@@ -1,4 +1,3 @@
-// src/hooks/useSocket.ts
 import { addMessage, setConnected } from "@/state/socket/socketIO";
 import { RootState } from "@/state/store";
 import { Message } from "@/types/Chat";
@@ -17,34 +16,47 @@ const useSocket = (userId: number, projectId: number) => {
   );
 
   useEffect(() => {
-    if (!socket) {
-      socket = io(socketUrl);
-      socket.on("connect", () => {
-        dispatch(setConnected(true));
-        socket?.emit("joinRoom", projectId.toString(), userId);
-      });
-
-      socket.on("disconnect", () => {
-        dispatch(setConnected(false));
-      });
-
-      socket.on("message", (message: Message) => {
-        dispatch(addMessage(message));
-      });
-
-      socket.on("joinSuccess", (message: string) => {
-        console.log(message);
-      });
-
-      socket.on("error", (error: { message: string }) => {
-        console.error(error.message);
-      });
-
-      return () => {
-        socket?.disconnect();
-      };
+    // Disconnect existing socket if it exists
+    if (socket) {
+      socket.disconnect();
     }
-  }, [dispatch, userId, projectId]);
+
+    // Create a new socket connection
+    socket = io(socketUrl);
+
+    socket.on("connect", () => {
+      dispatch(setConnected(true));
+      socket?.emit("joinRoom", projectId.toString(), userId);
+    });
+
+    socket.on("disconnect", () => {
+      dispatch(setConnected(false));
+    });
+
+    socket.on("message", (message: Message) => {
+      dispatch(addMessage(message));
+    });
+
+    socket.on("joinSuccess", (message: string) => {
+      console.log(message);
+    });
+
+    socket.on("error", (error: { message: string }) => {
+      console.error(error.message);
+    });
+
+    socket.on("receiveMessages", (messages: Message[]) => {
+      console.log(messages);
+      messages.forEach((item) => {
+        dispatch(addMessage(item));
+      });
+    });
+
+    // Cleanup on unmount or when projectId changes
+    return () => {
+      socket?.disconnect();
+    };
+  }, [dispatch, userId, projectId]); // Re-run effect when projectId changes
 
   const sendMessage = (message: string) => {
     if (socket?.connected) {

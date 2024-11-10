@@ -7,22 +7,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Months } from "@/lib/DummyData";
-import ErrorPage from "@/pages/genral/ErrorPage";
 import { setYear } from "@/state/calendar/year";
 import { setActiveChannel } from "@/state/sidebar/activeChannel";
 import { RootState } from "@/state/store";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { Headphones, Mic, Settings, Users } from "lucide-react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-
-const backend_url = import.meta.env.VITE_BACKEND_URL;
+import CommunityHeader from "./ComunityHeader";
+import UserControlBox from "./UserControlBox";
 
 export default function CalendarList() {
-  const { ID } = useParams();
   const groups = Months;
 
   const activeChannel = useSelector((state: RootState) => state.activeChannel);
@@ -34,50 +28,16 @@ export default function CalendarList() {
     dispatch(setActiveChannel(new Date().getMonth()));
   }, [dispatch]);
 
-  const {
-    data: community,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: [`communityDetails/${ID}`],
-    queryFn: async () => {
-      const response = await axios.get(
-        `${backend_url}/community/get-community-details/${ID}`,
-        { withCredentials: true }
-      );
-      return response.data.data;
-    },
-    staleTime: Infinity,
-  });
-
   const startingYear = 2020;
   const Years = Array.from(
     { length: new Date().getFullYear() - startingYear + 1 },
     (_, index) => startingYear + index
   );
 
-  if (isLoading) {
-    return <div>Loading . . .</div>;
-  }
-
-  if (error) {
-    return <ErrorPage />;
-  }
-
   return (
     <>
       <div className="w-60 bg-white flex flex-col border-r">
-        <div className="h-12 shadow-sm flex items-center px-4 font-semibold border-b justify-around">
-          <p>
-            {community.name.length < 10
-              ? community.name!.charAt(0).toUpperCase() +
-                community.name!.substring(1, community.name.length)
-              : community.name!.charAt(0).toUpperCase() +
-                community.name!.substring(1, 7).toLowerCase() +
-                "..."}{" "}
-          </p>
-          <p>( {community.joinCode} )</p>
-        </div>
+        <CommunityHeader />
         <div className="flex justify-center items-center mt-2 w-full">
           <Select value={year} onValueChange={setYear}>
             <SelectTrigger className="w-[90%]">
@@ -113,24 +73,7 @@ export default function CalendarList() {
             </div>
           ))}
         </ScrollArea>
-        <div className="h-14 bg-gray-100 flex items-center px-2 space-x-2 border-t">
-          <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
-            <Users className="w-5 h-5 text-gray-600" />
-          </div>
-          <div className="flex-grow">
-            <div className="text-sm font-semibold">Username</div>
-            <div className="text-xs text-gray-500">#1234</div>
-          </div>
-          <button className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300">
-            <Mic className="w-5 h-5 text-gray-600" />
-          </button>
-          <button className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300">
-            <Headphones className="w-5 h-5 text-gray-600" />
-          </button>
-          <button className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300">
-            <Settings className="w-5 h-5 text-gray-600" />
-          </button>
-        </div>
+        <UserControlBox />
       </div>
     </>
   );

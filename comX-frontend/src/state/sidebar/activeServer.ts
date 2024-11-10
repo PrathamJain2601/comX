@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 function checkLocalStorageForActiveServer(): number {
   const item = window.localStorage.getItem("active-server");
-  return typeof item === "number" ? item : 4;
+  return typeof item === "number" ? item : 2;
 }
 
 const initialState: number = checkLocalStorageForActiveServer();

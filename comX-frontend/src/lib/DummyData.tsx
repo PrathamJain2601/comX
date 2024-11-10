@@ -1,6 +1,5 @@
-import { Group } from "@/types/Groups";
 import { LockClosedIcon } from "@radix-ui/react-icons";
-import { Hash, Volume2, Video, Info, Users, Bell } from "lucide-react";
+import { Hash, Info, Users, Bell, Calendar, Settings, MessageCircleMore, FolderKanban, CheckCheck, Braces } from "lucide-react";
 import {
   CalendarDays,
   CloudDrizzle,
@@ -12,37 +11,55 @@ import {
   Flame,
 } from "lucide-react";
 
-export const dummyGroups: Group[] = [
+export const Server = [
   {
     id: 1,
-    name: "Text Channels",
-    channels: [
-      { id: 17, name: "General" },
-      { id: 18, name: "Gaming" },
-      { id: 19, name: "Music" },
-    ],
-    link: <Hash className={`w-5 h-5 mr-1.5 text-gray-400`} />,
+    name: "Calender",
+    link: <Calendar />,
   },
   {
     id: 2,
-    name: "Voice Channels",
-    channels: [
-      { id: 20, name: "General" },
-      { id: 21, name: "Gaming" },
-      { id: 22, name: "Music" },
-    ],
-    link: <Volume2 className="w-5 h-5 mr-1.5 text-gray-400" />,
+    name: "Settings",
+    link: <Settings />,
+  },
+  {
+    id: 4,
+    name: "General",
+    link: <MessageCircleMore />,
+  },
+  {
+    id: 5,
+    name: "Projects",
+    link: <FolderKanban />,
+  },
+  {
+    id: 6,
+    name: "Tasks",
+    link: <CheckCheck />,
   },
   {
     id: 3,
-    name: "Video Channels",
-    channels: [
-      { id: 23, name: "General" },
-      { id: 24, name: "Gaming" },
-      { id: 25, name: "Music" },
-    ],
-    link: <Video className="w-5 h-5 mr-1.5 text-gray-400" />,
+    name: "Code",
+    link: <Braces />,
   },
+];
+
+export const Groups = [
+  {
+    id: 1,
+    name: "Text Channels",
+    link: <Hash className={`w-5 h-5 mr-1.5 text-gray-400`} />,
+  },
+  // {
+  //   id: 2,
+  //   name: "Voice Channels",
+  //   link: <Volume2 className="w-5 h-5 mr-1.5 text-gray-400" />,
+  // },
+  // {
+  //   id: 3,
+  //   name: "Video Channels",
+  //   link: <Video className="w-5 h-5 mr-1.5 text-gray-400" />,
+  // },
 ];
 
 export const Setting = [

@@ -8,6 +8,7 @@ import { FolderGit2 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import UserControlBox from "./UserControlBox";
+import CommunityHeader from "./ComunityHeader";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -20,22 +21,6 @@ export default function ProjectList() {
   const activeServer = useSelector((state: RootState) => state.activeServer);
 
   const navigate = useNavigate();
-
-  const {
-    data: community,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: [`communityDetails/${ID}`],
-    queryFn: async () => {
-      const response = await axios.get(
-        `${backend_url}/community/get-community-details/${ID}`,
-        { withCredentials: true }
-      );
-      return response.data.data;
-    },
-    staleTime: Infinity,
-  });
 
   const {
     data: projects,
@@ -55,28 +40,18 @@ export default function ProjectList() {
     staleTime: Infinity,
   });
 
-  if (isLoading || projectsLoading) {
+  if (projectsLoading) {
     return <div>Loading ...</div>;
   }
 
-  if (error || projectError) {
+  if (projectError) {
     return <ErrorPage />;
   }
 
   return (
     <>
       <div className="w-60 bg-white flex flex-col border-r">
-        <div className="h-12 shadow-sm flex items-center px-4 font-semibold border-b justify-around">
-          <p>
-            {community.name.length < 10
-              ? community.name!.charAt(0).toUpperCase() +
-                community.name!.substring(1, community.name.length)
-              : community.name!.charAt(0).toUpperCase() +
-                community.name!.substring(1, 7).toLowerCase() +
-                "..."}{" "}
-          </p>
-          <p>( {community.joinCode} )</p>
-        </div>
+        <CommunityHeader />
         <ScrollArea className="flex-grow">
           {projects.map((category: { id: number; name: string }) => (
             <div key={category.id} className="m-2 mx-4">
