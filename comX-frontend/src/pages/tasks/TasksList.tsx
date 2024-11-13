@@ -54,7 +54,7 @@ export default function TasksList({
   return (
     <Card className="w-full border-none shadow-none">
       <CardContent>
-        <div className="grid grid-cols-6 gap-4 mb-2 px-4 font-semibold text-muted-foreground">
+        <div className="grid grid-cols-6 gap-4 mb-2 px-6 font-semibold text-muted-foreground">
           <h3 className="col-span-3 text-xl">Task</h3>
           <p>Assignee</p>
           <p className="text-center -translate-x-4">Status</p>
@@ -165,7 +165,7 @@ function TaskItem({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="grid grid-cols-6 gap-4 items-center p-4 rounded-lg cursor-pointer hover:bg-muted shadow-even mx-2 justify-center"
+            className="grid grid-cols-6 gap-4 items-center p-4 rounded-lg cursor-pointer hover:bg-muted shadow-even3 mx-2 justify-center"
           >
             <motion.div
               layoutId={`image-${card.title}-${card.id}`}

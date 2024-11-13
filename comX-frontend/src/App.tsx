@@ -21,6 +21,7 @@ import Permissions from "./pages/community-settings/Permissions";
 import ProjectDashboard from "./pages/project/ProjectDashboard";
 import TaskPage from "./pages/tasks/TasksPage";
 import ChatSkeleton from "./pages/chatApp/ChatSkeleton";
+import Testing from "./pages/Testing";
 
 function App() {
   const router = createBrowserRouter([
@@ -52,6 +53,10 @@ function App() {
     {
       path: "forgot-password",
       element: <ForgotPassword />,
+    },
+    {
+      path: "testing",
+      element: <Testing />
     },
     {
       path: "community/:ID",
