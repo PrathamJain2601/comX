@@ -9,9 +9,6 @@ import {
 } from "@/components/ui/dialog";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useDebounce } from "@/hooks/useDebounce";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { Member } from "@/types/UserProfile";
 import Top_MemoryManagement from "./MemberManagement/Top-MemoryManagement";
 import Search_MemberManagement from "./MemberManagement/Search-MemberManagement";
 import { motion } from "framer-motion";
@@ -19,9 +16,7 @@ import Members_MemberManagement from "./MemberManagement/Member-MemberManagement
 import Admin_MemberManagement from "./MemberManagement/Admin-MemberManagement";
 import Invite_MemberManagement from "./MemberManagement/Invite-MemberManagement";
 import Ban_MemberManagement from "./MemberManagement/Ban-MemberManagement";
-import { useParams } from "react-router-dom";
-
-const backend_url = import.meta.env.VITE_BACKEND_URL;
+import CommunityMembersAPI from "@/api/community/CommunityMembersAPI";
 
 const itemAnimation = {
   hidden: { opacity: 0, y: 20 },
@@ -29,23 +24,8 @@ const itemAnimation = {
 };
 
 export default function MemberManagement() {
-  const { ID } = useParams();
-
-  const {
-    data: members = [],
-    error,
-    isLoading,
-  } = useQuery<Member[], Error>({
-    queryKey: [`Member-List/${ID}`],
-    queryFn: async () => {
-      const response = await axios.get(
-        `${backend_url}/member/get-community-members/${ID}`,
-        { withCredentials: true }
-      );
-      return response.data.data.members;
-    },
-    staleTime: Infinity,
-  });
+  const { communityMembers, communityMembersLoading, communityMembersError } =
+    CommunityMembersAPI();
 
   // Confirmation dialog state
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -58,15 +38,15 @@ export default function MemberManagement() {
   const debouncedSearchTerm = useDebounce(searchTerm);
 
   // Counting members based on their roles
-  const memberCount = members.filter((m) => m.role === "MEMBER").length;
-  const adminCount = members.filter(
+  const memberCount = communityMembers.filter((m) => m.role === "MEMBER").length;
+  const adminCount = communityMembers.filter(
     (m) => m.role === "ADMIN" || m.role === "OWNER"
   ).length;
-  const bannedCount = members.filter((m) => m.role === "BANNED").length;
-  const inviteCount = members.filter((m) => m.role === "QUEUE").length;
+  const bannedCount = communityMembers.filter((m) => m.role === "BANNED").length;
+  const inviteCount = communityMembers.filter((m) => m.role === "QUEUE").length;
 
   // Filtered members based on search
-  const filteredMembers = members.filter(
+  const filteredMembers = communityMembers.filter(
     (member) =>
       member.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
       member.email.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
@@ -77,13 +57,13 @@ export default function MemberManagement() {
     setShowConfirmDialog(false);
   };
 
-  if (isLoading) {
+  if (communityMembersLoading) {
     return <div>Loading...</div>;
   }
 
   // Handle error case
-  if (error) {
-    return <div>Error loading members: {error.message}</div>;
+  if (communityMembersError) {
+    return <div>Error loading members: {communityMembersError.message}</div>;
   }
 
   return (

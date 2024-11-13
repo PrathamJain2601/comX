@@ -8,44 +8,24 @@ import {
 import { Progress } from "@/components/ui/progress";
 import ErrorPage from "@/pages/genral/ErrorPage";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { Calendar } from "lucide-react";
-import { useParams } from "react-router-dom";
 import ProjectOverviewSettings from "./project-settings/ProjectOverviewSettings";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
-
-const backend_url = import.meta.env.VITE_BACKEND_URL;
+import ProjectAPI from "@/api/project/ProjectAPI";
 
 export default function ProjectOverview() {
-  const { ID, projectId } = useParams();
 
   const user = useSelector((state: RootState) => state.userDetails);
 
-  const {
-    data: project,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: [`community${ID}/project/${projectId}`],
-    queryFn: async () => {
-      const response = await axios.get(
-        `${backend_url}/project/get-project-details/${ID}/${projectId}`,
-        {
-          withCredentials: true,
-        }
-      );
-      return response.data.data;
-    },
-    staleTime: Infinity,
-  });
+  const { project, projectLoading, projectError } = ProjectAPI();
+  
 
-  if (isLoading) {
+  if (projectLoading) {
     return <div>Loading ...</div>;
   }
 
-  if (error) {
+  if (projectError) {
     return <ErrorPage />;
   }
 

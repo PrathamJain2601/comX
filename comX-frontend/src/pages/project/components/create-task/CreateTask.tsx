@@ -1,3 +1,4 @@
+import ProjectAPI from "@/api/project/ProjectAPI";
 import { ItemPicker } from "@/components/Item-Picker";
 import {
   AlertDialog,
@@ -19,7 +20,7 @@ import { Task } from "@/types/tasks";
 import { Member } from "@/types/UserProfile";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { Label } from "@radix-ui/react-label";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation , useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -85,29 +86,14 @@ export default function CreateTask({ milestone }: { milestone: string }) {
     },
   });
 
-  const {
-    data: project,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: [`community${ID}/project/${projectId}`],
-    queryFn: async () => {
-      const response = await axios.get(
-        `${backend_url}/project/get-project-details/${ID}/${projectId}`,
-        {
-          withCredentials: true,
-        }
-      );
-      return response.data.data;
-    },
-    staleTime: Infinity,
-  });
+  const { project, projectLoading, projectError } = ProjectAPI();
+  
 
-  if (isLoading) {
+  if (projectLoading) {
     return <div>Loading ...</div>;
   }
 
-  if (error) {
+  if (projectError) {
     return <ErrorPage />;
   }
 

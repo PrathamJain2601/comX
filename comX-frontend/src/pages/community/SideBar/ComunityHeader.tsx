@@ -1,34 +1,14 @@
+import CommunityAPI from "@/api/community/CommunityAPI";
 import ErrorPage from "@/pages/genral/ErrorPage";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { useParams } from "react-router-dom";
-
-const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 export default function CommunityHeader() {
-  const { ID } = useParams();
+  const { community, communityLoading, communityError } = CommunityAPI();
 
-  const {
-    data: community,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: [`communityDetails/${ID}`],
-    queryFn: async () => {
-      const response = await axios.get(
-        `${backend_url}/community/get-community-details/${ID}`,
-        { withCredentials: true }
-      );
-      return response.data.data;
-    },
-    staleTime: Infinity,
-  });
-
-  if (isLoading) {
+  if (communityLoading) {
     return <div>Loading . . .</div>;
   }
 
-  if (error) {
+  if (communityError) {
     return <ErrorPage />;
   }
 

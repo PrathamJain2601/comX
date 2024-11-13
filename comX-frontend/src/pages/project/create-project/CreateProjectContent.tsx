@@ -8,47 +8,26 @@ import CreateProjectMilestone from "./CreateProjectMilestone";
 import { Milestone } from "@/types/Project";
 import CreateProjectMemberManagement from "./CreateProjectMemberManagement";
 import { ReloadIcon } from "@radix-ui/react-icons";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Member } from "@/types/UserProfile";
 import ErrorPage from "@/pages/genral/ErrorPage";
-import toast from "react-hot-toast";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertDialogCancel } from "@radix-ui/react-alert-dialog";
 import { X } from "lucide-react";
-
-const backend_url = import.meta.env.VITE_BACKEND_URL;
+import CreateProjectAPI from "@/api/project/CreateProjectAPI";
+import CommunityMembersAPI from "@/api/community/CommunityMembersAPI";
 
 const CreateProjectComponent: React.FC = () => {
   const { ID } = useParams();
 
-  const location = useLocation();
-  const currentUrl = location.pathname.split("/").filter(Boolean);
+  const {communityMembers,communityMembersLoading,communityMembersError} = CommunityMembersAPI();
 
-  const {
-    data: members = [],
-    error,
-    isLoading,
-  } = useQuery<Member[], Error>({
-    queryKey: [`Member-List/${ID}`],
-    queryFn: async () => {
-      const response = await axios.get(
-        `${backend_url}/member/get-community-members/${ID}`,
-        { withCredentials: true }
-      );
-      return response.data.data.members;
-    },
-    staleTime: Infinity,
-  });
-
-  const [availableMembers, setAvailableMembers] = useState<Member[]>(members);
+  const [availableMembers, setAvailableMembers] = useState<Member[]>(communityMembers);
   const [projectMembers, setProjectMembers] = useState<Member[]>([]);
   const [deadline, setDeadline] = useState<Date>(new Date());
   const [milestones, setMilestones] = useState<Milestone[]>([]);
 
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const {handleCreateProject,createProjectPending} = CreateProjectAPI();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -63,44 +42,11 @@ const CreateProjectComponent: React.FC = () => {
     });
   };
 
-  const { mutateAsync: handleCreateProject, isPending } = useMutation({
-    mutationFn: async (data: {
-      communityId: number;
-      name: string;
-      description: string;
-      members: number[];
-      milestones: string[];
-      deadline: Date;
-    }) => {
-      const response = await axios.post(
-        `${backend_url}/project/create-project`,
-        data,
-        { withCredentials: true }
-      );
-      return response.data;
-    },
-    onSuccess(data) {
-      console.log(data);
-      toast.success("Project Created Successfully!");
-      queryClient.invalidateQueries({ queryKey: [`project-list/${ID}`] });
-      navigate(`project/${currentUrl.at(-1)}`);
-    },
-    onError(error: unknown) {
-      if (axios.isAxiosError(error)) {
-        const errorMessage =
-          error.response?.data?.message || "Please try again.";
-        toast.error(errorMessage);
-      } else {
-        toast.error("Please try again.");
-      }
-    },
-  });
-
-  if (isLoading) {
+  if (communityMembersLoading) {
     return <div>Loading ...</div>;
   }
 
-  if (error) {
+  if (communityMembersError) {
     return <ErrorPage />;
   }
 
@@ -160,7 +106,7 @@ const CreateProjectComponent: React.FC = () => {
           </span>
         </AlertDialogCancel>
         <div>
-          {isPending ? (
+          {createProjectPending ? (
             <Button variant="default" disabled={true}>
               <ReloadIcon className="mr-2 animate-spin w-4 h-4 flex justify-center items-center" />
             </Button>

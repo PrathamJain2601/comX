@@ -4,7 +4,7 @@ import { RootState } from "@/state/store";
 import PROPS from "@/types/MemberMangementProps";
 import { Calendar, Mail, Trash2, UserMinus } from "lucide-react";
 import { useSelector } from "react-redux";
-import MemberManagementAPI from "./MemberManagementAPI";
+import MemberManagementAPI from "../../../api/community/MemberManagementAPI";
 import { useParams } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 

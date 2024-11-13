@@ -21,16 +21,12 @@ import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { useDebounce } from "@/hooks/useDebounce";
-import axios from "axios";
-import { useParams } from "react-router-dom";
 import ErrorPage from "@/pages/genral/ErrorPage";
-import { useQuery } from "@tanstack/react-query";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
 import { Member } from "@/types/UserProfile";
-
-const backend_url = import.meta.env.VITE_BACKEND_URL;
+import CommunityMembersAPI from "@/api/community/CommunityMembersAPI";
 
 export default function CreateProjectMemberManagement({
   projectMembers,
@@ -43,7 +39,6 @@ export default function CreateProjectMemberManagement({
   availableMembers: Member[];
   setAvailableMembers: React.Dispatch<React.SetStateAction<Member[]>>;
 }) {
-  const { projectId, ID } = useParams();
 
   const [activeMember, setActiveMember] = useState<Member | null>(null);
   const [search, setSearch] = useState<string>("");
@@ -52,25 +47,11 @@ export default function CreateProjectMemberManagement({
 
   const debounceSearch = useDebounce(search, 500);
 
-  const {
-    data: members = [],
-    error,
-    isLoading,
-  } = useQuery<Member[], Error>({
-    queryKey: [`Member-List/${projectId}`],
-    queryFn: async () => {
-      const response = await axios.get(
-        `${backend_url}/member/get-community-members/${ID}`,
-        { withCredentials: true }
-      );
-      return response.data.data.members;
-    },
-    staleTime: Infinity,
-  });
+  const {communityMembers,communityMembersLoading,communityMembersError} = CommunityMembersAPI();
 
   useEffect(() => {
     setAvailableMembers(
-      members
+      communityMembers
         .filter((item) =>
           item.name.toLowerCase().includes(debounceSearch.toLowerCase())
         )
@@ -79,7 +60,7 @@ export default function CreateProjectMemberManagement({
             !projectMembers.some((projMember) => projMember.id === item.id)
         )
     );
-  }, [debounceSearch, setAvailableMembers, members, projectMembers]);
+  }, [debounceSearch, setAvailableMembers, communityMembers, projectMembers]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -135,11 +116,11 @@ export default function CreateProjectMemberManagement({
     setProjectMembers((current) => current.filter((m) => m.id !== member.id));
   };
 
-  if (isLoading) {
+  if (communityMembersLoading) {
     return <div>Loading ...</div>;
   }
 
-  if (error) {
+  if (communityMembersError) {
     return <ErrorPage />;
   }
 

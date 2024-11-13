@@ -2,19 +2,14 @@ import ErrorPage from "@/pages/genral/ErrorPage";
 import CreateProject from "@/pages/project/create-project/CreateProject";
 import { RootState } from "@/state/store";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { FolderGit2 } from "lucide-react";
 import { useSelector } from "react-redux";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import UserControlBox from "./UserControlBox";
 import CommunityHeader from "./ComunityHeader";
-
-const backend_url = import.meta.env.VITE_BACKEND_URL;
+import AllProjectAPI from "@/api/project/AllProjectsAPI";
 
 export default function ProjectList() {
-  const { ID } = useParams();
-
   const location = useLocation();
   const currentUrl = location.pathname.split("/").filter(Boolean);
 
@@ -22,29 +17,13 @@ export default function ProjectList() {
 
   const navigate = useNavigate();
 
-  const {
-    data: projects,
-    isLoading: projectsLoading,
-    error: projectError,
-  } = useQuery({
-    queryKey: [`project-list/${ID}`],
-    queryFn: async () => {
-      const response = await axios.get(
-        `${backend_url}/project/get-all-projects/${ID}`,
-        {
-          withCredentials: true,
-        }
-      );
-      return response.data.data;
-    },
-    staleTime: Infinity,
-  });
+  const { projects, projectsLoading, projectsError } = AllProjectAPI();
 
   if (projectsLoading) {
     return <div>Loading ...</div>;
   }
 
-  if (projectError) {
+  if (projectsError) {
     return <ErrorPage />;
   }
 

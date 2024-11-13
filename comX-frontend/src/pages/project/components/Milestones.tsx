@@ -9,82 +9,45 @@ import { Progress } from "@radix-ui/react-progress";
 import { CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
-import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
 import ErrorPage from "@/pages/genral/ErrorPage";
 import MilestonesSettings from "./project-settings/MilestoneSettings";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
 import CreateTask from "./create-task/CreateTask";
-
-const backend_url = import.meta.env.VITE_BACKEND_URL;
+import ProjectAPI from "@/api/project/ProjectAPI";
+import TasksAPI from "@/api/tasks/TasksAPI";
 
 export default function Milestones() {
-  const { ID, projectId } = useParams();
-
   const user = useSelector((state: RootState) => state.userDetails);
 
-  const {
-    data: project,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: [`community${ID}/project/${projectId}`],
-    queryFn: async () => {
-      const response = await axios.get(
-        `${backend_url}/project/get-project-details/${ID}/${projectId}`,
-        {
-          withCredentials: true,
-        }
-      );
-      return response.data.data;
-    },
-    staleTime: Infinity,
-  });
+  const { project, projectLoading, projectError } = ProjectAPI();
 
-  const {
-    data: taskList,
-    isLoading: taskLoading,
-    error: taskError,
-  } = useQuery({
-    queryKey: [`community${ID}/project/${projectId}/task`],
-    queryFn: async () => {
-      const response = await axios.get(
-        `${backend_url}/task/get-all-tasks-in-project/${ID}/${projectId}`,
-        {
-          withCredentials: true,
-        }
-      );
-      return response.data.data;
-    },
-    staleTime: Infinity,
-  });
+  const {tasks,tasksLoading,tasksError} = TasksAPI();
 
-  if (isLoading || taskLoading) {
+  if (projectLoading || tasksLoading) {
     return <div>Loading ...</div>;
   }
 
-  if (error || taskError) {
+  if (projectError || tasksError) {
     return <ErrorPage />;
   }
 
-  const latestTask = taskList.reduce(
+  const latestTask = tasks.reduce(
     (latest: { deadline: Date }, item: { deadline: Date }) => {
       return new Date(item.deadline) > new Date(latest.deadline)
         ? item
         : latest;
     },
-    taskList[0]
+    tasks[0]
   );
 
   const dueDate = latestTask ? latestTask.deadline : null;
 
-  const taskCompleted = taskList
+  const taskCompleted = tasks
     .filter((item: { completedDate: Date }) => item.completedDate !== null)
     .filter((item: { status: string }) => item.status === "COMPLETED").length;
 
-  const totalTask = taskList.length;
+  const totalTask = tasks.length;
 
   const completionPercentage = Math.round((taskCompleted / totalTask) * 100);
 

@@ -8,14 +8,11 @@ import { TaskGet } from "@/types/tasks";
 import SingleTask from "./SingelTask";
 import { useParams } from "react-router-dom";
 import ErrorPage from "../genral/ErrorPage";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { Toaster } from "react-hot-toast";
-
-const backend_url = import.meta.env.VITE_BACKEND_URL;
+import TasksAPI from "@/api/tasks/TasksAPI";
 
 export default function TaskPage() {
-  const { ID, projectId } = useParams();
+  const { projectId } = useParams();
 
   const [active, setActive] = useState<TaskGet | null>(null);
 
@@ -36,36 +33,20 @@ export default function TaskPage() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [active]);
 
-  const {
-    data: taskList,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: [`community${ID}/project/${projectId}/task`],
-    queryFn: async () => {
-      const response = await axios.get(
-        `${backend_url}/task/get-all-tasks-in-project/${ID}/${projectId}`,
-        {
-          withCredentials: true,
-        }
-      );
-      return response.data.data;
-    },
-    staleTime: Infinity,
-  });
+  const {tasks,tasksLoading,tasksError} = TasksAPI();
 
   useEffect(() => {
     if (active === null) return;
-    setActive(taskList.find((item: { id: number }) => item.id === active.id));
-  }, [taskList]);
+    setActive(tasks.find((item: { id: number }) => item.id === active.id));
+  }, [tasks]);
 
   if (projectId === undefined) return <div>Hello World</div>;
 
-  if (isLoading) {
+  if (tasksLoading) {
     return <div>Loading ...</div>;
   }
 
-  if (error) {
+  if (tasksError) {
     return <ErrorPage />;
   }
 
@@ -85,7 +66,7 @@ export default function TaskPage() {
           </AnimatePresence>
           <SingleTask active={active} setActive={setActive} />
           <ul className="mx-auto w-full gap-4">
-            <TasksList cards={taskList} setActive={setActive} />
+            <TasksList cards={tasks} setActive={setActive} />
           </ul>
         </CardContent>
         <Button

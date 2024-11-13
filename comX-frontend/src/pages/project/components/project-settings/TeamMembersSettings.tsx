@@ -11,24 +11,18 @@ import {
 import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ReloadIcon } from "@radix-ui/react-icons";
-import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import toast from "react-hot-toast";
 import CreateProjectMemberManagement from "../../create-project/CreateProjectMemberManagement";
 import { useEffect, useState } from "react";
 import { Member } from "@/types/UserProfile";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
-
-const backend_url = import.meta.env.VITE_BACKEND_URL;
+import { EditTeamMembers } from "@/api/project/ProjectSettingsAPI";
 
 export default function TeamMembersSettings({
   project,
 }: {
   project: { projectMembers: Member[] };
 }) {
-  const { ID, projectId } = useParams();
 
   const user = useSelector((state: RootState) => state.userDetails);
 
@@ -43,56 +37,15 @@ export default function TeamMembersSettings({
     );
   }, [project, user]);
 
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const { handleEditTeamMembers, editTeamMembersPending } = EditTeamMembers({
+    project: project.projectMembers,
+    projectMembers,
+  });
 
   const handleSubmit = (e: React.MouseEvent) => {
     e.preventDefault();
-    handleEditProject();
+    handleEditTeamMembers();
   };
-
-  const { mutateAsync: handleEditProject, isPending } = useMutation({
-    mutationFn: async () => {
-      const data = {
-        communityId: parseInt(ID!, 10),
-        add: projectMembers
-          .filter(
-            (item) =>
-              !project.projectMembers.some((member) => member.id === item.id)
-          )
-          .map((item) => item.id),
-        remove: project.projectMembers
-          .filter(
-            (item) => !projectMembers.some((member) => member.id === item.id)
-          )
-          .filter((item) => item.id !== user.user?.id)
-          .map((item) => item.id),
-        projectId: parseInt(projectId!, 10),
-      };
-      const response = await axios.patch(
-        `${backend_url}/project/edit-member`,
-        data,
-        { withCredentials: true }
-      );
-      return response.data;
-    },
-    onSuccess() {
-      toast.success("Members Edited Successfully!");
-      queryClient.invalidateQueries({
-        queryKey: [`community${ID}/project/${projectId}`],
-      });
-      navigate(``);
-    },
-    onError(error: unknown) {
-      if (axios.isAxiosError(error)) {
-        const errorMessage =
-          error.response?.data?.message || "Please try again.";
-        toast.error(errorMessage);
-      } else {
-        toast.error("Please try again.");
-      }
-    },
-  });
 
   return (
     <AlertDialog>
@@ -120,7 +73,7 @@ export default function TeamMembersSettings({
               </span>
             </AlertDialogCancel>
             <div>
-              {isPending ? (
+              {editTeamMembersPending ? (
                 <Button variant="default" disabled={true}>
                   <ReloadIcon className="mr-2 animate-spin w-4 h-4 flex justify-center items-center" />
                 </Button>

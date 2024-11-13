@@ -2,16 +2,14 @@ import { Groups } from "@/lib/DummyData";
 import { cn } from "@/lib/utils";
 import { setActiveChannel } from "@/state/sidebar/activeChannel";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { ChevronDown } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import CommunityHeader from "./ComunityHeader";
 import UserControlBox from "./UserControlBox";
-
-const backend_url = import.meta.env.VITE_BACKEND_URL;
+import AllProjectAPI from "@/api/project/AllProjectsAPI";
+import ErrorPage from "@/pages/genral/ErrorPage";
 
 const GroupList = React.memo(function GroupList() {
   const groups = Groups;
@@ -32,21 +30,7 @@ const GroupList = React.memo(function GroupList() {
     );
   };
 
-  const { ID } = useParams();
-
-  const { data: projects, isLoading: projectsLoading } = useQuery({
-    queryKey: [`project-list/${ID}`],
-    queryFn: async () => {
-      const response = await axios.get(
-        `${backend_url}/project/get-all-projects/${ID}`,
-        {
-          withCredentials: true,
-        }
-      );
-      return response.data.data;
-    },
-    staleTime: Infinity,
-  });
+  const { projects, projectsLoading, projectsError } = AllProjectAPI();
 
   useEffect(() => {
     dispatch(setActiveChannel(1));
@@ -54,6 +38,10 @@ const GroupList = React.memo(function GroupList() {
 
   if (projectsLoading) {
     return <div>Loading . . .</div>;
+  }
+
+  if (projectsError) {
+    return <ErrorPage />;
   }
 
   return (

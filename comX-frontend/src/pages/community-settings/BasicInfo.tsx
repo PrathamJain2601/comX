@@ -6,74 +6,21 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Users, FileText, Image, Hash, Key, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import { useParams } from "react-router-dom";
-import toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import { ReloadIcon } from "@radix-ui/react-icons";
-
-const backend_url = import.meta.env.VITE_BACKEND_URL;
+import CommunityAPI from "@/api/community/CommunityAPI";
+import { CommunitySettingsAPI } from "@/api/community/CommunitySettingsAPI";
 
 export default function BasicInformation() {
   const { ID } = useParams();
-
-  const queryClient = useQueryClient();
-
-  const {
-    data: community,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: [`communityDetails/${ID}`],
-    queryFn: async () => {
-      const response = await axios.get(
-        `${backend_url}/community/get-community-details/${ID}`,
-        { withCredentials: true }
-      );
-      return response.data.data;
-    },
-    staleTime: Infinity,
-  });
-
-  const { mutateAsync: updateCommunity, isPending } = useMutation({
-    mutationFn: async (details: {
-      name: string | null;
-      description: string | null;
-      scope: string;
-      communityId: number;
-      file: File | undefined;
-    }) => {
-      console.log(typeof details.communityId);
-      const response = await axios.put(
-        `${backend_url}/community/update-community`,
-        details,
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      return response.data;
-    },
-    onSuccess() {
-      queryClient.invalidateQueries({
-        queryKey: [`communityDetails/${ID}`],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["communityList"],
-      });
-      toast.success("Community Details Updated");
-    },
-    onError(error) {
-      console.error("Update failed:", error);
-    },
-  });
 
   // State variables
   const coverImage = useRef<HTMLInputElement>(null);
   const [description, setDescription] = useState("");
   const [name, setName] = useState("");
+
+  const { community, communityLoading, communityError } = CommunityAPI();
 
   // Effect to set initial state values when community data is loaded
   useEffect(() => {
@@ -83,9 +30,12 @@ export default function BasicInformation() {
     }
   }, [community]);
 
+  const { handleEditCommunityBasicInfo, editCommunityBasicInfoPending } =
+    CommunitySettingsAPI();
+
   // Update community function
   const handleUpdateCommunity = () => {
-    updateCommunity({
+    handleEditCommunityBasicInfo({
       name,
       description,
       scope: "PUBLIC",
@@ -95,12 +45,12 @@ export default function BasicInformation() {
   };
 
   // Show loading state
-  if (isLoading) {
+  if (communityLoading) {
     return <div>Loading . . .</div>;
   }
 
   // Handle error state
-  if (error) {
+  if (communityError) {
     return <div>Error loading community details.</div>;
   }
 
@@ -225,7 +175,7 @@ export default function BasicInformation() {
               />
             </div>
 
-            {isPending ? (
+            {editCommunityBasicInfoPending ? (
               <Button
                 disabled
                 className="w-full bg-blue-800 hover:bg-blue-900 text-white transition-colors duration-300"

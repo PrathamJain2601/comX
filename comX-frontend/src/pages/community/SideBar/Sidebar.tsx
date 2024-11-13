@@ -14,6 +14,7 @@ import SettingsList from "./SettingList";
 import GroupList from "./GroupList";
 import ProjectList from "./ProjectList";
 import ProjectListForTasks from "./Task-ProjectList";
+import AllProjectAPI from "@/api/project/AllProjectsAPI";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -39,23 +40,7 @@ const Sidebar = React.memo(function Sidebar() {
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
-  const {
-    data: projects,
-    isLoading: projectsLoading,
-    error: projectError,
-  } = useQuery({
-    queryKey: [`project-list/${ID}`],
-    queryFn: async () => {
-      const response = await axios.get(
-        `${backend_url}/project/get-all-projects/${ID}`,
-        {
-          withCredentials: true,
-        }
-      );
-      return response.data.data;
-    },
-    staleTime: Infinity,
-  });
+  const { projects, projectsLoading, projectsError } = AllProjectAPI();
 
   const { data: taskList, error: taskError } = useQuery({
     queryKey: [`community${ID}/project/${-1}/task`],
@@ -93,7 +78,7 @@ const Sidebar = React.memo(function Sidebar() {
     return <div>Loading ...</div>;
   }
 
-  if (projectError || taskError) {
+  if (projectsError || taskError) {
     return <ErrorPage />;
   }
 

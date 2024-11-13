@@ -3,7 +3,7 @@ import ImprovedCodeHeatmap from "./Components/Heatmap";
 import PersonalInfo from "./Components/PersonalInfo";
 import TaskForProfile from "./Components/TasksForProfile";
 import FollowerList from "./Components/Follower";
-import PieChartTask from "../tasks/PieChart";
+import PieChartTask from "./Components/PieChart";
 
 export default function Profile() {
   const sampleData = React.useMemo(() => generateSampleData(365), []);

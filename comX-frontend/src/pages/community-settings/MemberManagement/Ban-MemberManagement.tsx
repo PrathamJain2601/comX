@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import PROPS from "@/types/MemberMangementProps";
 import { Calendar, Mail, UserCheck } from "lucide-react";
 import { useParams } from "react-router-dom";
-import MemberManagementAPI from "./MemberManagementAPI";
+import MemberManagementAPI from "../../../api/community/MemberManagementAPI";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function Ban_MemberManagement(props:PROPS) {

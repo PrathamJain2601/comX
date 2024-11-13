@@ -6,15 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useOutsideClick } from "@/hooks/use-outside-click";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
-import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
-
-const backend_url = import.meta.env.VITE_BACKEND_URL;
+import TaskFxn from "@/api/tasks/TasksFxnAPI";
 
 export default function SingleTask({
   active,
@@ -30,47 +26,17 @@ export default function SingleTask({
 
   const ref = useRef<HTMLDivElement>(null);
 
-  const queryClient = useQueryClient();
-
   useOutsideClick(ref, () => setActive(null));
 
+  const {handleTaskComplete,taskCompletePending} = TaskFxn();
+
   const handleMarkAsDone = () => {
-    handleTaskCompleted({
+    handleTaskComplete({
       communityId: parseInt(ID!, 10),
       projectId: parseInt(projectId!, 10),
       taskId: active!.id,
     });
   };
-
-  const { mutateAsync: handleTaskCompleted, isPending } = useMutation({
-    mutationFn: async (data: {
-      communityId: number;
-      projectId: number;
-      taskId: number;
-    }) => {
-      const response = await axios.put(
-        `${backend_url}/task/complete-task`,
-        data,
-        { withCredentials: true }
-      );
-      return response.data;
-    },
-    onSuccess(data) {
-      toast.success(`${data.data}`);
-      queryClient.invalidateQueries({
-        queryKey: [`community${ID}/project/${projectId}/task`],
-      });
-    },
-    onError(error: unknown) {
-      if (axios.isAxiosError(error)) {
-        const errorMessage =
-          error.response?.data?.message || "Please try again.";
-        toast.error(errorMessage);
-      } else {
-        toast.error("Please try again.");
-      }
-    },
-  });
 
   if (!active) {
     return null;
@@ -176,7 +142,7 @@ export default function SingleTask({
 
             {user.user!.id === active.user.id && (
               <div className="flex justify-between items-center pt-4">
-                {isPending ? (
+                {taskCompletePending ? (
                   <Button variant="default" disabled={true}>
                     <ReloadIcon className="mr-2 animate-spin w-4 h-4 flex justify-center items-center" />
                   </Button>

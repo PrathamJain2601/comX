@@ -24,65 +24,24 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { ReloadIcon } from "@radix-ui/react-icons";
-import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import toast from "react-hot-toast";
-
-const backend_url = import.meta.env.VITE_BACKEND_URL;
+import { EditBasicInfo } from "@/api/project/ProjectSettingsAPI";
 
 export default function ProjectOverviewSettings({
   project,
 }: {
   project: { name: string; description: string; deadline: Date };
 }) {
-  const { ID, projectId } = useParams();
 
   const [deadline, setDeadline] = useState<Date>(new Date(Date.now()));
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
 
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const {handleEditBasicInfo,editBasicInfoPending} = EditBasicInfo({name,description,deadline});
 
   const handleSubmit = (e: React.MouseEvent) => {
     e.preventDefault();
-    handleEditProject();
+    handleEditBasicInfo();
   };
-
-  const { mutateAsync: handleEditProject, isPending } = useMutation({
-    mutationFn: async () => {
-      const data = {
-        communityId: parseInt(ID!, 10),
-        name,
-        description,
-        deadline,
-        projectId: parseInt(projectId!, 10),
-      };
-      console.log(data);
-      const response = await axios.patch(
-        `${backend_url}/project/edit-basic-info`,
-        data,
-        { withCredentials: true }
-      );
-      return response.data;
-    },
-    onSuccess(data) {
-      console.log(data);
-      toast.success("Project Edited Successfully!");
-      queryClient.invalidateQueries({ queryKey: [`project-list/${ID}`] });
-      navigate(``);
-    },
-    onError(error: unknown) {
-      if (axios.isAxiosError(error)) {
-        const errorMessage =
-          error.response?.data?.message || "Please try again.";
-        toast.error(errorMessage);
-      } else {
-        toast.error("Please try again.");
-      }
-    },
-  });
 
   return (
     <AlertDialog>
@@ -151,7 +110,7 @@ export default function ProjectOverviewSettings({
               </span>
             </AlertDialogCancel>
             <div>
-              {isPending ? (
+              {editBasicInfoPending ? (
                 <Button variant="default" disabled={true}>
                   <ReloadIcon className="mr-2 animate-spin w-4 h-4 flex justify-center items-center" />
                 </Button>
