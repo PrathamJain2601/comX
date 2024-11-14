@@ -46,7 +46,7 @@ io.on('connect', (socket) => {
     if (await isUserInProject(userId, projectId)) {
       try {
         const messages = await prisma.message.findMany({
-          where: { projectId: projectId },
+          where: { projectId: Number(projectId) },
           orderBy: { createdAt: 'desc' },
           skip: offset*40,
           take: 40,
@@ -71,7 +71,7 @@ io.on('connect', (socket) => {
           data: {
             content,
             senderId: userId,
-            projectId: projectId,
+            projectId: Number(projectId),
             createdAt: new Date(),
           },
         });

@@ -33,6 +33,8 @@ const project = require("./routes/project.route");
 app.use("/project", project);
 const task = require("./routes/tasks.route");
 app.use("/task", task);
+const user = require("./routes/user.route");
+app.use("/user", user);
 
 
 app.listen(5000, ()=>{
