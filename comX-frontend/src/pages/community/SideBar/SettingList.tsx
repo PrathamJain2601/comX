@@ -26,7 +26,7 @@ export default function SettingsList() {
                     : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800 hover:shadow-md"
                 }`}
                 onClick={() => {
-                  navigate(category.link);
+                  navigate(category.link,{replace:true});
                 }}
               >
                 {category.icon}

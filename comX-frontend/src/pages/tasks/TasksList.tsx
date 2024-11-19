@@ -18,12 +18,12 @@ import {
   CircleIcon,
   LucideProps,
 } from "lucide-react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
-import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
-
-const backend_url = import.meta.env.VITE_BACKEND_URL;
+import ProjectAPI from "@/api/project/ProjectAPI";
+import { useSelector } from "react-redux";
+import { RootState } from "@/state/store";
+import TaskFxn from "@/api/tasks/TasksFxnAPI";
+import ErrorPage from "../genral/ErrorPage";
 
 export default function TasksList({
   cards,
@@ -63,14 +63,14 @@ export default function TasksList({
         <ScrollArea className="h-[calc(100vh-200px)] pr-4">
           <AnimatePresence>
             <div className="flex flex-col gap-4 mt-2">
-            {cards.map((card) => (
-              <TaskItem
-                key={`card-${card.title}-${card.id}`}
-                card={card}
-                setActive={setActive}
-                getStatusInfo={getStatusInfo}
-              />
-            ))}
+              {cards.map((card) => (
+                <TaskItem
+                  key={`card-${card.title}-${card.id}`}
+                  card={card}
+                  setActive={setActive}
+                  getStatusInfo={getStatusInfo}
+                />
+              ))}
             </div>
           </AnimatePresence>
         </ScrollArea>
@@ -94,6 +94,8 @@ function TaskItem({
     label: string;
   };
 }) {
+  const user = useSelector((state: RootState) => state.userDetails);
+
   const { color, icon: StatusIcon, label } = getStatusInfo(card.status);
 
   const { projectId, ID } = useParams();
@@ -109,7 +111,9 @@ function TaskItem({
     return `${day} ${month} ${adjustedYear}`;
   }
 
-  const queryClient = useQueryClient();
+  const { project, projectLoading, projectError } = ProjectAPI();
+
+  const { handleTaskVerdict, taskVerdictPending } = TaskFxn();
 
   const handleVerdict = (s: string, completedDate: Date, taskId: number) => {
     handleTaskVerdict({
@@ -121,38 +125,10 @@ function TaskItem({
     });
   };
 
-  const { mutateAsync: handleTaskVerdict, isPending: verdictPending } =
-    useMutation({
-      mutationFn: async (data: {
-        verdict: string;
-        taskId: number;
-        completedDate: Date;
-        communityId: number;
-        projectId: number;
-      }) => {
-        const response = await axios.put(
-          `${backend_url}/task/task-verdict`,
-          data,
-          { withCredentials: true }
-        );
-        return response.data;
-      },
-      onSuccess() {
-        toast.success("Task Verdict Given");
-        queryClient.invalidateQueries({
-          queryKey: [`community${ID}/project/${projectId}/task`],
-        });
-      },
-      onError(error: unknown) {
-        if (axios.isAxiosError(error)) {
-          const errorMessage =
-            error.response?.data?.message || "Please try again.";
-          toast.error(errorMessage);
-        } else {
-          toast.error("Please try again.");
-        }
-      },
-    });
+  if (projectLoading) return <div>Loading ...</div>;
+  if (projectError) return <ErrorPage />;
+
+  const isAdmin = user.user?.id === project.ownerId;
 
   return (
     <TooltipProvider>
@@ -182,7 +158,7 @@ function TaskItem({
                   {card.description}
                 </p>
               </div>
-              {!verdictPending && card.status === "PENDING" && (
+              {!taskVerdictPending && isAdmin && card.status === "PENDING" && (
                 <div className="flex gap-2 justify-center items-center h-full">
                   <motion.button
                     className="px-4 py-2 rounded-lg bg-green-500 text-white font-semibold"

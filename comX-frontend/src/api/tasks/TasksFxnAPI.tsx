@@ -40,5 +40,43 @@ export default function TaskFxn() {
     },
   });
 
-  return { handleTaskComplete: mutateAsync, taskCompletePending: isPending };
+  const { mutateAsync: handleTaskVerdict, isPending: taskVerdictPending } =
+    useMutation({
+      mutationFn: async (data: {
+        verdict: string;
+        taskId: number;
+        completedDate: Date;
+        communityId: number;
+        projectId: number;
+      }) => {
+        const response = await axios.put(
+          `${backend_url}/task/task-verdict`,
+          data,
+          { withCredentials: true }
+        );
+        return response.data;
+      },
+      onSuccess() {
+        toast.success("Task Verdict Given");
+        queryClient.invalidateQueries({
+          queryKey: [`community${ID}/project/${projectId}/task`],
+        });
+      },
+      onError(error: unknown) {
+        if (axios.isAxiosError(error)) {
+          const errorMessage =
+            error.response?.data?.message || "Please try again.";
+          toast.error(errorMessage);
+        } else {
+          toast.error("Please try again.");
+        }
+      },
+    });
+
+  return {
+    handleTaskComplete: mutateAsync,
+    taskCompletePending: isPending,
+    handleTaskVerdict,
+    taskVerdictPending,
+  };
 }

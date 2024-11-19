@@ -1,9 +1,7 @@
 import ErrorPage from "@/pages/genral/ErrorPage";
 import CreateProject from "@/pages/project/create-project/CreateProject";
-import { RootState } from "@/state/store";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { FolderGit2 } from "lucide-react";
-import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import UserControlBox from "./UserControlBox";
 import CommunityHeader from "./ComunityHeader";
@@ -12,8 +10,6 @@ import AllProjectAPI from "@/api/project/AllProjectsAPI";
 export default function ProjectList() {
   const location = useLocation();
   const currentUrl = location.pathname.split("/").filter(Boolean);
-
-  const activeServer = useSelector((state: RootState) => state.activeServer);
 
   const navigate = useNavigate();
 
@@ -41,7 +37,7 @@ export default function ProjectList() {
                     : "bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-800 hover:shadow-md"
                 }`}
                 onClick={() => {
-                  navigate(`project/${category.id}`);
+                  navigate(`project/${category.id}`, { replace: true });
                 }}
               >
                 <FolderGit2 />
@@ -51,7 +47,7 @@ export default function ProjectList() {
           ))}
         </ScrollArea>
         <div>
-          {activeServer === 5 && <CreateProject />}
+          {currentUrl.at(-2) === "project" && <CreateProject />}
           <UserControlBox />
         </div>
       </div>

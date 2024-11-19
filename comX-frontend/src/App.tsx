@@ -22,6 +22,7 @@ import ProjectDashboard from "./pages/project/ProjectDashboard";
 import TaskPage from "./pages/tasks/TasksPage";
 import ChatSkeleton from "./pages/chatApp/ChatSkeleton";
 import Testing from "./pages/Testing";
+import Code from "./pages/code/Code";
 
 function App() {
   const router = createBrowserRouter([
@@ -109,6 +110,10 @@ function App() {
         {
           path: "task/:projectId",
           element: <TaskPage />,
+        },
+        {
+          path: "code",
+          element: <Code />,
         },
       ],
     },

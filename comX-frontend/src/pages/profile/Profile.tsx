@@ -4,9 +4,37 @@ import PersonalInfo from "./Components/PersonalInfo";
 import TaskForProfile from "./Components/TasksForProfile";
 import FollowerList from "./Components/Follower";
 import PieChartTask from "./Components/PieChart";
+import ComingSoon from "./Components/CommingSoon";
+import { useQuery } from "@tanstack/react-query";
+import { useSelector } from "react-redux";
+import { RootState } from "@/state/store";
+import axios from "axios";
+import { useParams } from "react-router-dom";
+import ErrorPage from "../genral/ErrorPage";
+
+const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 export default function Profile() {
+  const { username } = useParams();
+
+  const user = useSelector((state: RootState) => state.userDetails);
+
   const sampleData = React.useMemo(() => generateSampleData(365), []);
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: [`user-info-${username}`],
+    queryFn: async () => {
+      const response = await axios.get(
+        `${backend_url}/user/get-user-info/${username}`,
+        { withCredentials: true }
+      );
+    },
+  });
+
+  if (isLoading) return <div>Loading ...</div>;
+  if (error) return <ErrorPage />;
+
+  console.log(data);
 
   return (
     <div className="px-8 py-8 flex gap-8">
@@ -30,7 +58,7 @@ export default function Profile() {
             <FollowerList />
           </div>
           <div className="border border-gray-200 bg-card rounded-lg shadow-xl w-[49%]">
-            <FollowerList />
+            <ComingSoon />
           </div>
         </div>
       </div>

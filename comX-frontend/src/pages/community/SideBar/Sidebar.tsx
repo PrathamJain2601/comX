@@ -55,24 +55,28 @@ const Sidebar = React.memo(function Sidebar() {
         return response.data.data;
       } else return [];
     },
+    enabled: !!projects,
     staleTime: Infinity,
   });
 
   useEffect(() => {
+    if(projectsLoading) return;
     if (activeServer === 1) {
-      navigate("calendar");
+      navigate("calendar", { replace: true });
     } else if (activeServer === 2) {
-      navigate("settings/basic-info");
+      navigate("settings/basic-info", { replace: true });
     } else if (activeServer === 4) {
-      navigate("chat-skeleton");
+      navigate("chat-skeleton", { replace: true });
     } else if (activeServer === 5) {
-      if (projects.length === 0) navigate(`project`);
-      else navigate(`project/${projects[0].id}`);
+      if (projects.length === 0) navigate(`project`, { replace: true });
+      else navigate(`project/${projects[0].id}`, { replace: true });
     } else if (activeServer === 6) {
-      if (projects.length === 0) navigate(`project/task`);
-      else navigate(`task/${projects[0].id}`);
+      if (projects.length === 0) navigate(`project/task`, { replace: true });
+      else navigate(`task/${projects[0].id}`, { replace: true });
+    } else if(activeServer === 3){
+      navigate("code",{replace:true});
     }
-  }, [activeServer, dispatch, navigate, projects, taskList]);
+  }, [activeServer, dispatch, navigate, projects, taskList,projectsLoading]);
 
   if (projectsLoading) {
     return <div>Loading ...</div>;
@@ -87,6 +91,7 @@ const Sidebar = React.memo(function Sidebar() {
       <ServerList />
       {activeServer === 1 && <CalendarList />}
       {activeServer === 2 && <SettingsList />}
+      {/* {activeServer === 3 && <Code />} */}
       {activeServer === 4 && <GroupList />}
       {activeServer === 5 && <ProjectList />}
       {activeServer === 6 && <ProjectListForTasks />}

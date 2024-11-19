@@ -19,7 +19,7 @@ export const Server = [
   },
   {
     id: 2,
-    name: "Settings",
+    name: "Setting",
     link: <Settings />,
   },
   {

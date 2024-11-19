@@ -3,8 +3,12 @@ import { cn } from "@/lib/utils";
 import { setActiveServer } from "@/state/sidebar/activeServer";
 import { RootState } from "@/state/store";
 import { useDispatch, useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 
 export default function ServerList() {
+  const location = useLocation();
+  const currentUrl = location.pathname.split("/").filter(Boolean);
+
   const activeServer = useSelector((state: RootState) => state.activeServer);
 
   const dispatch = useDispatch();
@@ -34,7 +38,7 @@ export default function ServerList() {
             <div
               className={cn(
                 "absolute left-0 w-1 bg-blue-500 rounded-r-full transition-all duration-200",
-                activeServer === item.id ? "h-10" : "h-2 group-hover:h-5"
+                currentUrl.at(-1) === item.name ? "h-10" : "h-2 group-hover:h-5"
               )}
             ></div>
           </button>

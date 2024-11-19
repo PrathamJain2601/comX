@@ -78,7 +78,7 @@ const GroupList = React.memo(function GroupList() {
                           "bg-primary hover:bg-primary"
                       )}
                       onClick={() => {
-                        navigate(`chat/${project.id}`);
+                        navigate(`chat/${project.id}`,{replace:true});
                       }}
                     >
                       {category.link}
