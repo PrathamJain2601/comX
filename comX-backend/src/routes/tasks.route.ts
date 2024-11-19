@@ -10,6 +10,7 @@ import { complete_task } from "../controllers/task-controller/complete-task.cont
 import { isUserAdmin } from "../middlewares/isUserAdmin.middleware";
 import { task_verdict } from "../controllers/task-controller/task-verdict.controller";
 import { isUserMember } from "../middlewares/isUserMember.middleware";
+import { get_all_tasks_in_community } from "../controllers/task-controller/get-all-tasks-in-community.controller";
 
 const router = Router();
 

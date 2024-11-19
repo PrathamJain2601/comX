@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({extended: true}));;
 const corsOptions = {
-    origin: 'http://192.168.75.86:5173',   // Allow requests from this origin
+    origin: 'http://localhost:5173',   // Allow requests from this origin
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Allowed HTTP methods
     credentials: true, // Allow credentials (cookies, authorization headers, etc.)
   };
