@@ -12,7 +12,36 @@ export const get_user_info = async(req: Request, res: Response) => {
                 avatar: true,
                 designation: true,
                 registeredAt: true,
-                Task: true
+                bio: true,
+                location: true,
+                website: true,
+                phone: true,
+                skills: true,
+                socialLinks: true,
+                Task: {
+                    select:{
+                        id: true,
+                        title: true,
+                        priority: true,
+                        status: true,
+                        deadline: true,
+                        completedDate: true,
+                        createdAt: true
+                    }
+                },
+                projects: {
+                    select: {
+                      project: {
+                        select: {
+                          id: true,
+                          name: true,
+                          description: true,
+                          deadline: true,
+                          createdAt: true,
+                        },
+                      },
+                    },
+                },
             },
             where:{
                 username: req.params.username
