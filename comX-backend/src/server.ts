@@ -7,9 +7,9 @@ import {Response, Request} from "express";
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({extended: true}));;
 const corsOptions = {
-    origin: 'http://localhost:5173', // Allow requests from this origin
+    origin: 'http://192.168.75.86:5173',   // Allow requests from this origin
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Allowed HTTP methods
     credentials: true, // Allow credentials (cookies, authorization headers, etc.)
   };
@@ -33,6 +33,8 @@ const project = require("./routes/project.route");
 app.use("/project", project);
 const task = require("./routes/tasks.route");
 app.use("/task", task);
+const user = require("./routes/user.route");
+app.use("/user", user);
 
 
 app.listen(5000, ()=>{

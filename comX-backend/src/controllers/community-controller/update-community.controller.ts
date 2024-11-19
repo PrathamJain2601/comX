@@ -8,8 +8,9 @@ import { bodyParser } from '../../utils/body-parser';
 
 export const update_community = async (req: Request, res: Response) => {
   try {
-    if(!bodyParser(updateCommunitySchema, req, res)) return;
-    const { userId, name, description, scope }:updateCommunityRequest = req.body;
+    // if(!bodyParser(updateCommunitySchema, req, res)) return;
+    console.log("Here request is coming");
+    const { userId, name, description, scope } = req.body;
 
     const communityId = Number(req.body.communityId);
     
