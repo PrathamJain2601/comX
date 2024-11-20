@@ -6,8 +6,6 @@ export const get_calendar_task = async(req:Request, res: Response) => {
     try{
         const communityId = Number(req.params.communityId);
 
-
-
         const tasks = await prisma.communityCalendar.findMany({
             where:{
                 communityId: communityId

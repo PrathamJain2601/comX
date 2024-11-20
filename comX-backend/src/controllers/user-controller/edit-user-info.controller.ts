@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { prisma } from "../../config/dbConnect";
 import { SocialLinks } from "@prisma/client"; // Import SocialLinks from Prisma client
 import { responseCodes } from "../../utils/response-codes";
+import { uploadOnCloudinary } from "../../utils/cloudinary";
+import fs from "fs";
 
 export const edit_user_info = async (req: Request, res: Response) => {
   try {
@@ -85,6 +87,23 @@ export const edit_user_info = async (req: Request, res: Response) => {
       skills,
     };
 
+    let coverImageUrl = null;
+        if(req.file){
+            const localFilePath = req.file.path;
+            const cloudinaryResult = await uploadOnCloudinary(localFilePath);
+
+            if(!cloudinaryResult){
+                return responseCodes.serverError.internalServerError(res, "cloudinary upload failed");
+            }
+            
+            coverImageUrl = cloudinaryResult.url;
+            fs.unlinkSync(localFilePath);
+        }
+      
+    if(coverImageUrl){
+      updateData.avatar = coverImageUrl;
+    }
+
     if (socialLinks) {
       updateData.socialLinks = socialLinks; // Directly assign validated socialLinks
     }
@@ -96,6 +115,7 @@ export const edit_user_info = async (req: Request, res: Response) => {
       select: {
         name: true,
         email: true,
+        avatar: true,
         username: true,
         designation: true,
         bio: true,
