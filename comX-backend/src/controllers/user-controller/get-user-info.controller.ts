@@ -47,11 +47,11 @@ export const get_user_info = async(req: Request, res: Response) => {
                 username: req.params.username
             }
 
-        })  
+        }) 
         if(!user){
             return responseCodes.clientError.badRequest(res, "user not found");
         }
-        return responseCodes.success.ok(res, "user info");
+        return responseCodes.success.ok(res, user);
     }
     catch(e){
         console.log(e);
