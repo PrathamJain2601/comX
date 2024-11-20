@@ -9,8 +9,8 @@ const webSocketApp = express();
 const server = createServer(webSocketApp);
 const io = new SocketIOServer(server, {
   cors: {
-    origin: 'http://192.168.75.86:5173',
-    methods: ['GET', 'POST'],
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'HEAD', 'PUT', 'PATCH', 'DELETE'],
     credentials: true,
   },
 });

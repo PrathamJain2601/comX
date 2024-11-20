@@ -31,7 +31,7 @@ export const get_user_info = async (req: Request, res: Response) => {
             username: true,
             avatar: true
           }
-        },
+        },  
         Task: {
           select: {
             id: true,
