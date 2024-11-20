@@ -18,6 +18,20 @@ export const get_user_info = async (req: Request, res: Response) => {
         phone: true,
         skills: true,
         socialLinks: true,
+        followers: {
+          select: {
+            name: true,
+            username: true,
+            avatar: true
+          }
+        },
+        following: {
+          select: {
+            name: true,
+            username: true,
+            avatar: true
+          }
+        },
         Task: {
           select: {
             id: true,
