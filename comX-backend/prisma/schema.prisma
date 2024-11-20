@@ -26,7 +26,7 @@ model User {
   website      String?
   phone        String?
   skills       String[]
-  socialLinks  Json?
+  socialLinks  SocialLinks[]
   otp          String?
   isOtpValid   DateTime?
   isVerified   Boolean?  @default(false)
@@ -169,7 +169,7 @@ enum Scope {
   PUBLIC
 }
 
-enum socialLinks {
+enum SocialLinks {
   TWITTER
   GITHUB
   LINKEDIN
