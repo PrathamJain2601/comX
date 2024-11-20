@@ -21,6 +21,12 @@ model User {
   password     String
   avatar       String?
   designation  String
+  bio          String?
+  location     String?
+  website      String?
+  phone        String?
+  skills       String[]
+  socialLinks  SocialLinks[]
   otp          String?
   isOtpValid   DateTime?
   isVerified   Boolean?  @default(false)
@@ -33,6 +39,8 @@ model User {
   memberships   CommunityMember[]
   calendarTasks CommunityCalendar[]
   messages      Message[]
+  followers     User[]              @relation("UserFollowers")
+  following     User[]              @relation("UserFollowers")
 }
 
 model Community {
@@ -159,4 +167,15 @@ enum Role {
 enum Scope {
   PRIVATE
   PUBLIC
+}
+
+enum SocialLinks {
+  TWITTER
+  GITHUB
+  LINKEDIN
+  INSTAGRAM
+  FACEBOOK
+  LEETCODE
+  CODEFORCES
+  CODECHEF
 }
