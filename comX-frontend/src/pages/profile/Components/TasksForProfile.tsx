@@ -10,76 +10,52 @@ import {
 } from "@/components/ui/table";
 import { CheckCircle, Clock, Disc, PlayCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import ProfileAPI from "@/api/profile/ProfileAPI";
+import ErrorPage from "@/pages/genral/ErrorPage";
 
 type Task = {
   id: number;
   title: string;
-  status: "completed" | "pending" | "in-progress" | "all";
+  status: "COMPLETED" | "PENDING" | "INPROGRESS";
   date: string;
 };
 
-const tasks: Task[] = [
-  {
-    id: 1,
-    title: "Complete project proposal",
-    status: "completed",
-    date: "2023-06-15",
-  },
-  {
-    id: 2,
-    title: "Review team performance",
-    status: "pending",
-    date: "2023-06-30",
-  },
-  {
-    id: 3,
-    title: "Implement new feature",
-    status: "in-progress",
-    date: "2023-06-25",
-  },
-  {
-    id: 4,
-    title: "Prepare presentation",
-    status: "pending",
-    date: "2023-07-05",
-  },
-  {
-    id: 5,
-    title: "Update documentation",
-    status: "completed",
-    date: "2023-06-10",
-  },
-];
-
 export default function TaskForProfile() {
   const [activeTab, setActiveTab] = useState<
-    "completed" | "pending" | "in-progress" | "all"
-  >("completed");
+    "COMPLETED" | "PENDING" | "INPROGRESS" | "ALL"
+  >("COMPLETED");
+
+  const { profile, profileLoading, profileError } = ProfileAPI();
+
+  if (profileLoading) return <div>Loading ...</div>;
+  if (profileError) return <ErrorPage />;
+
+  const tasks: Task[] = profile.Task;
 
   const filteredTasks = tasks.filter(
-    (task) => task.status === activeTab || activeTab === "all"
+    (task) => task.status === activeTab || activeTab === "ALL"
   );
 
   return (
-    <Card className="p-4">
+    <Card className="p-4 border-0 shadow-none">
       <div className="flex justify-center space-x-2 mb-6">
         <TabButton
-          status="all"
+          status="ALL"
           activeTab={activeTab}
           setActiveTab={setActiveTab}
         />
         <TabButton
-          status="completed"
+          status="COMPLETED"
           activeTab={activeTab}
           setActiveTab={setActiveTab}
         />
         <TabButton
-          status="pending"
+          status="PENDING"
           activeTab={activeTab}
           setActiveTab={setActiveTab}
         />
         <TabButton
-          status="in-progress"
+          status="INPROGRESS"
           activeTab={activeTab}
           setActiveTab={setActiveTab}
         />
@@ -106,16 +82,18 @@ export default function TaskForProfile() {
                   <TableCell className="font-medium">{task.title}</TableCell>
                   <TableCell>
                     <span className="flex items-center">
-                      {task.status === "completed" && (
+                      {task.status === "COMPLETED" && (
                         <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
                       )}
-                      {task.status === "pending" && (
+                      {task.status === "PENDING" && (
                         <Clock className="mr-2 h-4 w-4 text-yellow-500" />
                       )}
-                      {task.status === "in-progress" && (
+                      {task.status === "INPROGRESS" && (
                         <PlayCircle className="mr-2 h-4 w-4 text-blue-500" />
                       )}
-                      {task.status}
+                      {task.status === "COMPLETED" && "Completed"}
+                      {task.status === "PENDING" && "Pending"}
+                      {task.status === "INPROGRESS" && "In-Progress"}
                     </span>
                   </TableCell>
                   <TableCell>{task.date}</TableCell>
@@ -138,19 +116,19 @@ function TabButton({
   activeTab,
   setActiveTab,
 }: {
-  status: "completed" | "pending" | "in-progress" | "all";
+  status: "COMPLETED" | "PENDING" | "INPROGRESS" | "ALL";
   activeTab: string;
   setActiveTab: (
-    status: "completed" | "pending" | "in-progress" | "all"
+    status: "COMPLETED" | "PENDING" | "INPROGRESS" | "ALL"
   ) => void;
 }) {
   const isActive = status === activeTab;
   const Icon =
-    status === "completed"
+    status === "COMPLETED"
       ? CheckCircle
-      : status === "pending"
+      : status === "PENDING"
       ? Clock
-      : status === "all"
+      : status === "ALL"
       ? Disc
       : PlayCircle;
 

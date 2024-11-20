@@ -9,7 +9,7 @@ const webSocketApp = express();
 const server = createServer(webSocketApp);
 const io = new SocketIOServer(server, {
   cors: {
-    origin: 'http://192.168.75.86:5173',
+    origin: 'http://localhost:5173',
     methods: ['GET', 'POST'],
     credentials: true,
   },
@@ -46,7 +46,9 @@ io.on('connect', (socket) => {
     if (await isUserInProject(userId, projectId)) {
       try {
         const messages = await prisma.message.findMany({
-          where: { projectId: Number(projectId) },
+          where: { 
+            projectId: Number(projectId),
+           },
           orderBy: { createdAt: 'desc' },
           skip: offset*40,
           take: 40,

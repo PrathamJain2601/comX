@@ -8,6 +8,8 @@ import {
 } from "@/components/ui/card";
 import { scaleLinear } from "d3-scale";
 import { interpolateGreens } from "d3-scale-chromatic";
+import ErrorPage from "@/pages/genral/ErrorPage";
+import ProfileAPI from "@/api/profile/ProfileAPI";
 
 interface ContributionData {
   date: Date;
@@ -15,7 +17,6 @@ interface ContributionData {
 }
 
 interface HeatmapProps {
-  data: ContributionData[];
   title?: string;
   description?: string;
 }
@@ -99,7 +100,10 @@ const CustomHeatmap = ({ data }: { data: ContributionData[] }) => {
       <div
         key={12}
         style={{
-          gridColumnStart: Math.floor((monthLabels[0].x + monthLabels[11].x + 25) / CELL_SIZE) + 2,
+          gridColumnStart:
+            Math.floor(
+              (monthLabels[0].x + monthLabels[11].x + 25) / CELL_SIZE
+            ) + 2,
           gridRowStart: 1,
           fontSize: "12px",
           textAlign: "left",
@@ -156,10 +160,16 @@ const CustomHeatmap = ({ data }: { data: ContributionData[] }) => {
 };
 
 export default function ImprovedCodeHeatmap({
-  data,
   title = "Contribution Heatmap",
   description = "Visualization of your coding activity over the past year",
 }: HeatmapProps) {
+  const { profile, profileLoading, profileError } = ProfileAPI();
+
+  if (profileLoading) return <div>Loading ...</div>;
+  if (profileError) return <ErrorPage />;
+
+  const data = generateSampleData(365, profile.Task);
+
   return (
     <Card className="w-full mx-auto">
       <CardHeader>
@@ -174,3 +184,48 @@ export default function ImprovedCodeHeatmap({
     </Card>
   );
 }
+
+interface ContributionData {
+  date: Date;
+  count: number;
+}
+
+type Task = {
+  id: number;
+  title: string;
+  priority: string;
+  status: string;
+  deadline: string;
+  createdAt: string;
+  completedDate: string | null;
+};
+
+const generateSampleData = (
+  days: number,
+  tasks: Task[]
+): ContributionData[] => {
+  const data: ContributionData[] = [];
+  const endDate = new Date();
+  endDate.setHours(0, 0, 0, 0);
+
+  for (let i = 0; i < days; i++) {
+    const date = new Date(endDate);
+    date.setDate(date.getDate() - i);
+
+    const completedCount = tasks.filter((task) => {
+      if (task.completedDate) {
+        const taskDate = new Date(task.completedDate);
+        taskDate.setHours(0, 0, 0, 0);
+        return taskDate.getTime() === date.getTime();
+      }
+      return false;
+    }).length;
+
+    data.unshift({
+      date: date,
+      count: completedCount,
+    });
+  }
+
+  return data;
+};

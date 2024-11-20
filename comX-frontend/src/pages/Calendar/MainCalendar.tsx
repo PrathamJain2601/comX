@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { DateTime } from "luxon";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
+import CalendarAPI from "@/api/calendar/CalendarAPI";
+import ErrorPage from "../genral/ErrorPage";
 
 interface CalendarEvent {
   id: string;
@@ -26,7 +28,7 @@ const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 export default function MainCalendar() {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
 
-  // const { tasks, tasksLoading, tasksError } = TasksAPI();
+  const { tasks, tasksLoading, tasksError } = CalendarAPI();
 
   const activeChannel = useSelector((state: RootState) => state.activeChannel);
   const year = useSelector((state: RootState) => state.year);
@@ -60,10 +62,19 @@ export default function MainCalendar() {
   // if(!tasksLoading) setEvents(tasks);
   // },[tasksLoading,tasks])
 
-  // if (tasksLoading) return <div>Loading ...</div>;
-  // if (tasksError) return <ErrorPage />;
+  if (tasksLoading) return <div>Loading ...</div>;
+  if (tasksError) return <ErrorPage />;
 
-  // console.log(tasks);
+  console.log(tasks[0].projects);
+  let taskList;
+  // tasks[0].projects.forEach((tasks: { tasks: unknown }[]) => {
+  //   tasks.tasks.forEach((item: unknown) => {
+  //     // taskList.push(item);
+  //     console.log(item);
+  //   });
+  // });
+
+  console.log(taskList);
 
   const getDaysInMonth = (year: number, month: number) => {
     const firstDay = DateTime.local(year, month, 1);

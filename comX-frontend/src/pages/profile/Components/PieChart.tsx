@@ -14,13 +14,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-
-const data = [
-  { name: "Easy", value: 550, color: "hsl(120, 60%, 50%)" },
-  { name: "Medium", value: 1250, color: "hsl(45, 90%, 55%)" },
-  { name: "Hard", value: 450, color: "hsl(15, 80%, 50%)" },
-  { name: "Critical", value: 210, color: "hsl(0, 70%, 50%)" },
-];
+import ProfileAPI from "@/api/profile/ProfileAPI";
+import ErrorPage from "@/pages/genral/ErrorPage";
 
 const RADIAN = Math.PI / 180;
 const renderActiveShape = (props: any) => {
@@ -95,6 +90,50 @@ export default function PieChartTask() {
     return () => clearTimeout(timer);
   }, []);
 
+  const { profile, profileLoading, profileError } = ProfileAPI();
+
+  if (profileLoading) return <div>Loading ...</div>;
+  if (profileError) return <ErrorPage />;
+
+  console.log(profile);
+
+  const data = [
+    {
+      name: "Low",
+      value: profile.Task.filter(
+        (item: { priority: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL" }) =>
+          item.priority === "LOW"
+      ).length,
+      color: "hsl(120, 60%, 50%)",
+    },
+    {
+      name: "Medium",
+      value: profile.Task.filter(
+        (item: { priority: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL" }) =>
+          item.priority === "MEDIUM"
+      ).length,
+      color: "hsl(45, 90%, 55%)",
+    },
+    {
+      name: "High",
+      value: profile.Task.filter(
+        (item: { priority: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL" }) =>
+          item.priority === "HIGH"
+      ).length,
+      color: "hsl(15, 80%, 50%)",
+    },
+    {
+      name: "Critical",
+      value: profile.Task.filter(
+        (item: { priority: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL" }) =>
+          item.priority === "CRITICAL"
+      ).length,
+      color: "hsl(0, 70%, 50%)",
+    },
+  ];
+
+  console.log(data);
+
   const onPieEnter = (_: any, index: number) => {
     setActiveIndex(index);
   };
@@ -105,25 +144,25 @@ export default function PieChartTask() {
     <Card className="w-full">
       <CardHeader>
         <CardTitle>Task Distribution</CardTitle>
-        <CardDescription>Distribution of Task by difficulty</CardDescription>
+        <CardDescription>Distribution of Task by priority</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col">
         <ChartContainer
           config={{
-            easy: {
-              label: "Easy",
+            low: {
+              label: "low",
               color: "hsl(120, 60%, 50%)",
             },
             medium: {
               label: "Medium",
               color: "hsl(45, 90%, 55%)",
             },
-            hard: {
-              label: "Hard",
+            high: {
+              label: "high",
               color: "hsl(15, 80%, 50%)",
             },
             critical: {
-              label: "Hard",
+              label: "low",
               color: "hsl(0, 70%, 50%)",
             },
           }}

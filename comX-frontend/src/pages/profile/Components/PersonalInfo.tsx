@@ -6,8 +6,6 @@ import {
   Github,
   Linkedin,
   Mail,
-  Briefcase,
-  User,
   Phone,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -31,7 +29,7 @@ export default function PersonalInfo() {
   if (profileLoading) return <div>Loading ...</div>;
   if (profileError) return <ErrorPage />;
 
-  console.log(profile);
+  const projects = profile.projects.length;
 
   return (
     <Card className="w-full max-w-lg shadow-xl border border-gray-200">
@@ -52,16 +50,18 @@ export default function PersonalInfo() {
         </p>
       </CardHeader>
 
-      {/* <CardContent className="space-y-6">
-        <div className="text-center text-muted-foreground">{profile.bio}</div>
+      <CardContent className="space-y-6">
+        <div className="text-center text-muted-foreground">
+          {profile.bio ?? ""}
+        </div>
         <Separator />
         <div className="grid grid-cols-3 gap-4 text-center">
           <div>
-            <div className="text-2xl font-bold">{followers}</div>
+            <div className="text-2xl font-bold">{0}</div>
             <div className="text-xs text-muted-foreground">Followers</div>
           </div>
           <div>
-            <div className="text-2xl font-bold">{following}</div>
+            <div className="text-2xl font-bold">{0}</div>
             <div className="text-xs text-muted-foreground">Following</div>
           </div>
           <div>
@@ -71,56 +71,72 @@ export default function PersonalInfo() {
         </div>
         <Separator />
         <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-muted-foreground" />
-            <span>{profile.location}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link className="w-4 h-4 text-muted-foreground" />
-            <a
-              href={profile.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline"
-            >
-              {profile.website}
-            </a>
-          </div>
+          {profile.location && (
+            <div className="flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-muted-foreground" />
+              <span>{profile.location}</span>
+            </div>
+          )}
+          {profile.website && (
+            <div className="flex items-center gap-2">
+              <Link className="w-4 h-4 text-muted-foreground" />
+              <a
+                href={profile.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                {profile.website}
+              </a>
+            </div>
+          )}
           <div className="flex items-center gap-2">
             <Mail className="w-4 h-4 text-muted-foreground" />
             <span>{profile.email}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <Phone className="w-4 h-4 text-muted-foreground" />
-            <span>{profile.phone}</span>
-          </div>
+          {profile.phone && (
+            <div className="flex items-center gap-2">
+              <Phone className="w-4 h-4 text-muted-foreground" />
+              <span>{profile.phone}</span>
+            </div>
+          )}
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4 text-muted-foreground" />
-            <span>Joined {profile.registeredAt}</span>
+            <span>
+              {new Date(profile.registeredAt).toLocaleDateString("en-GB", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}
+            </span>
           </div>
         </div>
         <Separator />
-        <div>
-          <h3 className="font-semibold mb-2">Skills</h3>
-          <div className="flex flex-wrap gap-2">
-            {profile.skills.map((skill: string, index: number) => (
-              <Badge key={index} variant="outline">
-                {skill}
-              </Badge>
-            ))}
-          </div>
-        </div>
-        <div>
-          <h3 className="font-semibold mb-2">Skill Progress</h3>
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span>Overall</span>
-              <span>85%</span>
+        {profile.skills.length > 0 && (
+          <>
+            <div>
+              <div className="flex flex-wrap gap-2">
+                <h3 className="font-semibold mb-2">Skills</h3>
+                {profile.skills.map((skill: string, index: number) => (
+                  <Badge key={index} variant="outline">
+                    {skill}
+                  </Badge>
+                ))}
+              </div>
             </div>
-            <Progress value={85} className="w-full" />
-          </div>
-        </div>
-        <Separator />
+            <div>
+              <h3 className="font-semibold mb-2">Skill Progress</h3>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Overall</span>
+                  <span>85%</span>
+                </div>
+                <Progress value={85} className="w-full" />
+              </div>
+            </div>
+            <Separator />
+          </>
+        )}
         <div className="flex justify-center space-x-4">
           {profile.socialLinks.twitter && (
             <a
@@ -158,8 +174,32 @@ export default function PersonalInfo() {
               </Button>
             </a>
           )}
+          {profile.socialLinks.codechef && (
+            <a
+              href={profile.socialLinks.codechef}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button variant="ghost" size="icon">
+                <Linkedin className="w-5 h-5" />
+                <span className="sr-only">CodeChef profile</span>
+              </Button>
+            </a>
+          )}
+          {profile.socialLinks.codeforces && (
+            <a
+              href={profile.socialLinks.codeforces}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button variant="ghost" size="icon">
+                <Linkedin className="w-5 h-5" />
+                <span className="sr-only">Codeforces profile</span>
+              </Button>
+            </a>
+          )}
         </div>
-      </CardContent> */}
+      </CardContent>
       <CardFooter className="flex justify-between">
         <Button variant="outline">Edit Profile</Button>
         <Button variant="destructive">Logout</Button>
