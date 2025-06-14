@@ -5,11 +5,12 @@ import RecentActivity from "./components/RecentActivity";
 import Milestones from "./components/Milestones";
 import { useParams } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+import CreateProject from "./create-project/CreateProject";
 
 export default function ProjectDashboard() {
   const { projectId } = useParams();
-
-  if (projectId === undefined) return <div>Hello World</div>;
+  
+  if (projectId === undefined) return <CreateProject />;
 
   return (
     <div className="max-h-screen overflow-scroll w-full no-scrollbar">
