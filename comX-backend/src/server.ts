@@ -20,9 +20,14 @@ const io = new SocketIOServer(server, {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+const allowedOrigins: string[] = [];
+
+if (process.env.FRONTEND_URL) allowedOrigins.push(process.env.FRONTEND_URL);
+allowedOrigins.push('http://localhost:5173');
+
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://comx-frontend.vercel.app'],
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  origin: allowedOrigins,
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
   credentials: true,
 }));
 
