@@ -111,7 +111,7 @@ io.on('connect', (socket) => {
 });
 
 // ─── Start Server ───────────────────────────────────
-const PORT = process.env.PORT || 5000;
+const PORT = parseInt(process.env.PORT || '3000', 10);
 server.listen(PORT, () => {
   console.log(`Server + WebSocket running on port ${PORT}`);
 });
