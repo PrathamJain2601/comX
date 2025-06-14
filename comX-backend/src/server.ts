@@ -6,11 +6,16 @@ import { PrismaClient } from '@prisma/client';
 import { Server as SocketIOServer } from 'socket.io';
 
 // ─── Express App Setup ──────────────────────────────
+const allowedOrigins: string[] = [];
+
+if (process.env.FRONTEND_URL) allowedOrigins.push(process.env.FRONTEND_URL);
+allowedOrigins.push('http://localhost:5173');
+
 const app = express();
 const server = http.createServer(app); // ✅ shared server
 const io = new SocketIOServer(server, {
   cors: {
-    origin: ['http://localhost:5173', 'https://comx-frontend.vercel.app'],
+    origin: allowedOrigins,
     methods: ['GET', 'POST', 'HEAD', 'PUT', 'PATCH', 'DELETE'],
     credentials: true,
   },
@@ -20,10 +25,6 @@ const io = new SocketIOServer(server, {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-const allowedOrigins: string[] = [];
-
-if (process.env.FRONTEND_URL) allowedOrigins.push(process.env.FRONTEND_URL);
-allowedOrigins.push('http://localhost:5173');
 
 app.use(cors({
   origin: allowedOrigins,
