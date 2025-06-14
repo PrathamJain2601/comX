@@ -9,7 +9,7 @@ const webSocketApp = express();
 const server = createServer(webSocketApp);
 const io = new SocketIOServer(server, {
   cors: {
-    origin: 'http://localhost:5173',
+    origin: ['http://localhost:5173', 'https://comx-frontend.vercel.app'],
     methods: ['GET', 'POST', 'HEAD', 'PUT', 'PATCH', 'DELETE'],
     credentials: true,
   },
@@ -91,7 +91,7 @@ io.on('connect', (socket) => {
   });
 });
 
-const WS_PORT = 5001;
-server.listen(WS_PORT, () => {
-  console.log(`WebSocket server running on port ${WS_PORT}`);
+const WSPORT = process.env.WSPORT || 5001;
+server.listen(WSPORT, () => {
+  console.log(`WebSocket server running on port ${WSPORT}`);
 });

@@ -1,42 +1,117 @@
-const express = require('express');
-const http = require('http');
-const cors = require('cors');
-const cookieParser = require('cookie-parser');
-import {Response, Request} from "express";
+import express, { Request, Response } from 'express';
+import http from 'http';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import { PrismaClient } from '@prisma/client';
+import { Server as SocketIOServer } from 'socket.io';
 
+// ─── Express App Setup ──────────────────────────────
 const app = express();
+const server = http.createServer(app); // ✅ shared server
+const io = new SocketIOServer(server, {
+  cors: {
+    origin: ['http://localhost:5173', 'https://comx-frontend.vercel.app'],
+    methods: ['GET', 'POST', 'HEAD', 'PUT', 'PATCH', 'DELETE'],
+    credentials: true,
+  },
+});
+
+// ─── Middleware ─────────────────────────────────────
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(express.urlencoded({extended: true}));;
-const corsOptions = {
-    origin: 'http://localhost:5173',   // Allow requests from this origin
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Allowed HTTP methods
-    credentials: true, // Allow credentials (cookies, authorization headers, etc.)
-  };
-  
-  // Use CORS middleware
-app.use(cors(corsOptions));
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://comx-frontend.vercel.app'],
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+}));
 
-app.get("/", (req: Request, res: Response)=>{
-    res.send("server is running");
-})
+// ─── Routes ─────────────────────────────────────────
+app.get('/', (req: Request, res: Response) => {
+  res.send('server is running');
+});
 
-const auth = require("./routes/auth.route");
-app.use("/auth", auth);
-const community = require("./routes/community.route");
-app.use("/community", community);
-const member = require("./routes/member.route");
-app.use("/member", member);
-const calendar = require("./routes/calendar.route");
-app.use("/calendar", calendar);
-const project = require("./routes/project.route");
-app.use("/project", project);
-const task = require("./routes/tasks.route");
-app.use("/task", task);
-const user = require("./routes/user.route");
-app.use("/user", user);
+app.use('/auth', require('./routes/auth.route'));
+app.use('/community', require('./routes/community.route'));
+app.use('/member', require('./routes/member.route'));
+app.use('/calendar', require('./routes/calendar.route'));
+app.use('/project', require('./routes/project.route'));
+app.use('/task', require('./routes/tasks.route'));
+app.use('/user', require('./routes/user.route'));
 
+// ─── Prisma & WebSocket ─────────────────────────────
+const prisma = new PrismaClient();
 
-app.listen(5000, ()=>{
-    console.log("server running on port 5000");
+async function isUserInProject(userId: number, projectId: number): Promise<boolean> {
+  const membership = await prisma.projectMembers.findFirst({
+    where: { userId, projectId },
+  });
+  return membership !== null;
+}
+
+io.on('connect', (socket) => {
+  console.log('A user connected to WebSocket server');
+
+  socket.on('joinRoom', async (room: string, userId: number) => {
+    const projectId = parseInt(room);
+    if (await isUserInProject(userId, projectId)) {
+      socket.join(room);
+      console.log(`User ${userId} joined room: ${room}`);
+      socket.emit('joinSuccess', `Joined room ${room}`);
+    } else {
+      socket.emit('error', { message: 'Unauthorized: You are not a member of this project.' });
+    }
+  });
+
+  socket.on('fetchMessages', async (room: string, userId: number, offset: number) => {
+    const projectId = parseInt(room);
+    if (await isUserInProject(userId, projectId)) {
+      try {
+        const messages = await prisma.message.findMany({
+          where: { projectId },
+          orderBy: { createdAt: 'desc' },
+          skip: offset * 40,
+          take: 40,
+        });
+        socket.emit('receiveMessages', messages.reverse());
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+        socket.emit('error', { message: 'Could not retrieve messages' });
+      }
+    } else {
+      socket.emit('error', { message: 'Unauthorized: You are not a member of this project.' });
+    }
+  });
+
+  socket.on('message', async (data) => {
+    const { room, content, userId } = data;
+    const projectId = parseInt(room);
+    if (await isUserInProject(userId, projectId)) {
+      try {
+        const message = await prisma.message.create({
+          data: {
+            content,
+            senderId: userId,
+            projectId,
+            createdAt: new Date(),
+          },
+        });
+        io.to(room).emit('message', message);
+      } catch (error) {
+        console.error('Error saving message:', error);
+      }
+    } else {
+      socket.emit('error', { message: 'Unauthorized: You are not a member of this project.' });
+    }
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected from WebSocket server');
+  });
+});
+
+// ─── Start Server ───────────────────────────────────
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => {
+  console.log(`Server + WebSocket running on port ${PORT}`);
 });
