@@ -1,2 +1,0 @@
-# comX
-pick, readonly, partial

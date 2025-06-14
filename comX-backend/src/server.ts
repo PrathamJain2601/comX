@@ -112,6 +112,13 @@ io.on('connect', (socket) => {
 
 // ─── Start Server ───────────────────────────────────
 const PORT = parseInt(process.env.PORT as string, 10);
+console.log('🔍 Render assigned PORT:', process.env.PORT);
+console.log('🏁 Attempting to listen on port:', PORT);
+
 server.listen(PORT, () => {
-  console.log(`Server + WebSocket running on port ${PORT}`);
+  console.log(`✅ Server + WebSocket successfully listening on port ${PORT}`);
+});
+
+server.on('error', err => {
+  console.error('❌ Server encountered an error during listen:', err);
 });
