@@ -6,7 +6,12 @@ import { prisma } from "../config/dbConnect";
 
 const create_token = async (res: Response, user: User) => {
     const token = await jwt.sign({userId: user.id}, process.env.JWT_SECRET, {expiresIn: "30d"});
-    res.cookie("token", token, {maxAge:1000 * 60 * 60 * 24 * 30, httpOnly: true});
+    res.cookie("token", token, {
+    maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    });    
 }
 
 const verify_token = async (req: Request) => {
