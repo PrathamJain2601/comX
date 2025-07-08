@@ -23,6 +23,7 @@ import TaskPage from "./pages/tasks/TasksPage";
 import ChatSkeleton from "./pages/chatApp/ChatSkeleton";
 import Testing from "./pages/Testing";
 import Code from "./pages/code/Code";
+import Call from "./pages/call/Call";
 
 function App() {
   const router = createBrowserRouter([
@@ -68,8 +69,8 @@ function App() {
           element: <MainCalendar />,
         },
         {
-          path: "code",
-          element: <></>,
+          path: "call",
+          element: <Call />,
         },
         {
           path: "settings/basic-info",

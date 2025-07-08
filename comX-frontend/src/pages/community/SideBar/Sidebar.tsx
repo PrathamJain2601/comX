@@ -15,6 +15,7 @@ import GroupList from "./GroupList";
 import ProjectList from "./ProjectList";
 import ProjectListForTasks from "./Task-ProjectList";
 import AllProjectAPI from "@/api/project/AllProjectsAPI";
+import CallList from "./CallList";
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -74,7 +75,7 @@ const Sidebar = React.memo(function Sidebar() {
       if (projects.length === 0) navigate(`project/task`, { replace: true });
       else navigate(`task/${projects[0].id}`, { replace: true });
     } else if(activeServer === 3){
-      navigate("code",{replace:true});
+      navigate("call",{replace:true});
     }
   }, [activeServer, dispatch, navigate, projects, taskList,projectsLoading]);
 
@@ -91,7 +92,7 @@ const Sidebar = React.memo(function Sidebar() {
       <ServerList />
       {activeServer === 1 && <CalendarList />}
       {activeServer === 2 && <SettingsList />}
-      {/* {activeServer === 3 && <Code />} */}
+      {activeServer === 3 && <CallList />}
       {activeServer === 4 && <GroupList />}
       {activeServer === 5 && <ProjectList />}
       {activeServer === 6 && <ProjectListForTasks />}
