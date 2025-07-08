@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-  "test": "echo \"Error: no test specified\" && exit 1",
-  "start": "npm run migrate:deploy && node dist/server.js",
-  "build": "tsc -b",
-  "migrate:deploy": "npx prisma migrate deploy"
-},
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm run migrate:deploy && node dist/server.js",
+    "build": "tsc -b",
+    "migrate:deploy": "npx prisma migrate deploy"
+  },
   "author": "",
   "license": "ISC",
   "description": "",
@@ -21,6 +21,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
     "jsonwebtoken": "^9.0.2",
+    "livekit-server-sdk": "^2.13.1",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.15",
     "socket.io": "^4.8.1",
