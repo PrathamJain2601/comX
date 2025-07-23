@@ -98,7 +98,7 @@ export default function Navbar() {
             ))}
           </div>
           <div className="hidden md:flex gap-8">
-            <DarkLightToggleButton />
+            {/* <DarkLightToggleButton /> */}
             {!loginDetails.user ? (
               <div className="flex gap-2">
                 <Link to="/Login">
