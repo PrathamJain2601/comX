@@ -120,7 +120,7 @@ export default function SignUpFormPage1({
           )}
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
-          <Label htmlFor="coverImage">Email Address</Label>
+          <Label htmlFor="coverImage">Profile Picture</Label>
           <Input
             id="coverImage"
             placeholder="abc@gmail.com"
