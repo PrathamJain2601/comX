@@ -81,7 +81,7 @@ export default function SignUpFormPage1({
           <Label htmlFor="name">Name</Label>
           <Input
             id="name"
-            placeholder="Vardaan Pahwa"
+            placeholder="Abc"
             type="text"
             {...register("name", { required: true })}
           />
@@ -95,7 +95,7 @@ export default function SignUpFormPage1({
           <Label htmlFor="username">Username</Label>
           <Input
             id="username"
-            placeholder="Vardaan-02"
+            placeholder="Abc02"
             type="text"
             {...register("username", { required: true })}
           />
@@ -109,7 +109,7 @@ export default function SignUpFormPage1({
           <Label htmlFor="email">Email Address</Label>
           <Input
             id="email"
-            placeholder="iit2023249@iiita.ac.in"
+            placeholder="abc@gmail.com"
             type="email"
             {...register("email", { required: true })}
           />
@@ -123,7 +123,7 @@ export default function SignUpFormPage1({
           <Label htmlFor="coverImage">Email Address</Label>
           <Input
             id="coverImage"
-            placeholder="iit2023249@iiita.ac.in"
+            placeholder="abc@gmail.com"
             type="file"
             ref={profilePic}
           />
