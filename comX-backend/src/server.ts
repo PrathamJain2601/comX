@@ -10,7 +10,6 @@ const allowedOrigins: string[] = [];
 
 if (process.env.FRONTEND_URL) allowedOrigins.push(process.env.FRONTEND_URL);
 allowedOrigins.push('http://localhost:5173');
-
 const app = express();
 const server = http.createServer(app); // ✅ shared server
 const io = new SocketIOServer(server, {

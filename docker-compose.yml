@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+  backend:
+    build: ./comX-backend
+    image: comx-backend:latest
+    container_name: backend_container
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ./comX-backend/.env
+    command: sh -c "npx prisma generate && npx prisma migrate deploy && npm run start"
+
+  postgres:
+    image: postgres:15
+    container_name: postgres_container
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=comX
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build: ./comX-frontend
+    image: comx-frontend:latest
+    container_name: frontend_container
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
