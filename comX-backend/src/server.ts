@@ -4,8 +4,10 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { PrismaClient } from '@prisma/client';
 import { Server as SocketIOServer } from 'socket.io';
+import { globalLimiter } from './middlewares/rateLimit.middleware';
 
 // ─── Express App Setup ──────────────────────────────
+
 const allowedOrigins: string[] = [];
 
 if (process.env.FRONTEND_URL) allowedOrigins.push(process.env.FRONTEND_URL);
@@ -31,6 +33,8 @@ app.use(cors({
   credentials: true,
 }));
 
+app.use(globalLimiter);
+
 // ─── Routes ─────────────────────────────────────────
 app.get('/', (req: Request, res: Response) => {
   res.send('server is running');
@@ -53,6 +57,8 @@ async function isUserInProject(userId: number, projectId: number): Promise<boole
   });
   return membership !== null;
 }
+
+const messageTracker: Record<number, number[]> = {};
 
 io.on('connect', (socket) => {
   console.log('A user connected to WebSocket server');
@@ -91,6 +97,26 @@ io.on('connect', (socket) => {
   socket.on('message', async (data) => {
     const { room, content, userId } = data;
     const projectId = parseInt(room);
+
+    // 🛑 Rate limit: Allow max 20 messages/minute per user
+  if (!messageTracker[userId]) {
+    messageTracker[userId] = [];
+  }
+
+  messageTracker[userId] = messageTracker[userId].filter(
+    (timestamp) => Date.now() - timestamp < 60_000
+  );
+
+  if (messageTracker[userId].length >= 20) {
+    return socket.emit('error', { message: 'Rate limit exceeded: Max 20 messages per minute.' });
+  }
+
+  if (messageTracker[userId].length === 0) {
+    delete messageTracker[userId];
+  }
+
+  messageTracker[userId].push(Date.now());
+
     if (await isUserInProject(userId, projectId)) {
       try {
         const message = await prisma.message.create({
