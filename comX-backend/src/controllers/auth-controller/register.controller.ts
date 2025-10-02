@@ -6,9 +6,26 @@ import { generateOTP, sendOtpEmail } from "./send-email-otp.controller";
 import { prisma } from "../../config/dbConnect";
 import bcryptjs from "bcryptjs";
 import fs from "fs";
+import axios from 'axios';
 import { registerRequestSchema, registerRequest } from "@prathamjain522/comx-common";
 import { uploadOnCloudinary } from "../../utils/cloudinary";
 import { bodyParser } from "../../utils/body-parser";
+
+async function verifyCaptcha(token: string): Promise<boolean> {
+  try {
+    const res = await axios.post(
+      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+      new URLSearchParams({
+        secret: process.env.CF_SECRET_KEY!,
+        response: token,
+      })
+    );
+    return res.data.success;
+  } catch (error) {
+    console.error('CAPTCHA verification failed', error);
+    return false;
+  }
+}
 
 export const register = async (req: Request, res: Response) => {
     if(!bodyParser(registerRequestSchema, req, res)) return;
@@ -17,8 +34,15 @@ export const register = async (req: Request, res: Response) => {
     if(!name || !username || !email || !password || !designation){
         responseCodes.clientError.notFound(res, "all fields are required");
     }
-
     const hashedPassword = await bcryptjs.hash(password, 8);
+
+    console.log("verifying captcha")
+    const success = await verifyCaptcha(req.body.captchaToken);
+    if (!success){
+        console.log("failure");
+        return res.status(403).json({ message: "CAPTCHA failed" });
+    } 
+    console.log("successfull")
 
     try {
 

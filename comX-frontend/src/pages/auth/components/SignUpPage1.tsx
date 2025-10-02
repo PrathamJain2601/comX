@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import axios from "axios";
+import Turnstile from 'react-turnstile';
 import toast, { Toaster } from "react-hot-toast";
 import { useMutation } from "@tanstack/react-query";
 import { UserData, UserDataSchema } from "@/types/UserProfile";
@@ -22,6 +23,9 @@ export default function SignUpFormPage1({
   setCurrentPage: (value: number) => void;
   email: React.MutableRefObject<HTMLInputElement>;
 }) {
+
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
@@ -36,17 +40,36 @@ export default function SignUpFormPage1({
 
   const { mutateAsync: submitForm, isPending } = useMutation({
     mutationFn: async (userData: UserData) => {
+      if (!captchaToken) {
+        throw new Error("Captcha not verified");
+      }
+      
       if (profilePic.current?.files?.[0]) {
         userData.file = profilePic.current.files[0];
       }
 
-      return await axios.post(`${backend_url}/auth/register`, userData, {
+      const formData = new FormData();
+      Object.entries(userData).forEach(([key, value]) => {
+        if (value instanceof File) {
+          formData.append(key, value);
+        } else if (value !== undefined && value !== null) {
+          formData.append(key, value.toString());
+        }
+      });
+
+      // Append captcha token
+      formData.append("captchaToken", captchaToken);
+      
+      console.log(formData);
+
+      return await axios.post(`${backend_url}/auth/register`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
     },
     onSuccess: () => {
+      setCaptchaToken(null);
       setCurrentPage(2);
     },
     onError: (error) => {
@@ -69,10 +92,10 @@ export default function SignUpFormPage1({
   return (
     <div className="max-w-md sm:w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input border border-slate-300 bg-white dark:bg-black w-[80%] translate-y-12">
       <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
-        Welcome to E-Commerce
+        Welcome to ComX
       </h2>
       <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
-        SignUp to E-Commerce if you can because we don&apos;t have a sign up
+        SignUp to ComX if you can because we don&apos;t have a sign up
         flow yet
       </p>
 
@@ -162,6 +185,16 @@ export default function SignUpFormPage1({
           value={post} setValue={setPost}
            />
         </LabelInputContainer>
+          <div className="flex justify-center">
+          <Turnstile
+            theme="light"
+            sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+            onVerify={(token) => {
+              setCaptchaToken(token); // Save for backend verification
+            }}
+            onExpire={() => setCaptchaToken(null)}
+          />
+          </div>
 
         {isPending ? (
           <Button
@@ -175,6 +208,7 @@ export default function SignUpFormPage1({
           <button
             className={`bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]`}
             type="submit"
+            disabled = {!captchaToken || isPending}
           >
             Next &rarr;
             <BottomGradient />
