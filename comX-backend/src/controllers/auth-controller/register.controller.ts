@@ -35,16 +35,16 @@ export const register = async (req: Request, res: Response) => {
         responseCodes.clientError.notFound(res, "all fields are required");
     }
     const hashedPassword = await bcryptjs.hash(password, 8);
-
-    console.log("verifying captcha")
-    const success = await verifyCaptcha(req.body.captchaToken);
-    if (!success){
-        console.log("failure");
-        return res.status(403).json({ message: "CAPTCHA failed" });
-    } 
-    console.log("successfull")
-
     try {
+
+        console.log("verifying captcha")
+        const success = await verifyCaptcha(req.body.captchaToken);
+        if (!success){
+            console.log("failure");
+            return res.status(403).json({ message: "CAPTCHA failed" });
+        } 
+        console.log("successfull")
+
 
         let avatarUrl;
         if(req.file){
@@ -71,7 +71,16 @@ export const register = async (req: Request, res: Response) => {
         })
         await create_token(res, user);
         const otp = generateOTP();
-        sendOtpEmail(user.email, otp, 'Email Verification OTP', `Your OTP for email verification is: ${otp}. It is valid for 10 minutes.`);
+        try {
+            await sendOtpEmail(
+                user.email,
+                otp,
+                'Email Verification OTP',
+                `Your OTP for email verification is: ${otp}. It is valid for 10 minutes.`
+            );
+        } catch (err) {
+            console.error('Failed to send OTP email:', err);
+        }
         user.password = "";
         return responseCodes.success.created(res, user, "User created successfully");
     }
