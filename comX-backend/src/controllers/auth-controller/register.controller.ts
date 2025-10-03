@@ -37,13 +37,13 @@ export const register = async (req: Request, res: Response) => {
     const hashedPassword = await bcryptjs.hash(password, 8);
     try {
 
-        console.log("verifying captcha")
-        const success = await verifyCaptcha(req.body.captchaToken);
-        if (!success){
-            console.log("failure");
-            return res.status(403).json({ message: "CAPTCHA failed" });
-        } 
-        console.log("successfull")
+        // console.log("verifying captcha")
+        // const success = await verifyCaptcha(req.body.captchaToken);
+        // if (!success){
+        //     console.log("failure");
+        //     return res.status(403).json({ message: "CAPTCHA failed" });
+        // } 
+        // console.log("successfull")
 
 
         let avatarUrl;
