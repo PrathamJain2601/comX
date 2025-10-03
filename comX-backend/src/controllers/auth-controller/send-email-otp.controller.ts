@@ -11,6 +11,8 @@ export function generateOTP(): string {
 
 export async function sendOtpEmail(toEmail: string, otp: string, subject: string, text: string): Promise<void> {
   try {
+
+    console.log("sending otp to", toEmail);
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       secure: true,
@@ -40,6 +42,7 @@ export async function sendOtpEmail(toEmail: string, otp: string, subject: string
     });
 
     await transporter.sendMail(mailOptions);
+    console.log("sent otp to", toEmail);
   } catch (error) {
     console.error('Error sending OTP email:', error);
   }

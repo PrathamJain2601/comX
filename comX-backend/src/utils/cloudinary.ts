@@ -10,8 +10,11 @@ cloudinary.config({
 export const uploadOnCloudinary = async(localFilePath: string) => {
     try{
         if(!localFilePath) return null;
+        const stats = fs.statSync(localFilePath);
+        console.log("Uploading file of size:", (stats.size / 1024 / 1024).toFixed(2), "MB");
         const response = await cloudinary.uploader.upload(localFilePath, {
-            resource_type: "auto"
+            resource_type: "auto",
+            timeout: 120000,
         })
         console.log("File uploaded on cloudinary", response.url);
         return response;

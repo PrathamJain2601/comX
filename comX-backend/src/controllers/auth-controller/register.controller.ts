@@ -72,7 +72,7 @@ export const register = async (req: Request, res: Response) => {
         await create_token(res, user);
         const otp = generateOTP();
         try {
-            await sendOtpEmail(
+            sendOtpEmail(
                 user.email,
                 otp,
                 'Email Verification OTP',
